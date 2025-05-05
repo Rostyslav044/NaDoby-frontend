@@ -2,6 +2,7 @@
 
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/app/LanguageContext";
@@ -9,6 +10,7 @@ import { Drawer, List, ListItem, ListItemText, IconButton, Collapse, MenuItem, T
 import { Close, ArrowDropDown } from "@mui/icons-material";
 import CreateUser from "./CreateUser"; // Импортируем компонент CreateUser
 import styles from "@/app/styles/Menu.styles.module.scss";
+import { Roboto } from "next/font/google";
 
 const translations = {
   ua: {
@@ -80,7 +82,28 @@ const NoAutorazeMenu = () => {
         <Box sx={{ width: 300 }} role="presentation" ref={menuRef}>
           <Box className={styles.menuHeader} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Typography variant="h6" className={styles.name}>
-            <span style={{ color: "blue", marginLeft:"10%", }}>NaDoby.com</span>
+            <h1
+            style={{
+              fontSize: "26px",
+              fontWeight: "bold",
+              color: "#1976d2",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+              letterSpacing: "1.2px",
+              paddingLeft:"10px",
+              // paddingTop:"10px",
+              margin: 0,
+              textShadow: `
+                0 0 5px #fff176,
+                1px 1px 2px rgba(0, 0, 0, 0.4)
+              `,
+            }}
+          >
+            NaDoby
+            <span style={{ color: "#FFD700", textShadow: "0 0 8px #FFD700" }}>
+              .com
+            </span>
+          </h1>
+
             </Typography>
             <IconButton onClick={handleCloseMenu}>
               <Close />
@@ -120,6 +143,51 @@ const NoAutorazeMenu = () => {
               </List>
             </Collapse>
 
+
+            {/* <Box sx={{ p: 2 }}>
+  <Link href="/add-apartment" style={{ textDecoration: "none" }}>
+    <Typography
+      variant="body2"
+      sx={{
+        fontSize: "16px",
+        color: "blue",
+        fontFamily: "Roboto, sans-serif"
+      }}
+    >
+      {translation.listYourProperty}
+    </Typography>
+  </Link>
+</Box> */}
+
+
+<Box sx={{ p: 2 }}>
+  <Link href="/add-apartment" style={{ textDecoration: "none" }}>
+    <Typography
+      variant="body1"
+      sx={{
+        fontSize: "18px",
+        fontWeight: 600,
+        color: "#1e88e5",
+        fontFamily: "Roboto, sans-serif",
+        textAlign: "center",
+        boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+        borderRadius: "8px",
+        padding: "10px 16px",
+        backgroundColor: "#ffffff",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+          backgroundColor: "#f5f5f5",
+        },
+      }}
+    >
+      {translation.listYourProperty}
+    </Typography>
+  </Link>
+</Box>
+
+
+
             {/* Остальные пункты меню */}
             <ListItem button>
               <ListItemText primary={<span style={{ color: "blue" }}>{translation.housingSearch}</span>} />
@@ -139,13 +207,13 @@ const NoAutorazeMenu = () => {
           </List>
 
           {/* Ссылка для добавления жилья без подчеркивания */}
-          <Box sx={{ p: 2 }}>
+          {/* <Box sx={{ p: 2 }}>
             <Link href="/add-apartment" style={{ textDecoration: "none" }}>
               <Typography variant="body2" color="primary" style={{ color: "blue" }}>
                 {translation.listYourProperty}
               </Typography>
             </Link>
-          </Box>
+          </Box> */}
         </Box>
       </Drawer>
 
@@ -177,4 +245,7 @@ const NoAutorazeMenu = () => {
 };
 
 export default NoAutorazeMenu;
+
+
+
 

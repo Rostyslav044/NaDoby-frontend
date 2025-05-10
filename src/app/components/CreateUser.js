@@ -384,6 +384,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Logo from "./Logo";
 import {
   TextField,
   Button,
@@ -528,7 +529,7 @@ const CreateUser = ({ onClose }) => {
         </IconButton>
 
         <Typography variant="h5" textAlign="center" gutterBottom>
-        <h1
+        {/* <h1
             style={{
               fontSize: "26px",
               fontWeight: "bold",
@@ -546,7 +547,9 @@ const CreateUser = ({ onClose }) => {
             <span style={{ color: "#FFD700", textShadow: "0 0 8px #FFD700" }}>
               .com
             </span>
-          </h1>
+          </h1> */}
+
+          <Logo/>
 
         </Typography>
 

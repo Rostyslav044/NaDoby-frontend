@@ -1146,6 +1146,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Logo from "./Logo";
 import {
   List,
   ListItem,
@@ -1255,7 +1256,7 @@ const UserMenu = ({ currentLanguage = "ua" }) => {
             pt: 2,
           }}
         >
-          <h1
+          {/* <h1
             style={{
               fontSize: "26px",
               fontWeight: "bold",
@@ -1273,8 +1274,8 @@ const UserMenu = ({ currentLanguage = "ua" }) => {
             <span style={{ color: "#FFD700", textShadow: "0 0 8px #FFD700" }}>
               .com
             </span>
-          </h1>
-
+          </h1> */}
+<Logo/>
           <IconButton onClick={() => setIsOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -1289,7 +1290,7 @@ const UserMenu = ({ currentLanguage = "ua" }) => {
             <ListItemText primary={t.myListings} />
           </ListItem>
 
-          <ListItem button component={Link} href="/rent-out" sx={{ px: 3 }}>
+          <ListItem button component={Link} href="/add-apartment" sx={{ px: 3 }}>
             <ListItemText primary={t.rentOut} />
           </ListItem>
 

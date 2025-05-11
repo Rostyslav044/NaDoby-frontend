@@ -12,9 +12,9 @@ export default function Menu() {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-//   useEffect(() => {
-//     dispatch(loadFromStorage());
-//   }, [dispatch]);
+  useEffect(() => {
+    dispatch(loadFromStorage());
+  }, [dispatch]);
 
 //   const handleLogout = () => {
 //     dispatch(logout());

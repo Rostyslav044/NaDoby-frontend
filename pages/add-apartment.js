@@ -498,6 +498,7 @@
 
 import React, { useState } from 'react';
 import Autocomplete from 'react-google-autocomplete';
+import FileUploadSlider from '@/app/components/FileUploadSlider';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import {
   Container,
@@ -605,10 +606,24 @@ const AddApartment = () => {
     }
   };
 
+  // const handlePhotoChange = (e) => {
+  //   const files = Array.from(e.target.files).slice(0, 9);
+  //   setPhotos(files);
+  // };
+
+  // Расширим handlePhotoChange, чтобы поддерживать добавление и обновление фотографий:
   const handlePhotoChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 9);
-    setPhotos(files);
+    const files = Array.from(e.target.files);
+    const newPhotos = [...photos, ...files].slice(0, 9); // максимум 9 фото
+    setPhotos(newPhotos);
   };
+  // Добавим функцию удаления:
+  const handleRemovePhoto = (index) => {
+    const updatedPhotos = [...photos];
+    updatedPhotos.splice(index, 1);
+    setPhotos(updatedPhotos);
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -713,7 +728,7 @@ const AddApartment = () => {
             defaultValue={formData.city}
             placeholder="Введите город"
             style={{
-              width: '90%',
+              width: '100%',
               padding: '16.5px 14px',
               fontSize: '1rem',
               borderRadius: '4px',
@@ -722,6 +737,8 @@ const AddApartment = () => {
               fontFamily: 'inherit',
               marginBottom:'15px',
               marginTop: '10px',
+              maxWidth: '100%',
+             boxSizing:'border-box',
             }}
           />
           {errors.city && <Typography variant="caption" color="error" sx={{ mt: 1 }}>Это поле обязательно</Typography>}
@@ -824,7 +841,7 @@ const AddApartment = () => {
         />
 
         {/* Фотографии */}
-        <Box margin="normal">
+        {/* <Box margin="normal">
           <input
             accept="image/*"
             style={{ display: 'none' }}
@@ -849,7 +866,12 @@ const AddApartment = () => {
               ))}
             </Box>
           )}
-        </Box>
+        </Box> */}
+
+<FileUploadSlider/>
+
+
+
 
         {/* Кнопки */}
         <Stack direction="column" spacing={2} sx={{ mt: 4 }}>

@@ -1,6 +1,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
-
+import { signIn, signOut, useSession } from "next-auth/react"
 const initialState = {
   isAuthenticated: false,
   user: null,
@@ -18,6 +18,7 @@ const authSlice = createSlice({
     logout(state) {
       state.isAuthenticated = false;
       state.user = null;
+      signOut();
       localStorage.removeItem('auth_token');
     },
     loadFromStorage(state) {

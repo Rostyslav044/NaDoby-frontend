@@ -385,6 +385,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Logo from "./Logo";
+import AuthButton from "./testAvtoriz";
+
+
 import {
   TextField,
   Button,
@@ -529,25 +532,7 @@ const CreateUser = ({ onClose }) => {
         </IconButton>
 
         <Typography variant="h5" textAlign="center" gutterBottom>
-        {/* <h1
-            style={{
-              fontSize: "26px",
-              fontWeight: "bold",
-              color: "#1976d2",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              letterSpacing: "1.2px",
-              margin: 0,
-              textShadow: `
-                0 0 5px #fff176,
-                1px 1px 2px rgba(0, 0, 0, 0.4)
-              `,
-            }}
-          >
-            NaDoby
-            <span style={{ color: "#FFD700", textShadow: "0 0 8px #FFD700" }}>
-              .com
-            </span>
-          </h1> */}
+      
 
           <Logo/>
 
@@ -613,6 +598,10 @@ const CreateUser = ({ onClose }) => {
           >
             {isLogin ? t.loginButton : t.registerButton}
           </Button>
+          <Box sx={{ mt: 2 }}>
+  <AuthButton />
+</Box>
+
         </form>
 
         {isLogin && (

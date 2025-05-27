@@ -1167,9 +1167,10 @@ import { useDispatch } from "react-redux";
 
 const translations = {
   ua: {
+    nameUser:"",
     profile: "Мій Профіль",
     myListings: "Мої оголошення",
-    rentOut: "Здати житло",
+    rentOut: "Зареєструвати своє помешкання",
     searchHome: "Пошук житла",
     language: "Мова",
     currency: "Валюта",
@@ -1180,9 +1181,10 @@ const translations = {
     blog: "Блог",
   },
   ru: {
+    nameUser:"",
     profile: "Мой Профиль",
     myListings: "Мои объявления",
-    rentOut: "Сдать жильё",
+    rentOut: "Зарегистрировать своё жильё",
     searchHome: "Поиск жилья",
     language: "Язык",
     currency: "Валюта",

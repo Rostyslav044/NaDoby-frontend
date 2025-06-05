@@ -1093,11 +1093,11 @@ const NoAutorazeMenu = () => {
           <Typography sx={{ p: 2, color: 'blue' }}>{t.slogan}</Typography>
 
           <List>
-            <ListItem button onClick={handleCreateUserOpen}>
+            <ListItem  onClick={handleCreateUserOpen}>
               <ListItemText primary={<Typography color="primary">{t.login}</Typography>} />
             </ListItem>
 
-            <ListItem button onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}>
+            <ListItem  onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}>
               <ListItemText primary={<Typography color="primary">{t.language}</Typography>} />
               <ArrowDropDown />
             </ListItem>
@@ -1108,7 +1108,7 @@ const NoAutorazeMenu = () => {
               </List>
             </Collapse>
 
-            <ListItem button onClick={() => setIsCurrencyMenuOpen(!isCurrencyMenuOpen)}>
+            <ListItem  onClick={() => setIsCurrencyMenuOpen(!isCurrencyMenuOpen)}>
               <ListItemText primary={<Typography color="primary">{t.currency}</Typography>} />
               <ArrowDropDown />
             </ListItem>
@@ -1120,7 +1120,7 @@ const NoAutorazeMenu = () => {
               </List>
             </Collapse>
 
-            <ListItem button onClick={handleCreateUserOpen}>
+            <ListItem  onClick={handleCreateUserOpen}>
               <Box sx={{ width: '100%', textAlign: 'center', typography: 'h6', color: 'primary.main', p: 1, boxShadow: 1, borderRadius: 1, '&:hover': { boxShadow: 3 } }}>
                 {t.listYourProperty}
               </Box>
@@ -1133,7 +1133,7 @@ const NoAutorazeMenu = () => {
               t.blog,
               t.contact,
             ].map(text => (
-              <ListItem button key={text}>
+              <ListItem  key={text}>
                 <ListItemText primary={<Typography color="primary">{text}</Typography>} />
               </ListItem>
             ))}

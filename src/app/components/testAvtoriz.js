@@ -1,17 +1,12 @@
 
 
 
-
-
-
-
-
 // "use client";
 // import axios from "axios";
 // import { signIn, useSession } from "next-auth/react";
 // import { useDispatch } from "react-redux";
 // import { login } from "../store/authSlice";
-// import { Button, Snackbar, Alert, Box } from "@mui/material";
+// import { Button, Alert, Box } from "@mui/material";
 // import Image from "next/image";
 // import { useLanguage } from "@/app/LanguageContext";
 // import { useEffect, useState } from "react";
@@ -52,7 +47,6 @@
 //           });
 //           setShowAlert(true);
 //         } catch (error) {
-//           // console.error("Registration failed:", error.response?.data || error.message);
 //           try {
 //             const response = await axios.post(
 //               `http://localhost:3000${endpoint_login}`,
@@ -77,42 +71,45 @@
 //     }
 //   }, [session, dispatch]);
 
+//   // Автоматическое скрытие алерта через 7 секунд
+//   useEffect(() => {
+//     if (showAlert) {
+//       const timer = setTimeout(() => setShowAlert(false), 7000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [showAlert]);
+
 //   return (
 //     <>
-//       {/* Центрированный Snackbar */}
-//       <Snackbar
-//   open={showAlert}
-//   autoHideDuration={7000}
-//   onClose={() => setShowAlert(false)}
-//   anchorOrigin={{ vertical: "top", horizontal: "center" }}
-//   sx={{
-//     top: "50%",
-//     transform: "translateY(-50%)",
-//     left: 0,
-//     right: 0,
-//     margin: "0 auto",
-//     width: "100%",
-//     maxWidth: "90vw", // адаптивная ширина
-//     display: "flex",
-//     justifyContent: "center",
-//     zIndex: 1400, // выше остальных элементов
-//   }}
-// >
-//   <Alert
-//     onClose={() => setShowAlert(false)}
-//     severity="success"
-//     sx={{
-//       width: "100%",
-//       fontSize: "16px",
-//       padding: "16px",
-//       textAlign: "left", // выравнивание текста
-//     }}
-//   >
-//     {t.registrationSuccess}
-//   </Alert>
-// </Snackbar>
+//       {/* Центрированный алерт */}
+//       {showAlert && (
+//         <Box
+//           sx={{
+//             position: "fixed",
+//             top: "50%",
+//             left: "50%",
+//             transform: "translate(-50%, -50%)",
+//             zIndex: 1400,
+//             width: "90vw",
+//             maxWidth: 400,
+//           }}
+//         >
+//           <Alert
+//             onClose={() => setShowAlert(false)}
+//             severity="success"
+//             sx={{
+//               width: "100%",
+//               fontSize: "16px",
+//               padding: "16px",
+//               textAlign: "left",
+//             }}
+//           >
+//             {t.registrationSuccess}
+//           </Alert>
+//         </Box>
+//       )}
 
-
+//       {/* Кнопка авторизации через Google */}
 //       {!session && (
 //         <Button
 //           onClick={() => signIn("google")}
@@ -161,7 +158,13 @@
 
 
 
+
+
+
+
+
 "use client";
+
 import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import { useDispatch } from "react-redux";
@@ -170,6 +173,7 @@ import { Button, Alert, Box } from "@mui/material";
 import Image from "next/image";
 import { useLanguage } from "@/app/LanguageContext";
 import { useEffect, useState } from "react";
+import UserMenu from "./UserMenu"; // 👈 не забудь путь указать правильно
 
 const translations = {
   ru: {
@@ -187,7 +191,9 @@ export default function AuthButton() {
   const dispatch = useDispatch();
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
+
   const [showAlert, setShowAlert] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false); // 👈 состояние для UserMenu
 
   useEffect(() => {
     if (session) {
@@ -205,7 +211,9 @@ export default function AuthButton() {
           await axios.post(`http://localhost:3000${endpoint_register}`, dataRegister, {
             headers: { "Content-Type": "application/json" },
           });
+
           setShowAlert(true);
+          setShowUserMenu(true); // 👈 открыть меню
         } catch (error) {
           try {
             const response = await axios.post(
@@ -219,6 +227,7 @@ export default function AuthButton() {
               if (dataResponse.success && dataResponse.token) {
                 dispatch(login(dataResponse.token));
                 setShowAlert(true);
+                setShowUserMenu(true); // 👈 открыть меню
               }
             }
           } catch (err) {
@@ -231,7 +240,6 @@ export default function AuthButton() {
     }
   }, [session, dispatch]);
 
-  // Автоматическое скрытие алерта через 7 секунд
   useEffect(() => {
     if (showAlert) {
       const timer = setTimeout(() => setShowAlert(false), 7000);
@@ -241,7 +249,6 @@ export default function AuthButton() {
 
   return (
     <>
-      {/* Центрированный алерт */}
       {showAlert && (
         <Box
           sx={{
@@ -269,7 +276,9 @@ export default function AuthButton() {
         </Box>
       )}
 
-      {/* Кнопка авторизации через Google */}
+      {/* Меню пользователя показывается сразу после входа */}
+      {showUserMenu && <UserMenu />}
+
       {!session && (
         <Button
           onClick={() => signIn("google")}
@@ -315,3 +324,6 @@ export default function AuthButton() {
     </>
   );
 }
+
+
+

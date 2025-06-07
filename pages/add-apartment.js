@@ -9,7 +9,7 @@
 
 
 
-
+'use client';
 
 import React, { useState } from 'react';
 import Autocomplete from 'react-google-autocomplete';
@@ -48,7 +48,7 @@ const AddApartment = () => {
   //   price: '',
   // });
 
-
+  const [uploudImages, setUploudImages] = useState([]);
   const [formData, setFormData] = useState({
     city: '',
     district: '',
@@ -56,6 +56,7 @@ const AddApartment = () => {
     hasMetro: false,
     description: '',
     price: '',
+    uploudImages
   });
   
 
@@ -63,8 +64,9 @@ const AddApartment = () => {
     metro: false,
     hasMetro: false,
     description: false,
+    district: false,
     city: false,
-    street: false,
+    // street: false,
     price: false,
   });
 
@@ -83,11 +85,12 @@ const AddApartment = () => {
 
   // Валидация формы
   const validateForm = () => {
+    console.log(formData);
     const newErrors = {
      
       description: !formData.description,
       city: !formData.city,
-      street: !formData.street,
+      // street: !formData.street,
       price: !formData.price,
     };
     setErrors(newErrors);
@@ -150,21 +153,25 @@ const AddApartment = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      setSnackbarMessage('Пожалуйста, заполните все обязательные поля');
-      setSnackbarOpen(true);
-      return;
-    }
+    // if (!validateForm()) {
+    //   setSnackbarMessage('Пожалуйста, заполните все обязательные поля');
+    //   setSnackbarOpen(true);
+    //   return;
+    // }
 
     setIsSubmitting(true);
 
     try {
       // Здесь должна быть ваша логика отправки данных
       console.log('Данные для отправки:', formData);
-
+console.log(uploudImages);
+formData.append("photos", uploudImages);
       const res = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
-        body:JSON.stringify (formData),
+        body:JSON.stringify ({...formData,photos:uploadImages}),
+        headers: {
+          'Content-Type': 'application/json'
+        },
       });
 
       // const data = await res.json();
@@ -425,7 +432,7 @@ const AddApartment = () => {
           )}
         </Box> */}
 
-<FileUploadSlider/>
+{/* <FileUploadSlider setUploudImages = {setUploudImages}/> */}
 
 
 
@@ -492,6 +499,7 @@ const AddApartment = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      <FileUploadSlider setUploudImages = {setUploudImages}/>
     </Container>
   );
 };

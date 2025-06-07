@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import Logo from './Logo'; // ✅ Импорт логотипа
 
-export default function FileUploadSlider() {
+export default function FileUploadSlider({setUploudImages}) {
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -19,6 +19,7 @@ export default function FileUploadSlider() {
       preview: URL.createObjectURL(file),
     }));
     setImages([...newImages, ...images]); // Новые фото сверху
+    
     setCurrentIndex(0);
   };
 
@@ -30,7 +31,7 @@ export default function FileUploadSlider() {
 
     const formData = new FormData();
     images.forEach((imgObj) => {
-      formData.append('files', imgObj.file);
+      formData.append('file', imgObj.file);
     });
 
     try {
@@ -43,6 +44,7 @@ export default function FileUploadSlider() {
 
       if (res.ok) {
         setMessage('✅ Файлы загружены!');
+        setUploudImages([data.url]);
       } else {
         setMessage(`❌ Ошибка: ${data.error}`);
       }

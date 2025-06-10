@@ -164,11 +164,11 @@ const AddApartment = () => {
     try {
       // Здесь должна быть ваша логика отправки данных
       console.log('Данные для отправки:', formData);
-console.log(uploudImages);
-formData.append("photos", uploudImages);
+
+      console.log('uploudImages', uploudImages);
       const res = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
-        body:JSON.stringify ({...formData,photos:uploadImages}),
+        body:JSON.stringify ({...formData,photos:uploudImages}),
         headers: {
           'Content-Type': 'application/json'
         },

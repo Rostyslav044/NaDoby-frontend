@@ -14,6 +14,9 @@
 import React, { useState } from 'react';
 import Autocomplete from 'react-google-autocomplete';
 import FileUploadSlider from '@/app/components/FileUploadSlider';
+import { LanguageProvider } from '@/app/LanguageContext';
+import MetroSelector from '@/app/components/MetroSelector';
+import InfoApartments from '@/app/components/InfoApartments';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import {
   Container,
@@ -105,10 +108,15 @@ const AddApartment = () => {
   };
 
   const handleCitySelect = (place) => {
-    const city = place?.formatted_address || '';
+    const cityComponent = place?.address_components?.find(comp =>
+      comp.types.includes('locality')
+    );
+  
+    const city = cityComponent?.long_name || ''; // Название города: "Київ", "Дніпро", "Харків"
+  
     setFormData(prev => ({ ...prev, city }));
     setErrors(prev => ({ ...prev, city: false }));
-
+  
     if (place?.geometry?.location) {
       const location = {
         lat: place.geometry.location.lat(),
@@ -118,6 +126,7 @@ const AddApartment = () => {
       setMapCenter(location);
     }
   };
+  
 
   const handleStreetSelect = (place) => {
     const street = place?.formatted_address?.split(',')[0] || '';
@@ -205,6 +214,9 @@ const AddApartment = () => {
   };
 
   return (
+    <LanguageProvider>
+
+
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" align="center" gutterBottom>
         Добавить новое объявление
@@ -212,7 +224,7 @@ const AddApartment = () => {
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
         {/* Категория */}
-        {/* <FormControl fullWidth margin="normal" error={errors.category}>
+        <FormControl fullWidth margin="normal" error={errors.category}>
           <InputLabel>Категория *</InputLabel>
           <Select
             name="category"
@@ -225,10 +237,10 @@ const AddApartment = () => {
             ))}
           </Select>
           {errors.category && <Typography variant="caption" color="error">Это поле обязательно</Typography>}
-        </FormControl> */}
+        </FormControl>
 
         {/* Название объекта */}
-        {/* <TextField
+        <TextField
           fullWidth
           margin="normal"
           name="objectName"
@@ -237,10 +249,10 @@ const AddApartment = () => {
           onChange={handleInputChange}
           error={errors.objectName}
           helperText={errors.objectName ? "Это поле обязательно" : "Например: Гостиница Уют"}
-        /> */}
+        />
 
         {/* Описание */}
-        {/* <TextField
+        <TextField
           fullWidth
           margin="normal"
           name="description"
@@ -251,7 +263,7 @@ const AddApartment = () => {
           onChange={handleInputChange}
           error={errors.description}
           helperText={errors.description ? "Это поле обязательно" : ""}
-        /> */}
+        />
 
         {/* Город с автозаполнением Google */}
         <Box margin="normal">
@@ -282,7 +294,7 @@ const AddApartment = () => {
         </Box>
 
 
-        <TextField
+        {/* <TextField
   fullWidth
   margin="normal"
   name="metro"
@@ -303,7 +315,22 @@ const AddApartment = () => {
     />
     <Typography>Есть метро поблизости</Typography>
   </Box>
-</FormControl>
+</FormControl> */}
+
+
+
+{/* Метро: новый компонент */}
+<Box sx={{ mb: 2 }}>
+  <MetroSelector
+    city={formData.city}
+    onMetroSelect={(metro) =>
+      setFormData((prev) => ({ ...prev, metro }))
+    }
+  />
+</Box>
+
+
+
 
 
         {/* Улица с автозаполнением Google */}
@@ -404,37 +431,12 @@ const AddApartment = () => {
           }}
         />
 
-        {/* Фотографии */}
-        {/* <Box margin="normal">
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="photo-upload"
-            type="file"
-            multiple
-            onChange={handlePhotoChange}
-          />
-          <label htmlFor="photo-upload">
-            <Button variant="contained" component="span" startIcon={<PhotoCamera /> }>
-              Загрузить фотографии 
-            </Button>
-          </label>
-          {photos.length > 0 && (
-            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {photos.map((photo, index) => (
-                <Chip 
-                  key={index} 
-                  label={photo.name} 
-                  onDelete={() => setPhotos(photos.filter((_, i) => i !== index))} 
-                />
-              ))}
-            </Box>
-          )}
-        </Box> */}
-
-{/* <FileUploadSlider setUploudImages = {setUploudImages}/> */}
 
 
+
+<FileUploadSlider setUploudImages = {setUploudImages}/>
+
+<InfoApartments />
 
 
         {/* Кнопки */}
@@ -480,7 +482,10 @@ const AddApartment = () => {
               ))}
             </Box>
           )}
+
         </DialogContent>
+
+        {/* <FileUploadSlider setUploudImages = {setUploudImages}/> */}
         <DialogActions>
           <Button onClick={() => handleClosePreview(true)}>Редактировать</Button>
           <Button onClick={() => handleClosePreview(false)} variant="contained">
@@ -499,8 +504,11 @@ const AddApartment = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <FileUploadSlider setUploudImages = {setUploudImages}/>
+      
     </Container>
+    </LanguageProvider>
+
+
   );
 };
 

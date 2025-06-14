@@ -57,7 +57,8 @@ import Providers from './providers'; // Подключаем новый комп
 import Profile from './components/testAvtoriz';
 import { SessionProvider } from "next-auth/react";
 import { store } from './store'; // Подключаем store
-import TestFileUpload from './components/TestFileUpload';
+
+import Apartments from './components/Apartments';
 
 // Применение шрифтов:
 const roboto = Roboto({
@@ -84,11 +85,11 @@ export default function Layout({ children }) {
               <main>
               
             <Profile />
-            
+           
                 {children}
               </main>
-              <TestFileUpload/>
-             
+              
+             <Apartments/>
             </Providers>
           </LanguageProvider>
         </SessionProvider>

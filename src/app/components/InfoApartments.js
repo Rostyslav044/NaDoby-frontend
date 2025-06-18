@@ -453,6 +453,7 @@
 //   const renderPhoneFields = () =>
 //     phones.map((phone, index) => (
 //       <Grid item xs={12} key={index}>
+//         <Box mb={2}>
 //         <TextField
 //           fullWidth
 //           label={`${t.phone} ${index + 1}`}
@@ -470,6 +471,7 @@
 //               ) : null,
 //           }}
 //         />
+// </Box>
 //       </Grid>
 //     ));
 
@@ -661,6 +663,12 @@
 
 
 
+
+
+
+
+
+
 'use client';
 
 import React, { useState } from "react";
@@ -673,13 +681,14 @@ import {
   InputAdornment,
   Typography,
   FormControlLabel,
-  Checkbox,
+  Checkbox
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useLanguage } from "@/app/LanguageContext";
 
 const translations = {
   ua: {
+    title: "Інформація про апартаменти",
     phone: "Номер телефону",
     addPhone: "Додати телефон",
     rooms: "Кількість кімнат",
@@ -690,73 +699,21 @@ const translations = {
     checkIn: "Час заїзду",
     checkOut: "Час виселення",
     fullDayCheckIn: "Цілодобове заселення",
-    smoking: "Паління ",
+    smoking: "Паління",
     parties: "Святкування",
-    pets: "Перебування с тваринами",
-    minRent: "Мінімальний термін оренди ",
+    pets: "Тварини",
+    minRent: "Мін. оренда (днів)",
     reportDocs: "Звітні документи",
-    deposit: "Застава",
+    deposit: "Залог",
     depositNone: "Немає",
     depositDailyPrice: "Ціна за добу",
     yes: "Так",
     no: "Ні",
     ageLimit: "Вікове обмеження від",
     conveniences: "Зручності",
-    facilities: {
-      satelliteTV: "Супутникове ТБ",
-      microwave: "Мікрохвильова піч",
-      shower: "Душова кабіна",
-      fridge: "Холодильник",
-      safe: "Сейф",
-      kettle: "Електрочайник",
-      intercom: "Домофон",
-      hairDryer: "Фен",
-      utensils: "Посуд та приладдя",
-      parking: "Парковка",
-      cutlery: "Столові прибори",
-      loggia: "Лоджія",
-      blender: "Блендер",
-      oven: "Духова піч",
-      waterHeater: "Газовий водонагрівач",
-      washingMachine: "Пральна машина",
-      dishwasher: "Посудомийна машина",
-      fan: "Вентилятор",
-      bath: "Ванна",
-      toiletries: "Туалетне приладдя (шампуні, мило)",
-      balcony: "Балкон",
-      detergent: "Пральний порошок",
-      internet: "Інтернет",
-      crib: "Дитяче ліжечко",
-      highchair: "Дитячий стілець для годування",
-      cableTV: "Кабельне телебачення",
-      airConditioning: "Кондиціонер",
-      clothesDryer: "Сушилка для білизни",
-      boiler: "Бойлер",
-      linens: "Змінна постільна білизна",
-      wifi: "WiFi",
-      extraTowels: "Запасні рушники",
-      elevator: "Ліфт",
-      securityDoors: "Броньовані двері",
-      hotplate: "Електроплитка",
-      coffeeMaker: "Кавоварка",
-      fireplace: "Камін",
-      courtyard: "Дворик",
-      pool: "Басейн",
-      barbecue: "Мангал",
-      pc: "Персональний комп'ютер",
-      sauna: "Лазня",
-      gazebo: "Альтанка",
-      terrace: "Тераса",
-      homeTheater: "Домашній кінотеатр",
-      garden: "Сад",
-      toaster: "Тостер",
-      jacuzzi: "Джакузі",
-      steamRoom: "Сауна",
-      billiards: "Більярд",
-      clothesDrier: "Сушилка для речей",
-    }
   },
   ru: {
+    title: "Информация об апартаментах",
     phone: "Номер телефона",
     addPhone: "Добавить телефон",
     rooms: "Количество комнат",
@@ -769,8 +726,8 @@ const translations = {
     fullDayCheckIn: "Круглосуточное заселение",
     smoking: "Курение",
     parties: "Вечеринки",
-    pets: " Перебывание с животными",
-    minRent: "Минимальный срок аренды",
+    pets: "Животные",
+    minRent: "Мин. аренда (дней)",
     reportDocs: "Отчетные документы",
     deposit: "Залог",
     depositNone: "Нет",
@@ -779,63 +736,64 @@ const translations = {
     no: "Нет",
     ageLimit: "Возрастное ограничение от",
     conveniences: "Удобства",
-    facilities: {
-      satelliteTV: "Спутниковое ТВ",
-      microwave: "Микроволновая печь",
-      shower: "Душевая кабина",
-      fridge: "Холодильник",
-      safe: "Сейф",
-      kettle: "Электрочайник",
-      intercom: "Домофон",
-      hairDryer: "Фен",
-      utensils: "Посуда и принадлежности",
-      parking: "Парковка",
-      cutlery: "Столовые приборы",
-      loggia: "Лоджия",
-      blender: "Блендер",
-      oven: "Духовка",
-      waterHeater: "Газовый водонагреватель",
-      washingMachine: "Стиральная машина",
-      dishwasher: "Посудомоечная машина",
-      fan: "Вентилятор",
-      bath: "Ванна",
-      toiletries: "Туалетные принадлежности (шампунь, мыло)",
-      balcony: "Балкон",
-      detergent: "Стиральный порошок",
-      internet: "Интернет",
-      crib: "Детская кроватка",
-      highchair: "Детский стульчик для кормления",
-      cableTV: "Кабельное телевидение",
-      airConditioning: "Кондиционер",
-      clothesDryer: "Сушилка для белья",
-      boiler: "Бойлер",
-      linens: "Смена постельного белья",
-      wifi: "WiFi",
-      extraTowels: "Запасные полотенца",
-      elevator: "Лифт",
-      securityDoors: "Бронированные двери",
-      hotplate: "Электроплитка",
-      coffeeMaker: "Кофеварка",
-      fireplace: "Камин",
-      courtyard: "Дворик",
-      pool: "Бассейн",
-      barbecue: "Мангал",
-      pc: "Персональный компьютер",
-      sauna: "Сауна",
-      gazebo: "Беседка",
-      terrace: "Терраса",
-      homeTheater: "Домашний кинотеатр",
-      garden: "Сад",
-      toaster: "Тостер",
-      jacuzzi: "Джакузи",
-      steamRoom: "Парная",
-      billiards: "Бильярд",
-      clothesDrier: "Сушилка для вещей",
-    }
   },
 };
 
-export default function InfoApartments() {
+const facilitiesList = [
+  "Супутникове ТБ",
+  "Мікрохвильова піч",
+  "Душова кабіна",
+  "Холодильник",
+  "Сейф",
+  "Електрочайник",
+  "Домофон",
+  "Фен",
+  "Посуд та приладдя",
+  "Парковка",
+  "Столові прибори",
+  "Лоджія",
+  "Блендер",
+  "Духова піч",
+  "Газовий водонагрівач",
+  "Пральна машина",
+  "Посудомийна машина",
+  "Вентилятор",
+  "Ванна",
+  "Туалетне приладдя (шампуні, мило)",
+  "Балкон",
+  "Пральний порошок",
+  "Інтернет",
+  "Дитяче ліжечко",
+  "Дитячий стілець для годування",
+  "Кабельне телебачення",
+  "Кондиціонер",
+  "Сушилка для білизни",
+  "Бойлер",
+  "Змінна постільна білизна",
+  "WiFi",
+  "Запасні рушники",
+  "Ліфт",
+  "Броньовані двері",
+  "Електроплитка",
+  "Кавоварка",
+  "Камін",
+  "Дворик",
+  "Басейн",
+  "Мангал",
+  "Персональний комп'ютер",
+  "Лазня",
+  "Альтанка",
+  "Тераса",
+  "Домашній кінотеатр",
+  "Сад",
+  "Тостер",
+  "Джакузі",
+  "Сауна",
+  "Більярд",
+  "Cушилка для речей"
+];
+
+export default function InfoApartments({ onDataChange }) {
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
 
@@ -844,8 +802,7 @@ export default function InfoApartments() {
     rooms: "", beds: "", size: "", floor: "", totalFloors: "",
     checkIn: "", checkOut: "", minRent: "", fullDayCheckIn: "",
     smoking: "", parties: "", pets: "", reportDocs: "", deposit: "",
-    ageLimit: "",
-    conveniences: [],
+    ageLimit: "", conveniences: []
   });
 
   const numericFields = ["rooms", "beds", "size", "floor", "totalFloors", "minRent", "ageLimit"];
@@ -855,107 +812,76 @@ export default function InfoApartments() {
     const newPhones = [...phones];
     newPhones[index] = cleaned;
     setPhones(newPhones);
+    updateParentData({ ...formData, phones: newPhones.filter(p => p) });
   };
 
   const handleAddPhone = () => {
     if (phones.length < 4) {
-      setPhones([...phones, ""]);
+      const newPhones = [...phones, ""];
+      setPhones(newPhones);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     const newValue = numericFields.includes(name) ? value.replace(/\D/g, "") : value;
-    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    const newData = { ...formData, [name]: newValue };
+    setFormData(newData);
+    updateParentData({ ...newData, phones: phones.filter(p => p) });
   };
 
-  const handleConvenienceToggle = (convenience) => {
-    setFormData(prev => {
-      const newConveniences = prev.conveniences.includes(convenience)
-        ? prev.conveniences.filter(c => c !== convenience)
-        : [...prev.conveniences, convenience];
-      return { ...prev, conveniences: newConveniences };
-    });
+  const handleConvenienceToggle = (item) => {
+    const newConveniences = formData.conveniences.includes(item)
+      ? formData.conveniences.filter(i => i !== item)
+      : [...formData.conveniences, item];
+    const newData = { ...formData, conveniences: newConveniences };
+    setFormData(newData);
+    updateParentData({ ...newData, phones: phones.filter(p => p) });
   };
 
-  // const renderPhoneFields = () =>
-  //   phones.map((phone, index) => (
-  //     <Grid item xs={12} key={index}>
-  //       <TextField
-  //         fullWidth
-  //         label={`${t.phone} ${index + 1}`}
-  //         value={phone}
-  //         onChange={(e) => handlePhoneChange(index, e.target.value)}
-  //         inputProps={{ inputMode: "numeric", maxLength: 15 }}
-  //         InputProps={{
-  //           endAdornment:
-  //             index === phones.length - 1 && phones.length < 4 ? (
-  //               <InputAdornment position="end">
-  //                 <IconButton onClick={handleAddPhone} edge="end" color="primary">
-  //                   <AddIcon />
-  //                 </IconButton>
-  //               </InputAdornment>
-  //             ) : null,
-  //         }}
-  //       />
-  //     </Grid>
-  //   ));
+  const updateParentData = (data) => {
+    if (onDataChange) {
+      onDataChange(data);
+    }
+  };
 
   const renderPhoneFields = () =>
-  phones.map((phone, index) => (
-    <Grid item xs={12} key={index} sx={{ mb: 2 }}>
-      <TextField
-        fullWidth
-        label={`${t.phone} ${index + 1}`}
-        value={phone}
-        onChange={(e) => handlePhoneChange(index, e.target.value)}
-        inputProps={{ inputMode: "numeric", maxLength: 15 }}
-        sx={{ mb: 1 }} // Добавлен отступ внутри TextField
-        InputProps={{
-          endAdornment:
-            index === phones.length - 1 && phones.length < 4 ? (
-              <InputAdornment position="end">
-                <IconButton 
-                  onClick={handleAddPhone} 
-                  edge="end" 
-                  color="primary"
-                  sx={{ ml: 1 }} // Добавлен отступ слева от иконки
-                >
-                  <AddIcon />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
-        }}
-      />
-    </Grid>
-  ));
-
-
-
-  const renderFacilities = () => {
-    const facilityKeys = Object.keys(t.facilities);
-    return facilityKeys.map((key) => (
-      <Grid item xs={12} sm={6} md={4} key={key}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={formData.conveniences.includes(key)}
-              onChange={() => handleConvenienceToggle(key)}
-            />
-          }
-          label={t.facilities[key]}
-        />
+    phones.map((phone, index) => (
+      <Grid item xs={12} key={index}>
+        <Box mb={2}>
+          <TextField
+            fullWidth
+            label={`${t.phone} ${index + 1}`}
+            value={phone}
+            onChange={(e) => handlePhoneChange(index, e.target.value)}
+            inputProps={{ inputMode: "numeric", maxLength: 15 }}
+            InputProps={{
+              endAdornment:
+                index === phones.length - 1 && phones.length < 4 ? (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleAddPhone} edge="end" color="primary">
+                      <AddIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+            }}
+          />
+        </Box>
       </Grid>
     ));
-  };
 
   return (
     <Box sx={{ p: 2 }}>
+      <Typography variant="h5" gutterBottom>
+        {t.title}
+      </Typography>
+      
       <Grid container spacing={2}>
         {/* Телефоны */}
         <Grid item xs={12} md={6}>
           {renderPhoneFields()}
         </Grid>
+        
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
@@ -966,7 +892,7 @@ export default function InfoApartments() {
           />
         </Grid>
 
-        {/* Пары инпутов */}
+        {/* Основные поля */}
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
@@ -1028,7 +954,6 @@ export default function InfoApartments() {
           />
         </Grid>
 
-        {/* Остальные инпуты */}
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
@@ -1047,71 +972,30 @@ export default function InfoApartments() {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="fullDayCheckIn"
-            label={t.fullDayCheckIn}
-            value={formData.fullDayCheckIn}
-            onChange={handleChange}
-          >
-            <MenuItem value="yes">{t.yes}</MenuItem>
-            <MenuItem value="no">{t.no}</MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="smoking"
-            label={t.smoking}
-            value={formData.smoking}
-            onChange={handleChange}
-          >
-            <MenuItem value="yes">{t.yes}</MenuItem>
-            <MenuItem value="no">{t.no}</MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="parties"
-            label={t.parties}
-            value={formData.parties}
-            onChange={handleChange}
-          >
-            <MenuItem value="yes">{t.yes}</MenuItem>
-            <MenuItem value="no">{t.no}</MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="pets"
-            label={t.pets}
-            value={formData.pets}
-            onChange={handleChange}
-          >
-            <MenuItem value="yes">{t.yes}</MenuItem>
-            <MenuItem value="no">{t.no}</MenuItem>
-          </TextField>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="reportDocs"
-            label={t.reportDocs}
-            value={formData.reportDocs}
-            onChange={handleChange}
-          >
-            <MenuItem value="yes">{t.yes}</MenuItem>
-            <MenuItem value="no">{t.no}</MenuItem>
-          </TextField>
-        </Grid>
+
+        {/* Выпадающие списки */}
+        {[
+          { name: "fullDayCheckIn", label: t.fullDayCheckIn },
+          { name: "smoking", label: t.smoking },
+          { name: "parties", label: t.parties },
+          { name: "pets", label: t.pets },
+          { name: "reportDocs", label: t.reportDocs },
+        ].map((field) => (
+          <Grid item xs={12} md={6} key={field.name}>
+            <TextField
+              select
+              fullWidth
+              name={field.name}
+              label={field.label}
+              value={formData[field.name]}
+              onChange={handleChange}
+            >
+              <MenuItem value="yes">{t.yes}</MenuItem>
+              <MenuItem value="no">{t.no}</MenuItem>
+            </TextField>
+          </Grid>
+        ))}
+
         <Grid item xs={12} md={6}>
           <TextField
             select
@@ -1125,49 +1009,29 @@ export default function InfoApartments() {
             <MenuItem value="daily">{t.depositDailyPrice}</MenuItem>
           </TextField>
         </Grid>
+
+        {/* Удобства */}
+        <Grid item xs={12}>
+          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+            {t.conveniences}
+          </Typography>
+          <Grid container spacing={1}>
+            {facilitiesList.map((item, idx) => (
+              <Grid item xs={12} sm={6} md={4} key={idx}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.conveniences.includes(item)}
+                      onChange={() => handleConvenienceToggle(item)}
+                    />
+                  }
+                  label={item}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
       </Grid>
-
-      {/* Удобства */}
-      {/* <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
-        {t.conveniences}
-      </Typography>
-      <Grid container spacing={2}>
-        {renderFacilities()}
-      </Grid> */}
-
-{/* Удобства с новыми стилями */}
-<Box sx={{ 
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  mt: 4
-}}>
-  <Typography 
-    variant="h5" 
-    sx={{ 
-      mb: 3,
-      fontSize: '2.3rem',
-      // fontWeight: 600,
-      textAlign: 'center',
-      width: '100%'
-    }}
-  >
-    {t.conveniences}
-  </Typography>
-  
-  <Grid 
-    container 
-    spacing={2} 
-    sx={{ 
-      maxWidth: '1200px',
-      justifyContent: 'center'
-    }}
-  >
-    {renderFacilities()}
-  </Grid>
-</Box>
-
     </Box>
   );
 }

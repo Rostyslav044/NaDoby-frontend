@@ -18,6 +18,7 @@ import { LanguageProvider } from '@/app/LanguageContext';
 import MetroSelector from '@/app/components/MetroSelector';
 import InfoApartments from '@/app/components/InfoApartments';
 import { GoogleMap, Marker } from '@react-google-maps/api';
+import PreviewDialog from '@/app/components/PreviewDialog';
 import {
   Container,
   Typography,
@@ -32,10 +33,6 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Stack,
 } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
@@ -59,7 +56,8 @@ const AddApartment = () => {
     hasMetro: false,
     description: '',
     price: '',
-    uploudImages
+    uploudImages,
+    
   });
   
 
@@ -74,6 +72,7 @@ const AddApartment = () => {
   });
 
   const [photos, setPhotos] = useState([]);
+  const [apartmentInfo, setApartmentInfo] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showManualStreetInput, setShowManualStreetInput] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -83,18 +82,31 @@ const AddApartment = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 50.4501, lng: 30.5234 }); // Координаты Киева по умолчанию
 
   // Константы
-  const categories = ['Квартира', 'Апартаменты', 'Гостиница', 'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня'];
+  const categories = ['Квартира',  'Гостиница', 'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня'];
   const GOOGLE_API_KEY = "AIzaSyBBFJdnxDmbAko4mbzBzJ-yozBBx_gpY3w"; // Ваш ключ API
 
   // Валидация формы
-  const validateForm = () => {
-    console.log(formData);
-    const newErrors = {
+  // const validateForm = () => {
+  //   console.log(formData);
+  //   const newErrors = {
      
+  //     description: !formData.description,
+  //     city: !formData.city,
+  //     // street: !formData.street,
+  //     price: !formData.price,
+  //   };
+  //   setErrors(newErrors);
+  //   return !Object.values(newErrors).some(error => error);
+  // };
+
+
+
+  const validateForm = () => {
+    const newErrors = {
       description: !formData.description,
       city: !formData.city,
-      // street: !formData.street,
       price: !formData.price,
+      rooms: !(formData.rooms || apartmentInfo.rooms), // Проверяем в обоих состояниях
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error);
@@ -177,7 +189,7 @@ const AddApartment = () => {
       console.log('uploudImages', uploudImages);
       const res = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
-        body:JSON.stringify ({...formData,photos:uploudImages}),
+        body:JSON.stringify ({...formData, ...apartmentInfo, photos:uploudImages}),
         headers: {
           'Content-Type': 'application/json'
         },
@@ -294,31 +306,7 @@ const AddApartment = () => {
         </Box>
 
 
-        {/* <TextField
-  fullWidth
-  margin="normal"
-  name="metro"
-  label="Станция метро (если есть)"
-  value={formData.metro}
-  onChange={handleInputChange}
-/>
-
-<FormControl margin="normal">
-  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-    <input
-      type="checkbox"
-      checked={formData.hasMetro}
-      onChange={() =>
-        setFormData((prev) => ({ ...prev, hasMetro: !prev.hasMetro }))
-      }
-      style={{ marginRight: 8 }}
-    />
-    <Typography>Есть метро поблизости</Typography>
-  </Box>
-</FormControl> */}
-
-
-
+ 
 {/* Метро: новый компонент */}
 <Box sx={{ mb: 2 }}>
   <MetroSelector
@@ -413,6 +401,12 @@ const AddApartment = () => {
           </Box>
         )}
 
+
+
+
+
+
+
         {/* Цена */}
         <TextField
           fullWidth
@@ -427,16 +421,28 @@ const AddApartment = () => {
           helperText={errors.price ? "Это поле обязательно" : ""}
           sx={{ maxWidth: 200 }}
           InputProps={{
-            endAdornment: <Typography sx={{ ml: 1 }}>грн</Typography>,
+            endAdornment: <Typography sx={{ ml: 1 }}></Typography>,
           }}
         />
 
+{/* Район */}
+<TextField
+  fullWidth
+  margin="normal"
+  name="district"
+  label="Район"
+  placeholder="Укажите район объекта"
+  value={formData.district}
+  onChange={handleInputChange}
+  error={errors.district}
+  helperText={errors.district ? "Это поле обязательно" : ""}
+/>
 
 
 
 <FileUploadSlider setUploudImages = {setUploudImages}/>
 
-<InfoApartments />
+<InfoApartments onDataChange={setApartmentInfo} />
 
 
         {/* Кнопки */}
@@ -460,7 +466,7 @@ const AddApartment = () => {
       </Box>
 
       {/* Диалог предпросмотра */}
-      <Dialog open={previewOpen} onClose={() => handleClosePreview(false)} maxWidth="md" fullWidth>
+      {/* <Dialog open={previewOpen} onClose={() => handleClosePreview(false)} maxWidth="md" fullWidth>
         <DialogTitle>Предпросмотр объявления</DialogTitle>
         <DialogContent>
           <Typography variant="h5" gutterBottom>{formData.objectName}</Typography>
@@ -483,16 +489,27 @@ const AddApartment = () => {
             </Box>
           )}
 
-        </DialogContent>
+        </DialogContent> */}
 
-        {/* <FileUploadSlider setUploudImages = {setUploudImages}/> */}
-        <DialogActions>
+        
+        {/* <DialogActions>
           <Button onClick={() => handleClosePreview(true)}>Редактировать</Button>
           <Button onClick={() => handleClosePreview(false)} variant="contained">
             Опубликовать
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
+
+
+      {/* Диалог предпросмотра */}
+<PreviewDialog 
+  open={previewOpen} 
+  onClose={handleClosePreview}
+  formData={formData}
+  photos={photos}
+  uploudImages={uploudImages}
+  apartmentInfo={apartmentInfo}
+/>
 
       {/* Уведомление */}
       <Snackbar

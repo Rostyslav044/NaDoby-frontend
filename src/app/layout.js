@@ -50,11 +50,11 @@
 
 'use client'
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LanguageProvider } from '@/app/LanguageContext';
 import { Roboto, Lato } from 'next/font/google';
 import Providers from './providers'; // Подключаем новый компонент Providers
-import Profile from './components/testAvtoriz';
+import AuthLogic from './components/AuthLogic';
 import { SessionProvider } from "next-auth/react";
 import { store } from './store'; // Подключаем store
 
@@ -72,6 +72,7 @@ const lato = Lato({
 });
 
 export default function Layout({ children }) {
+  
   return (
     <html lang="ua">
       <head />
@@ -84,7 +85,7 @@ export default function Layout({ children }) {
             
               <main>
               
-            <Profile />
+            <AuthLogic />
            
                 {children}
               </main>

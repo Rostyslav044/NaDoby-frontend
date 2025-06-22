@@ -365,8 +365,8 @@ export default function AuthButton() {
   const hasRun = useRef(false); // предотвращает повторную регистрацию
 
   useEffect(() => {
-    if (session && !hasRun.current) {
-      hasRun.current = true;
+    if (session ) {
+      // hasRun.current = true;
 
       const GoogleLogin = async () => {
         const dataRegister = {
@@ -395,6 +395,7 @@ export default function AuthButton() {
 
             if (response.status === 200 || response.status === 201) {
               const dataResponse = response.data;
+              setShowAlert(true);
               if (dataResponse.success && dataResponse.token) {
                 dispatch(login(dataResponse.token));
               }

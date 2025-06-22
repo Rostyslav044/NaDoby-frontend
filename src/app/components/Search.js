@@ -71,7 +71,8 @@ const Search = () => {
   const [errors, setErrors] = useState({});
   const { currentLanguage } = useLanguage();
   const translation = translations[currentLanguage];
-  const googleMapsApiKey = "AIzaSyBBFJdnxDmbAko4mbzBzJ-yozBBx_gpY3w";
+  // const googleMapsApiKey = "AIzaSyBBFJdnxDmbAko4mbzBzJ-yozBBx_gpY3w";
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -107,16 +107,17 @@ const CreateUser = ({ onClose }) => {
        
         setMessage(isLogin ? t.loginSuccess : t.registerSuccess);
         setAlertVisible (true);
-        // setMessage ("test");
         const dataResponse = response.data;
         if (dataResponse.success && dataResponse.token) {
-          dispatch(login(dataResponse.token));
-        }
-
-        setTimeout(() => {
+             setTimeout(() => {
           onClose();
+          dispatch(login(dataResponse.token));
+
           reset();
         }, 3000);
+        }
+
+     
       } else {
         setMessage(t.error);
       }
@@ -137,27 +138,44 @@ const CreateUser = ({ onClose }) => {
   };
 
   return (
+    // <Box
+    //   sx={{
+    //     display: "flex",
+    //     alignItems: "center",
+    //     justifyContent: "center",
+    //     backgroundColor: "#f5f5f5",
+    //     minHeight: "100vh",
+    //     position: "relative"
+    //   }}
+    // >
+    //   <Box
+    //     sx={{
+    //       width: "90%",
+    //       maxWidth: 350,
+    //       p: 3,
+    //       boxShadow: 3,
+    //       borderRadius: 2,
+    //       backgroundColor: "white",
+    //       position: "relative"
+    //     }}
+    //   >
+
+
+    <Box sx={{ backgroundColor: "#f5f5f5", p: 1, borderRadius: 5}}>
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-        position: "relative"
+        width: "85%",
+        maxWidth: 600,
+        p: 3,
+        boxShadow: 3,
+        borderRadius: 2,
+        backgroundColor: "white",
+        position: "relative",
+        mx: "auto"
       }}
     >
-      <Box
-        sx={{
-          width: "90%",
-          maxWidth: 350,
-          p: 3,
-          boxShadow: 3,
-          borderRadius: 2,
-          backgroundColor: "white",
-          position: "relative"
-        }}
-      >
+
+
         {/* Крестик */}
         <IconButton
           onClick={onClose}
@@ -181,15 +199,12 @@ const CreateUser = ({ onClose }) => {
         </Typography>
 
         {/* ALERT СООБЩЕНИЕ */}
-        {/* {alertVisible && (
+        {alertVisible && (
           <Alert severity="info" sx={{ mb: 2 }}>
             {message}
           </Alert>
-        )} */}
+        )}
 
-<Alert severity="info" sx={{ mb: 2 }}>
-            {message}
-          </Alert>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           {!isLogin && (

@@ -47,7 +47,6 @@
 
 
 
-
 'use client'
 
 import React, { useEffect } from 'react';
@@ -57,6 +56,7 @@ import Providers from './providers'; // Подключаем новый комп
 import AuthLogic from './components/AuthLogic';
 import { SessionProvider } from "next-auth/react";
 import { store } from './store'; // Подключаем store
+
 
 import Apartments from './components/Apartments';
 
@@ -92,6 +92,10 @@ export default function Layout({ children }) {
               
              <Apartments/>
             </Providers>
+
+
+
+            
           </LanguageProvider>
         </SessionProvider>
       </body>

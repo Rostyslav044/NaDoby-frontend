@@ -614,17 +614,47 @@ export default function FileUploadSlider({ setUploudImages }) {
     }
   };
 
+  // const handleFileChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const newImages = files.map((file) => ({
+  //     file,
+  //     preview: URL.createObjectURL(file),
+  //   }));
+
+  //   setImages((prev) => [...prev, ...newImages]);
+  //   setCurrentIndex(0);
+  //   uploadFiles(files);
+  // };
+
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
+  
+    if (images.length >= 15) {
+      setMessage("❌ Можно загрузить максимум 15 фото");
+      return;
+    }
+  
+    const allowedCount = 15 - images.length;
+    const filesToAdd = files.slice(0, allowedCount);
+  
+    if (files.length > allowedCount) {
+      setMessage(`⚠️ Можно добавить только ${allowedCount} фото`);
+    } else {
+      setMessage('');
+    }
+  
+    const newImages = filesToAdd.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
-
+  
     setImages((prev) => [...prev, ...newImages]);
-    setCurrentIndex(0);
-    uploadFiles(files);
+    // setCurrentIndex(0);
+    setCurrentIndex((prev) => images.length + newImages.length - 1);
+    uploadFiles(filesToAdd);
   };
+  
 
   const handleDelete = (index) => {
     const updatedImages = [...images];
@@ -669,11 +699,32 @@ export default function FileUploadSlider({ setUploudImages }) {
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
-      <label htmlFor="file-upload">
+      {/* <label htmlFor="file-upload">
         <Button variant="contained" color="primary" component="span">
           {t.addPhotos}
         </Button>
-      </label>
+      </label> */}
+
+
+<Box>
+  <label htmlFor="file-upload">
+    <Button
+      variant="contained"
+      color="primary"
+      component="span"
+      disabled={images.length >= 15}
+    >
+      {t.addPhotos}
+    </Button>
+  </label>
+
+  {images.length >= 15 && (
+    <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+      Ви досягли ліміту в 15 фото ✅
+    </Typography>
+  )}
+</Box>
+
 
       {images.length > 0 && (
         <Box mt={4}>

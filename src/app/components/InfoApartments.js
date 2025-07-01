@@ -136,7 +136,7 @@ const facilitiesList = [
   "Джакузі",
   "Сауна",
   "Більярд",
-  "Cушилка для речей"
+  "Праска"
 ];
 
 export default function InfoApartments({ onDataChange }) {

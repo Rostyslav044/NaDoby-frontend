@@ -60,6 +60,7 @@ import { store } from './store'; // Подключаем store
 
 import Apartments from './components/Apartments';
 
+
 // Применение шрифтов:
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -82,7 +83,7 @@ export default function Layout({ children }) {
             {/* Оборачиваем все в Providers для Redux */}
             
             <Providers>
-            
+           
               <main>
               
             <AuthLogic />

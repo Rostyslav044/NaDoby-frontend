@@ -1596,12 +1596,8 @@ import { LanguageProvider } from '@/app/LanguageContext';
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#3f51b5',
-    },
-    secondary: {
-      main: '#f50057',
-    },
+    primary: { main: '#3f51b5' },
+    secondary: { main: '#f50057' },
   },
 });
 
@@ -1617,7 +1613,6 @@ export default function ApartmentDetailPage() {
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { isLoaded } = useJsApiLoader({ googleMapsApiKey: GOOGLE_MAPS_API_KEY });
 
-  // Обработчик свайпа для фотографий
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => handleNext(),
     onSwipedRight: () => handlePrev(),
@@ -1666,20 +1661,18 @@ export default function ApartmentDetailPage() {
     if (navigator.share) {
       navigator.share({
         title: apartment.name || 'Оренда квартири',
-        text: `Перегляньте це оголошення про оренду: ${apartment.name}`,
+        text: `Перегляньте це оголошення: ${apartment.name}`,
         url: window.location.href,
       }).catch(console.error);
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Посилання скопійовано в буфер обміну');
+      alert('Посилання скопійовано');
     }
   };
 
   const toggleFavorite = () => setIsFavorite(!isFavorite);
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
+  const handleTabChange = (event, newValue) => setActiveTab(newValue);
 
   if (!apartment) {
     return (
@@ -1691,17 +1684,10 @@ export default function ApartmentDetailPage() {
 
   const renderHighlights = () => (
     <Grid container spacing={2} sx={{ mt: 2 }}>
-      {[
-        { icon: <ApartmentIcon />, label: 'Кімнат', value: apartment.rooms },
+      {[{ icon: <ApartmentIcon />, label: 'Кімнат', value: apartment.rooms },
         { icon: <BathtubIcon />, label: 'Спальних місць', value: apartment.beds },
         { icon: <LocationOnIcon />, label: 'Площа', value: `${apartment.size} м²` },
-        { 
-          icon: <LocationOnIcon />, 
-          label: 'Поверх', 
-          value: apartment.floor && apartment.totalFloors 
-            ? `${apartment.floor} з ${apartment.totalFloors}` 
-            : null 
-        },
+        { icon: <LocationOnIcon />, label: 'Поверх', value: apartment.floor && apartment.totalFloors ? `${apartment.floor} з ${apartment.totalFloors}` : null },
       ].map((item, index) => (
         <Grid item xs={6} sm={3} key={index}>
           <Paper elevation={0} sx={{ p: 2, textAlign: 'center', borderRadius: 2 }}>
@@ -1718,13 +1704,11 @@ export default function ApartmentDetailPage() {
     <ThemeProvider theme={theme}>
       <Box maxWidth="1200px" mx="auto" mt={isMobile ? 1 : 4} p={isMobile ? 1 : 3}>
         <LanguageProvider>
-        <Header />
+          <Header />
         </LanguageProvider>
-        {/* Кнопки действий */}
+
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Button variant="outlined" onClick={() => router.back()} size="small">
-            Назад
-          </Button>
+          <Button variant="outlined" onClick={() => router.back()} size="small">Назад</Button>
           <Box>
             <IconButton onClick={toggleFavorite} color={isFavorite ? "secondary" : "default"}>
               <FavoriteBorderIcon />
@@ -1735,81 +1719,43 @@ export default function ApartmentDetailPage() {
           </Box>
         </Box>
 
-        {/* Категория и адрес */}
         <Box mb={2}>
-          <Chip label="Оренда квартири" color="primary" size="small" sx={{ mb: 1 }} />
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            {apartment.name || 'Без назви'}
+          <Chip label={apartment.category || "Категорія"} color="primary" size="small" sx={{ mb: 1 }} />
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            {apartment.name || "Без назви"}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             <LocationOnIcon color="primary" fontSize="small" sx={{ verticalAlign: 'middle', mr: 1 }} />
-            {[apartment.city, apartment.district, apartment.street, apartment.houseNumber].filter(Boolean).join(', ')}
+            {[apartment.city, apartment.street, apartment.houseNumber, apartment.district].filter(Boolean).join(', ')}
           </Typography>
         </Box>
 
-        {/* Фото с свайпом */}
-        <Box 
-          position="relative" 
-          mb={2} 
-          sx={{ borderRadius: 3, overflow: 'hidden' }}
-          {...swipeHandlers}
-        >
+        <Box position="relative" mb={2} sx={{ borderRadius: 3, overflow: 'hidden' }} {...swipeHandlers}>
           <CardMedia
             component="img"
             image={apartment.photos?.[currentIndex]}
             height={isMobile ? 250 : 450}
-            sx={{ 
-              objectFit: 'cover', 
-              userSelect: 'none',
-              touchAction: 'pan-y'
-            }}
+            sx={{ objectFit: 'cover', userSelect: 'none', touchAction: 'pan-y' }}
           />
-          <IconButton onClick={handlePrev} sx={arrowStyle('left')}>
-            <ArrowBackIosNewIcon />
-          </IconButton>
-          <IconButton onClick={handleNext} sx={arrowStyle('right')}>
-            <ArrowForwardIosIcon />
-          </IconButton>
-          <Box sx={{ 
-            position: 'absolute', 
-            bottom: 16, 
-            right: 16, 
-            bgcolor: 'rgba(0,0,0,0.6)', 
-            color: 'white', 
-            px: 1, 
-            borderRadius: 1 
-          }}>
+          <IconButton onClick={handlePrev} sx={arrowStyle('left')}><ArrowBackIosNewIcon /></IconButton>
+          <IconButton onClick={handleNext} sx={arrowStyle('right')}><ArrowForwardIosIcon /></IconButton>
+          <Box sx={{ position: 'absolute', bottom: 16, right: 16, bgcolor: 'rgba(0,0,0,0.6)', color: 'white', px: 1, borderRadius: 1 }}>
             {`${currentIndex + 1}/${apartment.photos?.length}`}
           </Box>
         </Box>
 
-        {/* Контактная информация под фото */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
           <Box>
-            <Typography variant="h6" fontWeight="bold">
-              {apartment.ownerName}
-            </Typography>
-            <Typography variant="body1">
-              {apartment.phone}
-            </Typography>
+            <Typography variant="subtitle1" fontWeight="bold">{apartment.ownerName || "Ім'я не вказано"}</Typography>
+            <Typography variant="body1">{apartment.phone || "Телефон не вказано"}</Typography>
           </Box>
           {apartment.phone && (
-            <Button 
-              variant="contained" 
-              startIcon={<LocalPhoneIcon />}
-              href={`tel:${apartment.phone}`}
-              sx={{ 
-                px: 3,
-                py: 1,
-                borderRadius: 2
-              }}
-            >
+            <Button variant="contained" startIcon={<LocalPhoneIcon />} href={`tel:${apartment.phone}`} sx={{ px: 3, py: 1, borderRadius: 2 }}>
               Зателефонувати
             </Button>
           )}
         </Box>
 
-        {/* Цена и минимальный срок */}
         <Box mb={3}>
           <Typography variant="h5" fontWeight="bold" color="primary">
             {apartment.price} грн/доба
@@ -1819,19 +1765,14 @@ export default function ApartmentDetailPage() {
           </Typography>
         </Box>
 
-        {/* Основные характеристики */}
         {renderHighlights()}
         <Divider sx={{ my: 3 }} />
 
-        {/* Описание (всегда видимое) */}
         <Box mb={3}>
           <Typography variant="h6" gutterBottom>Опис</Typography>
-          <Typography variant="body1" paragraph>
-            {apartment.description || 'Опис відсутній.'}
-          </Typography>
+          <Typography variant="body1" paragraph>{apartment.description || 'Опис відсутній.'}</Typography>
         </Box>
 
-        {/* Карта (всегда видимая) */}
         <Box mb={3}>
           <Typography variant="h6" gutterBottom>Розташування</Typography>
           <Box sx={{ height: 300, borderRadius: 2, overflow: 'hidden', border: '1px solid #ccc', mb: 2 }}>
@@ -1849,56 +1790,9 @@ export default function ApartmentDetailPage() {
               </Box>
             )}
           </Box>
-          <Button 
-            variant="outlined" 
-            startIcon={<DirectionsIcon />}
-            onClick={handleGetDirections}
-            fullWidth
-          >
+          <Button variant="outlined" startIcon={<DirectionsIcon />} onClick={handleGetDirections} fullWidth>
             Прокласти маршрут
           </Button>
-        </Box>
-
-        {/* Зручності та Правила в табах */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
-            <Tab label="Зручності" />
-            <Tab label="Правила" />
-          </Tabs>
-        </Box>
-
-        <Box sx={{ p: 2 }}>
-          {activeTab === 0 && (
-            <Grid container spacing={2}>
-              {apartment.conveniences?.map((item, index) => (
-                <Grid item xs={6} sm={4} key={index}>
-                  <Box display="flex" alignItems="center">
-                    <Typography variant="body2">{item}</Typography>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          )}
-
-          {activeTab === 1 && (
-            <Grid container spacing={2}>
-              {[
-                { label: 'Час заїзду', value: apartment.checkIn || '14:00' },
-                { label: 'Час виїзду', value: apartment.checkOut || '12:00' },
-                { label: 'Тварини', value: apartment.pets ? 'Дозволені' : 'Заборонені' },
-                { label: 'Куріння', value: apartment.smoking ? 'Дозволено' : 'Заборонено' },
-                { label: 'Вечірки', value: apartment.parties ? 'Дозволені' : 'Заборонені' },
-                { label: 'Документи', value: apartment.reportDocs || 'Потрібен паспорт' },
-                { label: 'Застава', value: apartment.deposit || 'Не потрібна' },
-              ].map((item, index) => (
-                <Grid item xs={12} sm={6} key={index}>
-                  <Typography variant="body1">
-                    <strong>{item.label}:</strong> {item.value}
-                  </Typography>
-                </Grid>
-              ))}
-            </Grid>
-          )}
         </Box>
       </Box>
     </ThemeProvider>

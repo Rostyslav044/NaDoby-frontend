@@ -418,6 +418,3 @@ export default function InfoApartments({ onDataChange }) {
 }
 
 
-
-
-

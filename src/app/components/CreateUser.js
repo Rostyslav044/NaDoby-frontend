@@ -130,7 +130,7 @@ const CreateUser = ({ onClose }) => {
       } else {
         setMessage(t.error);
       }
-    }
+    } 
   };
 
   const handleForgotPassword = () => {

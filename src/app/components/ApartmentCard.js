@@ -497,10 +497,10 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
     { label: 'Вулиця', value: apartment.street },
     { label: 'Номер будинку', value: apartment.houseNumber },
     { label: 'Район', value: apartment.district },
-    { label: 'Метро', value: apartment.metro }, // ⬅️ добавлено сюда
+    apartment.metro && { label: 'Метро', value: apartment.metro },
     { label: 'Кімнат', value: apartment.rooms },
     { label: 'Спальних місць', value: apartment.beds },
-  ];
+  ].filter(Boolean);
   
 
   return (
@@ -671,7 +671,7 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
             fontWeight="bold"
             color="primary"
           >
-            {apartment.price ? `${apartment.price} грн` : 'Не вказано'}
+            {apartment.price ? `${apartment.price} грн./доба` : 'Не вказано'}
           </Typography>
         </Box>
 

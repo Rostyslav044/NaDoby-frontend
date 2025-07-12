@@ -59,6 +59,7 @@ import { store } from './store'; // Подключаем store
 
 
 import Apartments from './components/Apartments';
+import { useSelector } from 'react-redux';
 
 
 // Применение шрифтов:
@@ -73,6 +74,7 @@ const lato = Lato({
 });
 
 export default function Layout({ children }) {
+
   
   return (
     <html lang="ua">

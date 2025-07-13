@@ -3,17 +3,9 @@
 
 
 
-
-
-
-
-
-
-
-
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle } from "react";
 import {
   Box,
   Grid,
@@ -23,7 +15,10 @@ import {
   InputAdornment,
   Typography,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  FormControl,
+  InputLabel,
+  Select
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useLanguage } from "@/app/LanguageContext";
@@ -46,14 +41,12 @@ const translations = {
     pets: "Тварини",
     minRent: "Мін. оренда (днів)",
     reportDocs: "Звітні документи",
-    deposit: "Залог",
-    depositNone: "Немає",
-    depositDailyPrice: "Ціна за добу",
+    deposit: "Залог (грн)",
     yes: "Так",
     no: "Ні",
     ageLimit: "Вікове обмеження від",
     conveniences: "Зручності",
-    name: "Ваше ім’я",
+    name: "Ваше ім'я",
     kidsAge: "Вік дитини від",
   },
   ru: {
@@ -73,9 +66,7 @@ const translations = {
     pets: "Животные",
     minRent: "Мин. аренда (дней)",
     reportDocs: "Отчетные документы",
-    deposit: "Залог",
-    depositNone: "Нет",
-    depositDailyPrice: "Цена за сутки",
+    deposit: "Залог (грн)",
     yes: "Да",
     no: "Нет",
     ageLimit: "Возрастное ограничение от",
@@ -139,255 +130,258 @@ const facilitiesList = [
   "Праска"
 ];
 
-export default function InfoApartments({ onDataChange }) {
+const booleanOptions = [
+  { name: "smoking", labelKey: "smoking" },
+  { name: "parties", labelKey: "parties" },
+  { name: "pets", labelKey: "pets" },
+  { name: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
+  { name: "reportDocs", labelKey: "reportDocs" },
+];
+
+const InfoApartments = forwardRef(({ onDataChange }, ref) => {
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
 
-  const [phones, setPhones] = useState([""]);
+  const [phones, setPhones] = useState(["+380"]);
   const [formData, setFormData] = useState({
     rooms: "", beds: "", size: "", floor: "", totalFloors: "",
     checkIn: "", checkOut: "", minRent: "", fullDayCheckIn: "",
     smoking: "", parties: "", pets: "", reportDocs: "", deposit: "",
-    ageLimit: "", name: "",
-    kidsAge: "",conveniences: []
+    ageLimit: "", name: "", kidsAge: "", conveniences: []
   });
 
-  const numericFields = ["rooms", "beds", "size", "floor", "totalFloors", "minRent", "ageLimit"];
-
-  const handlePhoneChange = (index, value) => {
-    const cleaned = value.replace(/\D/g, "");
-    const newPhones = [...phones];
-    newPhones[index] = cleaned;
-    setPhones(newPhones);
-    updateParentData({ ...formData, phones: newPhones.filter(p => p) });
-  };
-
-  const handleAddPhone = () => {
-    if (phones.length < 4) {
-      const newPhones = [...phones, ""];
-      setPhones(newPhones);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const newValue = numericFields.includes(name) ? value.replace(/\D/g, "") : value;
-    const newData = { ...formData, [name]: newValue };
-    setFormData(newData);
-    updateParentData({ ...newData, phones: phones.filter(p => p) });
-  };
-
-  const handleConvenienceToggle = (item) => {
-    const newConveniences = formData.conveniences.includes(item)
-      ? formData.conveniences.filter(i => i !== item)
-      : [...formData.conveniences, item];
-    const newData = { ...formData, conveniences: newConveniences };
-    setFormData(newData);
-    updateParentData({ ...newData, phones: phones.filter(p => p) });
-  };
+  const [errors, setErrors] = useState({});
 
   const updateParentData = (data) => {
     if (onDataChange) {
       onDataChange(data);
     }
   };
+  
 
-  const renderPhoneFields = () =>
-    phones.map((phone, index) => (
-      <Grid item xs={12} key={index}>
-        <Box mb={2}>
-          <TextField
-            fullWidth
-            label={`${t.phone} ${index + 1}`}
-            value={phone}
-            onChange={(e) => handlePhoneChange(index, e.target.value)}
-            inputProps={{ inputMode: "numeric", maxLength: 15 }}
-            InputProps={{
-              endAdornment:
-                index === phones.length - 1 && phones.length < 4 ? (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleAddPhone} edge="end" color="primary">
-                      <AddIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ) : null,
-            }}
-          />
-        </Box>
-      </Grid>
-    ));
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      const newErrors = validateFields();
+      return !Object.values(newErrors).some(Boolean);
+    }
+  }));
+
+
+
+
+  
+
+
+  const validateFields = () => {
+    const newErrors = {
+      name: !formData.name || formData.name.length < 2,
+      phones: phones.length === 0 || phones.some(phone => !/^\+380\d{9}$/.test(phone)),
+      rooms: !formData.rooms,
+      beds: !formData.beds,
+      size: !formData.size,
+      floor: !formData.floor,
+      totalFloors: !formData.totalFloors,
+      checkIn: !formData.checkIn, // Добавлено
+      checkOut: !formData.checkOut, // Добавлено
+      minRent: !formData.minRent,
+      ageLimit: !formData.ageLimit,
+      kidsAge: !formData.kidsAge,
+      deposit: !formData.deposit,
+      conveniences: formData.conveniences.length < 5,
+    };
+  
+    booleanOptions.forEach(({ name }) => {
+      newErrors[name] = !formData[name];
+    });
+  
+    setErrors(newErrors);
+    return newErrors;
+  };
+
+  const updateParent = (data) => {
+    onDataChange?.(data);
+  };
+
+  
+
+  const handlePhoneChange = (index, value) => {
+    let cleaned = value;
+    if (!cleaned.startsWith("+380")) cleaned = "+380";
+    cleaned = "+380" + cleaned.slice(4).replace(/\D/g, "");
+    const newPhones = [...phones];
+    newPhones[index] = cleaned;
+    setPhones(newPhones);
+    
+    // Проверяем валидность номера после ввода
+    const isValid = /^\+380\d{9}$/.test(cleaned);
+    setErrors(prev => ({
+      ...prev,
+      phones: newPhones.some(p => !/^\+380\d{9}$/.test(p))
+    }));
+    
+    updateParent({ ...formData, phones: newPhones });
+  };
+  const addPhone = () => {
+    if (phones.length < 4) {
+      setPhones([...phones, "+380"]);
+    }
+  };
+
+  
+
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let newValue = value;
+  
+    if (name === "name") {
+      newValue = value
+        .replace(/[^а-яА-ЯёЁa-zA-Z\s]/g, "")
+        .replace(/\s+/g, ' ')
+        .trimStart();
+      
+      if (newValue.length > 0) {
+        newValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      }
+      
+      const isValid = newValue.length >= 2;
+      setErrors(prev => ({ ...prev, name: !isValid }));
+    }
+    // Для полей времени
+    else if (name === "checkIn" || name === "checkOut") {
+      const isValid = value !== "";
+      setErrors(prev => ({ ...prev, [name]: !isValid }));
+    }
+    // Для остальных полей
+    else {
+      setErrors(prev => ({ ...prev, [name]: false }));
+    }
+  
+    const updated = { ...formData, [name]: newValue };
+    setFormData(updated);
+    updateParent({ ...updated, phones });
+  };
+
+
+  const handleNumeric = (e) => {
+    const { name, value } = e.target;
+    const updated = { ...formData, [name]: value.replace(/\D/g, "") };
+    setFormData(updated);
+    setErrors(prev => ({ ...prev, [name]: false }));
+    updateParent({ ...updated, phones });
+  };
+
+  const handleBooleanChange = (name, value) => {
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    setErrors(prev => ({ ...prev, [name]: false }));
+    updateParent({ ...updated, phones });
+  };
+
+  const handleConvenienceToggle = (item) => {
+    const list = formData.conveniences.includes(item)
+      ? formData.conveniences.filter((i) => i !== item)
+      : [...formData.conveniences, item];
+    const updated = { ...formData, conveniences: list };
+    setFormData(updated);
+    setErrors(prev => ({ ...prev, conveniences: list.length < 5 }));
+    updateParent({ ...updated, phones });
+  };
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        {t.title}
-      </Typography>
-      
+      <Typography variant="h5">{t.title}</Typography>
       <Grid container spacing={2}>
-        {/* Телефоны */}
-        {/* <Grid item xs={12} md={6}>
-          {renderPhoneFields()}
-        </Grid> */}
-
-
-<Grid item xs={12} md={6}>
-  <TextField
-    fullWidth
-    name="name"
-    label={t.name}
-    value={formData.name}
-    onChange={handleChange}
-  />
-</Grid>
-<Grid item xs={12} md={6}>
-  {renderPhoneFields()}
-</Grid>
-
-        
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="ageLimit"
-            label={t.ageLimit}
-            value={formData.ageLimit}
-            onChange={handleChange}
-          />
-        </Grid>
+          
 
-        {/* Основные поля */}
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="rooms"
-            label={t.rooms}
-            value={formData.rooms}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="beds"
-            label={t.beds}
-            value={formData.beds}
-            onChange={handleChange}
-          />
+
+
+<TextField
+  fullWidth
+  name="name"
+  label={t.name}
+  value={formData.name}
+  onChange={handleChange}
+  error={!!errors.name}
+  helperText={errors.name ? "Введите корректное имя (минимум 2 буквы)" : ""}
+  onBlur={(e) => {
+    if (e.target.value.length < 2) {
+      setErrors(prev => ({ ...prev, name: true }));
+    }
+  }}
+/>
+
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="floor"
-            label={t.floor}
-            value={formData.floor}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="totalFloors"
-            label={t.totalFloors}
-            value={formData.totalFloors}
-            onChange={handleChange}
-          />
+          {phones.map((p, i) => (
+            <TextField key={i} fullWidth value={p} onChange={(e) => handlePhoneChange(i, e.target.value)}
+              label={`${t.phone} ${i + 1}`} inputProps={{ maxLength: 13 }}
+              error={!!errors.phones} helperText={errors.phones && 'Номер должен быть +380XXXXXXXXX'}
+              InputProps={{
+                endAdornment: i === phones.length - 1 && phones.length < 4 && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={addPhone}><AddIcon /></IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          ))}
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            type="time"
-            name="checkIn"
-            label={t.checkIn}
-            value={formData.checkIn}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            type="time"
-            name="checkOut"
-            label={t.checkOut}
-            value={formData.checkOut}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            name="size"
-            label={t.size}
-            value={formData.size}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            name="minRent"
-            label={t.minRent}
-            value={formData.minRent}
-            onChange={handleChange}
-            fullWidth
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-  <TextField
-    fullWidth
-    name="kidsAge"
-    label={t.kidsAge}
-    value={formData.kidsAge}
-    onChange={handleChange}
-    inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-  />
-</Grid>
-
-        {/* Выпадающие списки */}
         {[
-          { name: "fullDayCheckIn", label: t.fullDayCheckIn },
-          { name: "smoking", label: t.smoking },
-          { name: "parties", label: t.parties },
-          { name: "pets", label: t.pets },
-          { name: "reportDocs", label: t.reportDocs },
-        ].map((field) => (
-          <Grid item xs={12} md={6} key={field.name}>
-            <TextField
-              select
-              fullWidth
-              name={field.name}
-              label={field.label}
-              value={formData[field.name]}
-              onChange={handleChange}
-            >
-              <MenuItem value="yes">{t.yes}</MenuItem>
-              <MenuItem value="no">{t.no}</MenuItem>
-            </TextField>
+          ['ageLimit', t.ageLimit], ['rooms', t.rooms], ['beds', t.beds],
+          ['floor', t.floor], ['totalFloors', t.totalFloors], ['size', t.size],
+          ['minRent', t.minRent], ['kidsAge', t.kidsAge], ['deposit', t.deposit]
+        ].map(([name, label]) => (
+          <Grid item xs={12} md={6} key={name}>
+            <TextField fullWidth name={name} label={label} value={formData[name]}
+              onChange={handleNumeric} error={!!errors[name]}
+              helperText={errors[name] && 'Обязательное поле'}
+              inputProps={{ inputMode: 'numeric' }}
+            />
           </Grid>
         ))}
 
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            fullWidth
-            name="deposit"
-            label={t.deposit}
-            value={formData.deposit}
-            onChange={handleChange}
-          >
-            <MenuItem value="none">{t.depositNone}</MenuItem>
-            <MenuItem value="daily">{t.depositDailyPrice}</MenuItem>
-          </TextField>
-        </Grid>
 
-        {/* Удобства */}
+
+
+
+
+{['checkIn', 'checkOut'].map((name) => (
+  <Grid item xs={12} md={6} key={name}>
+    <TextField
+      fullWidth
+      name={name}
+      type="time"
+      label={t[name]}
+      value={formData[name]}
+      onChange={handleChange}
+      InputLabelProps={{ shrink: true }}
+      error={!!errors[name]}
+      helperText={errors[name] ? 'Обязательное поле' : ''}
+    />
+  </Grid>
+))}
+        {booleanOptions.map(({ name, labelKey }) => (
+          <Grid item xs={12} md={6} key={name}>
+            <FormControl fullWidth error={!!errors[name]}>
+              <InputLabel>{t[labelKey]}</InputLabel>
+              <Select
+                value={formData[name] || ''} label={t[labelKey]}
+                onChange={(e) => handleBooleanChange(name, e.target.value)}
+              >
+                <MenuItem value="yes">{t.yes}</MenuItem>
+                <MenuItem value="no">{t.no}</MenuItem>
+              </Select>
+              {errors[name] && <Typography color="error" variant="caption">Обязательное поле</Typography>}
+            </FormControl>
+          </Grid>
+        ))}
+
         <Grid item xs={12}>
-          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-            {t.conveniences}
-          </Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>{t.conveniences}</Typography>
           <Grid container spacing={1}>
             {facilitiesList.map((item, idx) => (
               <Grid item xs={12} sm={6} md={4} key={idx}>
@@ -401,20 +395,17 @@ export default function InfoApartments({ onDataChange }) {
                   label={item}
                 />
               </Grid>
-
-              
             ))}
-
-
           </Grid>
+          {errors.conveniences && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              Выберите минимум 5 удобств
+            </Typography>
+          )}
         </Grid>
-
-        
       </Grid>
-
-      
     </Box>
   );
-}
+});
 
-
+export default InfoApartments;

@@ -556,6 +556,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Logo from './Logo';
 import { useSwipeable } from 'react-swipeable';
+import { useEffect } from 'react';
 
 const translations = {
   ru: {
@@ -576,7 +577,7 @@ const translations = {
   },
 };
 
-export default function FileUploadSlider({ setUploudImages }) {
+export default function FileUploadSlider({ setUploudImages, onValidationChange }) {
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage] || translations.ru;
 
@@ -626,6 +627,13 @@ export default function FileUploadSlider({ setUploudImages }) {
   //   uploadFiles(files);
   // };
 
+
+  useEffect(() => {
+    const isValid = images.length >= 3;
+    if (onValidationChange) {
+      onValidationChange(isValid);
+    }
+  }, [images]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);

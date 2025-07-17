@@ -131,12 +131,21 @@ const facilitiesList = [
   "Праска"
 ];
 
+// const booleanOptions = [
+//   { name: "smoking", labelKey: "smoking" },
+//   { name: "parties", labelKey: "parties" },
+//   { name: "pets", labelKey: "pets" },
+//   { name: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
+//   { name: "reportDocs", labelKey: "reportDocs" },
+// ];
+
+
 const booleanOptions = [
-  { name: "smoking", labelKey: "smoking" },
-  { name: "parties", labelKey: "parties" },
-  { name: "pets", labelKey: "pets" },
-  { name: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
-  { name: "reportDocs", labelKey: "reportDocs" },
+  { key: "smoking", labelKey: "smoking" },
+  { key: "parties", labelKey: "parties" },
+  { key: "pets", labelKey: "pets" },
+  { key: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
+  { key: "reportDocs", labelKey: "reportDocs" },
 ];
 
 const InfoApartments = forwardRef(({ onDataChange }, ref) => {
@@ -147,7 +156,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
   const [formData, setFormData] = useState({
     rooms: "", beds: "", size: "", floor: "", totalFloors: "",
     checkIn: "", checkOut: "", minRent: "", fullDayCheckIn: "",
-    smoking: "", parties: "", pets: "", reportDocs: "", deposit: "",
+    smoking: "",parties: false, pets: "", reportDocs: "", deposit: "",
     ageLimit: "", name: "", kidsAge: "", conveniences: []
   });
 
@@ -191,10 +200,15 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
       conveniences: formData.conveniences.length < 5,
     };
   
-    booleanOptions.forEach(({ name }) => {
-      newErrors[name] = !formData[name];
-    });
+    // booleanOptions.forEach(({ name }) => {
+    //   newErrors[name] = !formData[name];
+    // });
   
+    booleanOptions.forEach(({ key }) => {
+      newErrors[key] = typeof formData[key] !== "boolean";
+    });
+    
+
     setErrors(newErrors);
     return newErrors;
   };
@@ -207,12 +221,12 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     onDataChange?.({ ...data, phones });
   }, [onDataChange, phones]);
 
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      const newErrors = validateFields();
-      return !Object.values(newErrors).some(Boolean);
-    }
-  }));
+  // useImperativeHandle(ref, () => ({
+  //   validate: () => {
+  //     const newErrors = validateFields();
+  //     return !Object.values(newErrors).some(Boolean);
+  //   }
+  // }));
 
   const handlePhoneChange = (index, value) => {
     let cleaned = value;
@@ -281,12 +295,21 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     updateParent({ ...updated, phones });
   };
 
-  const handleBooleanChange = (name, value) => {
-    const updated = { ...formData, [name]: value };
-    setFormData(updated);
-    setErrors(prev => ({ ...prev, [name]: false }));
-    updateParent({ ...updated, phones });
+  // const handleBooleanChange = (name, value) => {
+  //   const updated = { ...formData, [name]: value };
+  //   setFormData(updated);
+  //   setErrors(prev => ({ ...prev, [name]: false }));
+  //   updateParent({ ...updated, phones });
+  // };
+
+
+  const handleBooleanChange = (event) => {
+    const { name, checked } = event.target;
+    const newData = { ...formData, [name]: checked };
+    setFormData(newData);
+    updateParentData(newData); // чтобы отправилось наверх
   };
+  
 
   const handleConvenienceToggle = (item) => {
     const list = formData.conveniences.includes(item)
@@ -377,7 +400,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     />
   </Grid>
 ))}
-        {booleanOptions.map(({ name, labelKey }) => (
+        {/* {booleanOptions.map(({ name, labelKey }) => (
           <Grid item xs={12} md={6} key={name}>
             <FormControl fullWidth error={!!errors[name]}>
               <InputLabel>{t[labelKey]}</InputLabel>
@@ -391,7 +414,30 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
               {errors[name] && <Typography color="error" variant="caption">Обязательное поле</Typography>}
             </FormControl>
           </Grid>
-        ))}
+        ))} */}
+
+
+
+{booleanOptions.map(({ key, labelKey }) => (
+  <Grid item xs={12} md={6} key={key}>
+    <FormControlLabel
+      control={
+        <Checkbox
+          name={key}
+          checked={formData[key] || false}
+          onChange={handleBooleanChange}
+        />
+      }
+      label={t[labelKey]}
+    />
+    {errors[key] && (
+      <Typography color="error" variant="caption" sx={{ ml: 1 }}>
+        Обязательное поле
+      </Typography>
+    )}
+  </Grid>
+))}
+
 
         <Grid item xs={12}>
           <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>{t.conveniences}</Typography>

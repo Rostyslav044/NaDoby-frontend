@@ -79,5 +79,40 @@ const MetroSelector = ({ city, onMetroSelect }) => {
   );
 };
 
+
+// const MetroSelector = ({ city, onMetroSelect, error, showError }) => {
+//   const { currentLanguage } = useLanguage();
+
+//   if (!city || !CITIES_WITH_METRO.some(c => c.toLowerCase() === city.toLowerCase())) {
+//     return null;
+//   }
+
+//   const cityKey = Object.keys(metroStations).find(
+//     (key) => key.toLowerCase() === city.toLowerCase()
+//   );
+
+//   const stations = metroStations[cityKey]?.[currentLanguage] || [];
+
+//   return (
+//     <Box sx={{ mt: 2, width: '100%' }}>
+//       <Autocomplete
+//         fullWidth
+//         options={stations}
+//         onChange={(e, value) => onMetroSelect(value)}
+//         renderInput={(params) => (
+//           <TextField
+//             {...params}
+//             label={currentLanguage === 'ua' ? 'Станція метро *' : 'Станция метро *'}
+//             variant="outlined"
+//             error={error && showError}
+//             helperText={error && showError ? 
+//               (currentLanguage === 'ua' ? 'Оберіть станцію метро' : 'Выберите станцию метро') : ''}
+//           />
+//         )}
+//       />
+//     </Box>
+//   );
+// };
+
 export default MetroSelector;
 

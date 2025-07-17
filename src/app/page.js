@@ -70,6 +70,8 @@ import NewRealty from "./components/NewRealty";
 import { useSelector } from "react-redux";
 
 
+
+
 export default function Home() {
   const isAuthenticated = useSelector((state)=> state.isAuthenticated )
   useEffect(()=>{if (isAuthenticated) {
@@ -103,6 +105,7 @@ export default function Home() {
       <Header /> 
       {/* <CreateUser/> */}
       <Search/>
+      
       {/* <NewRealty/> */}
     </>
   );

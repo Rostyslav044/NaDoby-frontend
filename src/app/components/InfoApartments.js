@@ -5,7 +5,8 @@
 
 'use client';
 
-import React, { useState, forwardRef, useImperativeHandle } from "react";
+
+import React, { useState, forwardRef, useImperativeHandle, useCallback } from "react";
 import {
   Box,
   Grid,
@@ -83,7 +84,7 @@ const facilitiesList = [
   "Холодильник",
   "Сейф",
   "Електрочайник",
-  "Домофон",
+  "Тапочки",
   "Фен",
   "Посуд та приладдя",
   "Парковка",
@@ -108,7 +109,7 @@ const facilitiesList = [
   "Бойлер",
   "Змінна постільна білизна",
   "WiFi",
-  "Запасні рушники",
+  "Рушники",
   "Ліфт",
   "Броньовані двері",
   "Електроплитка",
@@ -198,11 +199,20 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     return newErrors;
   };
 
-  const updateParent = (data) => {
-    onDataChange?.(data);
-  };
+  // const updateParent = (data) => {
+  //   onDataChange?.(data);
+  // };
 
-  
+  const updateParent = useCallback((data) => {
+    onDataChange?.({ ...data, phones });
+  }, [onDataChange, phones]);
+
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      const newErrors = validateFields();
+      return !Object.values(newErrors).some(Boolean);
+    }
+  }));
 
   const handlePhoneChange = (index, value) => {
     let cleaned = value;
@@ -290,7 +300,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h5">{t.title}</Typography>
+      <Typography variant="h5" sx={{ mb: 4 }}>{t.title}</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           
@@ -310,12 +320,14 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
       setErrors(prev => ({ ...prev, name: true }));
     }
   }}
+  sx={{ mb: 2 }} 
 />
 
         </Grid>
 
         <Grid item xs={12} md={6}>
           {phones.map((p, i) => (
+            <Box key={i} sx={{ mb: i < phones.length - 1 ? 2 : 0 }}> {/* Добавлены отступы между телефонами */}
             <TextField key={i} fullWidth value={p} onChange={(e) => handlePhoneChange(i, e.target.value)}
               label={`${t.phone} ${i + 1}`} inputProps={{ maxLength: 13 }}
               error={!!errors.phones} helperText={errors.phones && 'Номер должен быть +380XXXXXXXXX'}
@@ -327,6 +339,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
                 )
               }}
             />
+            </Box>
           ))}
         </Grid>
 
@@ -381,7 +394,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
         ))}
 
         <Grid item xs={12}>
-          <Typography variant="h6" sx={{ mt: 2 }}>{t.conveniences}</Typography>
+          <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>{t.conveniences}</Typography>
           <Grid container spacing={1}>
             {facilitiesList.map((item, idx) => (
               <Grid item xs={12} sm={6} md={4} key={idx}>

@@ -338,7 +338,7 @@ const ApartmentDetailPage = () => {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText 
-                  primary="Макс. гостей" 
+                  primary="Кількість гостей" 
                   secondary={apartment.beds || 'Не указано'} 
                 />
               </ListItem>

@@ -57,7 +57,7 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
     { label: 'Район', value: apartment.district },
     apartment.metro && { label: 'Метро', value: apartment.metro },
     { label: 'Кімнат', value: apartment.rooms },
-    { label: 'Спальних місць', value: apartment.beds },
+    { label: 'Кількість гостей', value: apartment.beds },
   ].filter(Boolean);
   
 

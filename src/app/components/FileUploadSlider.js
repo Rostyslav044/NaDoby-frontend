@@ -32,8 +32,8 @@ const translations = {
     photos: 'Фото',
   },
 };
-
-export default function FileUploadSlider({ setUploudImages, onValidationChange }) {
+// setUploudImages-поменял на setUploadImages 
+export default function FileUploadSlider({ setUploadImages , onValidationChange }) {
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage] || translations.ru;
 
@@ -61,7 +61,7 @@ export default function FileUploadSlider({ setUploudImages, onValidationChange }
       if (res.ok) {
         setMessage(t.filesUploaded);
         const uploadedUrls = Array.isArray(data.url) ? data.url : [data.url];
-        setUploudImages((prev) => [...prev, ...uploadedUrls]);
+        setUploadImages((prev) => [...prev, ...uploadedUrls]);
       } else {
         setMessage(`❌ Ошибка: ${data.error}`);
       }

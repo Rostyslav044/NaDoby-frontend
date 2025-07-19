@@ -1,4 +1,5 @@
-
+// Этот компонент (ApartmentDetailPage) 
+// отображает детальную 1 страницу объявления об аренде
 
 'use client';
 
@@ -274,7 +275,7 @@ const ApartmentDetailPage = () => {
       )}
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 3 }}>
-        {/* Категория и адрес */}
+        {/* Категория и адрес
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <Chip 
             label={apartment.category} 
@@ -294,14 +295,44 @@ const ApartmentDetailPage = () => {
         </Box>
 
         {/* Название объекта и цена */}
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+        {/* <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h4">
             {apartment.name || 'Без названия'}
           </Typography>
           <Typography variant="h5" color="primary">
             {apartment.price || '0'} грн. / {getPriceSuffix()}
           </Typography>
-        </Stack>
+        </Stack>  */}
+
+
+        {/* Категория и название объекта */}
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+  <Chip 
+    label={apartment.category} 
+    color="primary" 
+    size="small" 
+    icon={getCategoryIcon()}
+  />
+  <Typography variant="h4">
+    {apartment.objectName || apartment.name || 'Без названия'}
+  </Typography>
+</Box>
+
+{/* Адрес и цена */}
+<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+  <Typography variant="body1" color="text.secondary">
+    {apartment.city}, {apartment.street} {apartment.houseNumber}
+    {apartment.district && (
+      <>
+        , <Box component="span" sx={{ fontWeight: 'bold' }}>район</Box>: {apartment.district}
+      </>
+    )}
+    {apartment.metro && `, метро: ${apartment.metro}`}
+  </Typography>
+  <Typography variant="h5" color="primary">
+    {apartment.price || '0'} грн. / {getPriceSuffix()}
+  </Typography>
+</Box>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
           Описание
@@ -546,7 +577,9 @@ const ApartmentDetailPage = () => {
                 </ListItemAvatar>
                 <ListItemText 
                   primary="Имя" 
-                  secondary={apartment.ownerName || 'Не указано'} 
+                  
+                  
+                  secondary={apartment.name || 'Не указано'} 
                 />
               </ListItem>
               
@@ -558,14 +591,17 @@ const ApartmentDetailPage = () => {
                 </ListItemAvatar>
                 <ListItemText 
                   primary="Телефоны" 
+              
+
+
                   secondary={
-                    apartment.phone ? (
+                    apartment.phones?.[0] ? (
                       <Box 
                         component="a"
-                        href={`tel:${apartment.phone.replace(/\D/g, '')}`}
+                        href={`tel:${apartment.phones[0].replace(/\D/g, '')}`}
                         onClick={(e) => {
                           e.preventDefault();
-                          handlePhoneClick(apartment.phone);
+                          handlePhoneClick(apartment.phones[0]);
                         }}
                         sx={{
                           color: 'primary.main',
@@ -574,10 +610,13 @@ const ApartmentDetailPage = () => {
                           cursor: 'pointer',
                         }}
                       >
-                        {apartment.phone}
+                        {apartment.phones[0]}
                       </Box>
                     ) : 'Не указаны'
-                  } 
+                  }
+                  
+
+
                 />
               </ListItem>
             </List>

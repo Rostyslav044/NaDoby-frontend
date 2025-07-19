@@ -1,10 +1,101 @@
+// 'use client';
+
+// import React from 'react';
+// import { useLanguage } from '@/app/LanguageContext';
+// import { Autocomplete, TextField, Box } from '@mui/material';
+
+// // Основные данные станций метро
+// const stationsData = {
+//   Київ: {
+//     ua: [
+//       'Академмістечко', 'Житомирська', 'Святошин', 'Нивки', 'Берестейська', 'Шулявська',
+//       'Політехнічний інститут', 'Вокзальна', 'Університет', 'Театральна', 'Хрещатик', 'Арсенальна',
+//       'Дніпро', 'Гідропарк', 'Лівобережна', 'Дарниця', 'Чернігівська', 'Лісова', 'Героїв Дніпра',
+//       'Мінська', 'Оболонь', 'Поштова площа', 'Контрактова площа', 'Тараса Шевченка', 'Лук’янівська',
+//       'Дорогожичі', 'Сирець', 'Золоті ворота', 'Палац спорту', 'Олімпійська', 'Палац «Україна»',
+//       'Либідська', 'Деміївська', 'Голосіївська', 'Васильківська', 'Виставковий центр', 'Іподром',
+//       'Теремки', 'Кловська', 'Печерська', 'Зверинецька', 'Видубичі', 'Славутич', 'Осокорки',
+//       'Позняки', 'Харківська', 'Вирлиця', 'Бориспільська', 'Червоний хутір',
+//     ],
+//     ru: [
+//       'Академгородок', 'Житомирская', 'Святошин', 'Нивки', 'Берестейская', 'Шулявская',
+//       'Политехнический институт', 'Вокзальная', 'Университет', 'Театральная', 'Крещатик', 'Арсенальная',
+//       'Днепр', 'Гидропарк', 'Левобережная', 'Дарница', 'Черниговская', 'Лесная', 'Героев Днепра',
+//       'Минская', 'Оболонь', 'Почтовая площадь', 'Контрактовая площадь', 'Тараса Шевченко', 'Лукьяновская',
+//       'Дорогожичи', 'Сырец', 'Золотые ворота', 'Дворец спорта', 'Олимпийская', 'Дворец «Украина»',
+//       'Лыбедская', 'Демиевская', 'Голосеевская', 'Васильковская', 'Выставочный центр', 'Ипподром',
+//       'Теремки', 'Кловская', 'Печерская', 'Зверинецкая', 'Выдубичи', 'Славутич', 'Осокорки',
+//       'Позняки', 'Харьковская', 'Вырлица', 'Бориспольская', 'Красный хутор',
+//     ]
+//   },
+//   Харків: {
+//     ua: ['Холодна гора', 'Південний вокзал', 'Центральний ринок', 'Майдан Конституції', 'Історичний музей', 'Проспект Гагаріна', 'Спортивна', 'Завод імені Малишева', 'Турбоатом', 'Індустріальна', 'Академіка Павлова', 'Студентська', 'Героїв Праці', 'Перемога', 'Олексіївська', '23 Серпня', 'Ботанічний сад', 'Держпром', 'Університет'],
+//     ru: ['Холодная гора', 'Южный вокзал', 'Центральный рынок', 'Площадь Конституции', 'Исторический музей', 'Проспект Гагарина', 'Спортивная', 'Завод имени Малышева', 'Турбоатом', 'Индустриальная', 'Академика Павлова', 'Студенческая', 'Героев Труда', 'Победа', 'Алексеевская', '23 Августа', 'Ботанический сад', 'Госпром', 'Университет']
+//   },
+//   Дніпро: {
+//     ua: ['Вокзальна', 'Металургів', 'Заводська', 'Метробудівників', 'Проспект Свободи', 'Покровська'],
+//     ru: ['Вокзальная', 'Металлургов', 'Заводская', 'Метростроителей', 'Проспект Свободы', 'Покровская']
+//   }
+// };
+
+// // Расширяем поддержку русских названий городов
+// const metroStations = {
+//   Київ: stationsData.Київ,
+//   Харків: stationsData.Харків,
+//   Дніпро: stationsData.Дніпро,
+//   Киев: stationsData.Київ,
+//   Харьков: stationsData.Харків,
+//   Днепр: stationsData.Дніпро,
+// };
+
+// const MetroSelector = ({ city, onMetroSelect }) => {
+//   const { currentLanguage } = useLanguage();
+
+//   if (!city) return null;
+
+//   const cityKey = Object.keys(metroStations).find(
+//     (key) => key.toLowerCase() === city.toLowerCase()
+//   );
+
+//   if (!cityKey) return null;
+
+//   const stations = metroStations[cityKey]?.[currentLanguage] || [];
+
+//   return (
+//     <Box sx={{ mt: 2, width: '100%' }}>
+//       <Autocomplete
+//         fullWidth
+//         options={stations}
+//         onChange={(e, value) => onMetroSelect(value)}
+//         renderInput={(params) => (
+//           <TextField
+//             {...params}
+//             label={currentLanguage === 'ua' ? 'Станція метро' : 'Станция метро'}
+//             variant="outlined"
+//           />
+//         )}
+//       />
+//     </Box>
+//   );
+// };
+
+
+
+
+// export default MetroSelector;
+
+
+
+
+
+
+
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLanguage } from '@/app/LanguageContext';
-import { Autocomplete, TextField, Box } from '@mui/material';
+import { Autocomplete, TextField, Box, Typography } from '@mui/material';
 
-// Основные данные станций метро
 const stationsData = {
   Київ: {
     ua: [
@@ -38,7 +129,6 @@ const stationsData = {
   }
 };
 
-// Расширяем поддержку русских названий городов
 const metroStations = {
   Київ: stationsData.Київ,
   Харків: stationsData.Харків,
@@ -48,8 +138,13 @@ const metroStations = {
   Днепр: stationsData.Дніпро,
 };
 
-const MetroSelector = ({ city, onMetroSelect }) => {
+
+const MetroSelector = ({ city, onMetroSelect, error = false, onErrorClear }) => {
   const { currentLanguage } = useLanguage();
+
+  useEffect(() => {
+    if (onErrorClear) onErrorClear();
+  }, [city, onErrorClear]);
 
   if (!city) return null;
 
@@ -61,58 +156,34 @@ const MetroSelector = ({ city, onMetroSelect }) => {
 
   const stations = metroStations[cityKey]?.[currentLanguage] || [];
 
+  const handleChange = (e, value) => {
+    onMetroSelect(value);
+    
+  };
+
   return (
     <Box sx={{ mt: 2, width: '100%' }}>
       <Autocomplete
         fullWidth
         options={stations}
-        onChange={(e, value) => onMetroSelect(value)}
+        onChange={handleChange}
         renderInput={(params) => (
           <TextField
             {...params}
-            label={currentLanguage === 'ua' ? 'Станція метро' : 'Станция метро'}
+            label={currentLanguage === 'ua' ? 'Станція метро *' : 'Станция метро *'}
             variant="outlined"
+            error={error}
+            helperText={
+              error ? 
+                (currentLanguage === 'ua' ? 
+                  'Оберіть станцію метро' : 
+                  'Выберите станцию метро') : 
+                ''
+            }
           />
         )}
       />
     </Box>
   );
 };
-
-
-// const MetroSelector = ({ city, onMetroSelect, error, showError }) => {
-//   const { currentLanguage } = useLanguage();
-
-//   if (!city || !CITIES_WITH_METRO.some(c => c.toLowerCase() === city.toLowerCase())) {
-//     return null;
-//   }
-
-//   const cityKey = Object.keys(metroStations).find(
-//     (key) => key.toLowerCase() === city.toLowerCase()
-//   );
-
-//   const stations = metroStations[cityKey]?.[currentLanguage] || [];
-
-//   return (
-//     <Box sx={{ mt: 2, width: '100%' }}>
-//       <Autocomplete
-//         fullWidth
-//         options={stations}
-//         onChange={(e, value) => onMetroSelect(value)}
-//         renderInput={(params) => (
-//           <TextField
-//             {...params}
-//             label={currentLanguage === 'ua' ? 'Станція метро *' : 'Станция метро *'}
-//             variant="outlined"
-//             error={error && showError}
-//             helperText={error && showError ? 
-//               (currentLanguage === 'ua' ? 'Оберіть станцію метро' : 'Выберите станцию метро') : ''}
-//           />
-//         )}
-//       />
-//     </Box>
-//   );
-// };
-
 export default MetroSelector;
-

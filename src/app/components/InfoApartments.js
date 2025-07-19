@@ -131,22 +131,16 @@ const facilitiesList = [
   "Праска"
 ];
 
-// const booleanOptions = [
-//   { name: "smoking", labelKey: "smoking" },
-//   { name: "parties", labelKey: "parties" },
-//   { name: "pets", labelKey: "pets" },
-//   { name: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
-//   { name: "reportDocs", labelKey: "reportDocs" },
-// ];
-
-
 const booleanOptions = [
-  { key: "smoking", labelKey: "smoking" },
-  { key: "parties", labelKey: "parties" },
-  { key: "pets", labelKey: "pets" },
-  { key: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
-  { key: "reportDocs", labelKey: "reportDocs" },
+  { name: "smoking", labelKey: "smoking" },
+  { name: "parties", labelKey: "parties" },
+  { name: "pets", labelKey: "pets" },
+  { name: "fullDayCheckIn", labelKey: "fullDayCheckIn" },
+  { name: "reportDocs", labelKey: "reportDocs" },
 ];
+
+
+
 
 const InfoApartments = forwardRef(({ onDataChange }, ref) => {
   const { currentLanguage } = useLanguage();
@@ -156,7 +150,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
   const [formData, setFormData] = useState({
     rooms: "", beds: "", size: "", floor: "", totalFloors: "",
     checkIn: "", checkOut: "", minRent: "", fullDayCheckIn: "",
-    smoking: "",parties: false, pets: "", reportDocs: "", deposit: "",
+    smoking: "",parties: "", pets: "", reportDocs: "", deposit: "",
     ageLimit: "", name: "", kidsAge: "", conveniences: []
   });
 
@@ -200,26 +194,26 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
       conveniences: formData.conveniences.length < 5,
     };
   
-    // booleanOptions.forEach(({ name }) => {
-    //   newErrors[name] = !formData[name];
-    // });
-  
-    booleanOptions.forEach(({ key }) => {
-      newErrors[key] = typeof formData[key] !== "boolean";
+    booleanOptions.forEach(({ name }) => {
+      newErrors[name] = !formData[name];
     });
+  
+    // booleanOptions.forEach(({ key }) => {
+    //   newErrors[key] = typeof formData[key] !== "boolean";
+    // });
     
 
     setErrors(newErrors);
     return newErrors;
   };
 
-  // const updateParent = (data) => {
-  //   onDataChange?.(data);
-  // };
+  const updateParent = (data) => {
+    onDataChange?.(data);
+  };
 
-  const updateParent = useCallback((data) => {
-    onDataChange?.({ ...data, phones });
-  }, [onDataChange, phones]);
+  // const updateParent = useCallback((data) => {
+  //   onDataChange?.({ ...data, phones });
+  // }, [onDataChange, phones]);
 
   // useImperativeHandle(ref, () => ({
   //   validate: () => {
@@ -295,20 +289,21 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     updateParent({ ...updated, phones });
   };
 
-  // const handleBooleanChange = (name, value) => {
-  //   const updated = { ...formData, [name]: value };
-  //   setFormData(updated);
-  //   setErrors(prev => ({ ...prev, [name]: false }));
-  //   updateParent({ ...updated, phones });
-  // };
-
-
-  const handleBooleanChange = (event) => {
-    const { name, checked } = event.target;
-    const newData = { ...formData, [name]: checked };
-    setFormData(newData);
-    updateParentData(newData); // чтобы отправилось наверх
+  const handleBooleanChange = (name, value) => {
+    console.log(name);
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    setErrors(prev => ({ ...prev, [name]: false }));
+    updateParent({ ...updated, phones });
   };
+
+
+  // const handleBooleanChange = (event) => {
+  //   const { name, checked } = event.target;
+  //   const newData = { ...formData, [name]: checked };
+  //   setFormData(newData);
+  //   updateParentData(newData); // чтобы отправилось наверх
+  // };
   
 
   const handleConvenienceToggle = (item) => {
@@ -400,7 +395,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
     />
   </Grid>
 ))}
-        {/* {booleanOptions.map(({ name, labelKey }) => (
+        {booleanOptions.map(({ name, labelKey }) => (
           <Grid item xs={12} md={6} key={name}>
             <FormControl fullWidth error={!!errors[name]}>
               <InputLabel>{t[labelKey]}</InputLabel>
@@ -414,10 +409,10 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
               {errors[name] && <Typography color="error" variant="caption">Обязательное поле</Typography>}
             </FormControl>
           </Grid>
-        ))} */}
+        ))}
 
 
-
+{/* 
 {booleanOptions.map(({ key, labelKey }) => (
   <Grid item xs={12} md={6} key={key}>
     <FormControlLabel
@@ -436,7 +431,7 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
       </Typography>
     )}
   </Grid>
-))}
+))} */}
 
 
         <Grid item xs={12}>

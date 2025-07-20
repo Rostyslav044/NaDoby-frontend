@@ -388,7 +388,8 @@ const AddApartment = () => {
               onChange={handleInputChange}
               error={!!errors.description}
               helperText={
-                errors.description ? 'Минимум 85 символов. Нельзя использовать @ или ссылки.' : ''
+                errors.description ? 'Минимум 85 символов. Нельзя использовать @ или ссылки.' : 
+                ''
               }
             />
 
@@ -512,7 +513,16 @@ const AddApartment = () => {
                     }}
                   />
                 </GoogleMap>
+                <Box sx={{ mt: 0.5, mb: 0.5, py: 0.5, textAlign: 'center' }}>
+      <Typography variant="body2" color="textSecondary">
+        Вы можете двигать маркер на карте для точного указания местоположения!
+      </Typography>
+    </Box>
+
               </Box>
+
+
+
             )}
 
             <TextField
@@ -526,7 +536,7 @@ const AddApartment = () => {
               onChange={handleInputChange}
               error={!!errors.district}
               helperText={errors.district ? 'Это поле обязательно' : ''}
-              sx={{ maxWidth: 200 }}
+              sx={{ maxWidth: 200 , mt: 5,}}
             />
 
             <Box sx={{ mt: 3, border: photoError ? '1px solid red' : 'none', p: 2, borderRadius: 2 }}>

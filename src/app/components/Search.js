@@ -1,464 +1,24 @@
 
 
 
-
 // "use client";
 
-// import React, { useState } from "react";
+// import React, { useState, useRef, useEffect } from "react";
 // import Autocomplete from "react-google-autocomplete";
 // import { useLanguage } from "@/app/LanguageContext";
 // import {
 //   Container,
 //   Typography,
 //   TextField,
-//   MenuItem,
 //   Button,
 //   Box,
-// } from "@mui/material";
-
-// const translations = {
-//   ua: {
-//     title: "Обирайте житло для своєї наступної подорожі",
-//     subtitle: "Від готелів до приватних помешкань – знайдіть те, що потрібно.",
-//     locationLabel: "Куди прямуєте?",
-//     locationPlaceholder: "Введіть місцезнаходження",
-//     guestsLabel: "Кількість гостей",
-//     typeLabel: "Тип помешкання",
-//     options: {
-//       apart: "Квартири",
-      
-//       hotel: "Готель",
-//       hostel: "Хостел",
-//       house: "Будинок",
-//       recreationCenter: "База відпочинку",
-//       sauna: "Cауна/Баня",
-//     },
-//     searchButton: "Пошук",
-//     searchAlert: "Пошук виконано!",
-//     errorMessages: {
-//       location: "Будь ласка, виберіть місцезнаходження.",
-//       guests: "Будь ласка, вкажіть кількість гостей.",
-//       type: "Будь ласка, виберіть тип помешкання.",
-//     },
-//   },
-//   ru: {
-//     title: "Выбирайте жилье для следующего путешествия",
-//     subtitle: "От отелей до частных домов – найдите то, что нужно.",
-//     locationLabel: "Куда направляетесь?",
-//     locationPlaceholder: "Введите местоположение",
-//     guestsLabel: "Количество гостей",
-//     typeLabel: "Тип жилья",
-//     options: {
-//       apart: "Квартиры",
-      
-//       hotel: "Гостиница",
-//       hostel: "Хостел",
-//       house: "Дом",
-//       recreationCenter: "База отдыха",
-//       sauna: "Сауна/Баня",
-//     },
-//     searchButton: "Поиск",
-//     searchAlert: "Поиск выполнен!",
-//     errorMessages: {
-//       location: "Пожалуйста, выберите местоположение.",
-//       guests: "Пожалуйста, укажите количество гостей.",
-//       type: "Пожалуйста, выберите тип жилья.",
-//     },
-//   },
-// };
-
-// const Search = () => {
-//   const [location, setLocation] = useState("");
-//   const [guests, setGuests] = useState(1);
-//   const [type, setType] = useState("");
-//   const [errors, setErrors] = useState({});
-//   const { currentLanguage } = useLanguage();
-//   const translation = translations[currentLanguage];
-//   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     const newErrors = {};
-//     if (!location.trim()) newErrors.location = translation.errorMessages.location;
-//     if (guests < 1) newErrors.guests = translation.errorMessages.guests;
-//     if (!type) newErrors.type = translation.errorMessages.type;
-//     if (Object.keys(newErrors).length > 0) {
-//       setErrors(newErrors);
-//       return;
-//     }
-//     alert(translation.searchAlert);
-//   };
-
-//   const handlePlaceSelected = (place) => {
-//     const cityComponent = place?.address_components?.find(comp =>
-//       comp.types.includes("locality")
-//     );
-//     const city = cityComponent?.long_name || place?.formatted_address || "";
-//     setLocation(city);
-//   };
-
-//   return (
-//     <Container
-//       maxWidth="sm"
-//       sx={{
-//         mt: 4,
-//         p: 3,
-//         bgcolor: "background.paper",
-//         borderRadius: 2,
-//         boxShadow: 3,
-//       }}
-//     >
-//       <Typography variant="h5" fontWeight={600} gutterBottom>
-//         {translation.title}
-//       </Typography>
-//       <Typography variant="body1" color="text.secondary" gutterBottom>
-//         {translation.subtitle}
-//       </Typography>
-
-//       <Box
-//         component="form"
-//         onSubmit={handleSubmit}
-//         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-//       >
-//         {/* Автозаполнение города только по Украине */}
-//         <Box>
-//           <Autocomplete
-//             apiKey={googleMapsApiKey}
-//             onPlaceSelected={handlePlaceSelected}
-//             options={{
-//               types: ["(cities)"],
-//               componentRestrictions: { country: "ua" },
-//             }}
-//             placeholder={translation.locationPlaceholder}
-//             language={currentLanguage === "ua" ? "uk" : "ru"}
-//             style={{
-//               width: "100%",
-//               height: "56px",
-//               fontSize: "16px",
-//               padding: "0 14px",
-//               border: errors.location
-//                 ? "1px solid red"
-//                 : "1px solid rgba(0, 0, 0, 0.23)",
-//               borderRadius: "4px",
-//               boxSizing: "border-box",
-//               display: "flex",
-//               alignItems: "center",
-//               marginBottom: errors.location ? "4px" : 0,
-//             }}
-//           />
-//           {errors.location && (
-//             <Typography variant="caption" color="error">
-//               {errors.location}
-//             </Typography>
-//           )}
-//         </Box>
-
-//         <TextField
-//           type="number"
-//           label={translation.guestsLabel}
-//           fullWidth
-//           value={guests > 1 ? guests : ""}
-//           onChange={(e) => setGuests(Math.max(1, Number(e.target.value)))}
-//           error={!!errors.guests}
-//           helperText={errors.guests}
-//           inputProps={{ min: 1 }}
-//         />
-
-//         <TextField
-//           select
-//           label={translation.typeLabel}
-//           fullWidth
-//           value={type}
-//           onChange={(e) => setType(e.target.value)}
-//           error={!!errors.type}
-//           helperText={errors.type}
-//         >
-//           <MenuItem value="">{translation.typeLabel}</MenuItem>
-//           {Object.entries(translation.options).map(([key, value]) => (
-//             <MenuItem key={key} value={key}>
-//               {value}
-//             </MenuItem>
-//           ))}
-//         </TextField>
-
-//         <Button type="submit" variant="contained" color="primary" fullWidth>
-//           {translation.searchButton}
-//         </Button>
-//       </Box>
-//     </Container>
-//   );
-// };
-
-// export default Search;
-
-
-
-
-
-// "use client";
-
-// import React, { useState } from "react";
-// import Autocomplete from "react-google-autocomplete";
-// import { useLanguage } from "@/app/LanguageContext";
-// import {
-//   Container,
-//   Typography,
-//   TextField,
-//   MenuItem,
-//   Button,
-//   Box,
-// } from "@mui/material";
-// import LocationOnIcon from "@mui/icons-material/LocationOn";
-
-// const translations = {
-//   ua: {
-//     title: "Обирайте житло для своєї наступної подорожі",
-//     subtitle: "Від готелів до приватних помешкань – знайдіть те, що потрібно.",
-//     locationLabel: "Куди прямуєте?",
-//     locationPlaceholder: "Введіть місцезнаходження",
-//     nearby: "Поруч зі мною",
-//     guestsLabel: "Кількість гостей",
-//     typeLabel: "Тип помешкання",
-//     options: {
-//       apart: "Квартири",
-//       hotel: "Готель",
-//       hostel: "Хостел",
-//       house: "Будинок",
-//       recreationCenter: "База відпочинку",
-//       sauna: "Сауна/Баня",
-//     },
-//     searchButton: "Пошук",
-//     searchAlert: "Пошук виконано!",
-//     errorMessages: {
-//       location: "Будь ласка, виберіть місцезнаходження.",
-//       guests: "Будь ласка, вкажіть кількість гостей.",
-//       type: "Будь ласка, виберіть тип помешкання.",
-//     },
-//   },
-//   ru: {
-//     title: "Выбирайте жилье для следующего путешествия",
-//     subtitle: "От отелей до частных домов – найдите то, что нужно.",
-//     locationLabel: "Куда направляетесь?",
-//     locationPlaceholder: "Введите местоположение",
-//     nearby: "Рядом со мной",
-//     guestsLabel: "Количество гостей",
-//     typeLabel: "Тип жилья",
-//     options: {
-//       apart: "Квартиры",
-//       hotel: "Гостиница",
-//       hostel: "Хостел",
-//       house: "Дом",
-//       recreationCenter: "База отдыха",
-//       sauna: "Сауна/Баня",
-//     },
-//     searchButton: "Поиск",
-//     searchAlert: "Поиск выполнен!",
-//     errorMessages: {
-//       location: "Пожалуйста, выберите местоположение.",
-//       guests: "Пожалуйста, укажите количество гостей.",
-//       type: "Пожалуйста, выберите тип жилья.",
-//     },
-//   },
-// };
-
-// const Search = () => {
-//   const [location, setLocation] = useState("");
-//   const [guests, setGuests] = useState(1);
-//   const [type, setType] = useState("");
-//   const [errors, setErrors] = useState({});
-//   const { currentLanguage } = useLanguage();
-//   const translation = translations[currentLanguage];
-//   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-//   const handlePlaceSelected = (place) => {
-//     const cityComponent = place?.address_components?.find((comp) =>
-//       comp.types.includes("locality")
-//     );
-//     const city = cityComponent?.long_name || place?.formatted_address || "";
-//     setLocation(city);
-//   };
-
-//   const handleNearbySearch = () => {
-//     if (!navigator.geolocation) {
-//       alert(
-//         currentLanguage === "ua"
-//           ? "Геолокація не підтримується вашим браузером."
-//           : "Геолокация не поддерживается вашим браузером."
-//       );
-//       return;
-//     }
-
-//     navigator.geolocation.getCurrentPosition(
-//       async (position) => {
-//         const { latitude, longitude } = position.coords;
-//         try {
-//           const res = await fetch(
-//             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleMapsApiKey}&language=${currentLanguage === "ua" ? "uk" : "ru"}`
-//           );
-//           const data = await res.json();
-//           const cityComponent = data.results[0]?.address_components?.find((comp) =>
-//             comp.types.includes("locality")
-//           );
-//           const city = cityComponent?.long_name || data.results[0]?.formatted_address;
-//           if (city) {
-//             setLocation(city);
-//           }
-//         } catch (error) {
-//           console.error("Помилка геолокації:", error);
-//         }
-//       },
-//       () => {
-//         alert(
-//           currentLanguage === "ua"
-//             ? "Не вдалося отримати геолокацію."
-//             : "Не удалось получить геолокацию."
-//         );
-//       }
-//     );
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     const newErrors = {};
-//     if (!location.trim()) newErrors.location = translation.errorMessages.location;
-//     if (!guests || guests < 1) newErrors.guests = translation.errorMessages.guests;
-//     if (!type || type === "") newErrors.type = translation.errorMessages.type;
-//     setErrors(newErrors);
-
-//     if (Object.keys(newErrors).length === 0) {
-//       alert(translation.searchAlert);
-//       // Действие после успешного поиска (фильтрация, редирект и т.д.)
-//     }
-//   };
-
-//   return (
-//     <Container
-//       maxWidth="sm"
-//       sx={{
-//         mt: 4,
-//         p: 3,
-//         bgcolor: "background.paper",
-//         borderRadius: 2,
-//         boxShadow: 3,
-//       }}
-//     >
-//       <Typography variant="h5" fontWeight={600} gutterBottom>
-//         {translation.title}
-//       </Typography>
-//       <Typography variant="body1" color="text.secondary" gutterBottom>
-//         {translation.subtitle}
-//       </Typography>
-
-//       <Box
-//         component="form"
-//         onSubmit={handleSubmit}
-//         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-//       >
-//         {/* Кнопка "Рядом со мной" */}
-//         <Button
-//           onClick={handleNearbySearch}
-//           variant="contained"
-//           startIcon={<LocationOnIcon />}
-//           sx={{
-//             backgroundColor: "#1976d2",
-//             color: "#fff",
-//             textTransform: "none",
-//             fontWeight: "bold",
-//             "&:hover": {
-//               backgroundColor: "#115293",
-//             },
-//           }}
-//         >
-//           {translation.nearby}
-//         </Button>
-
-//         {/* Автокомплит города */}
-//         <Box>
-//           <Autocomplete
-//             apiKey={googleMapsApiKey}
-//             onPlaceSelected={handlePlaceSelected}
-//             options={{
-//               types: ["(cities)"],
-//               componentRestrictions: { country: "ua" },
-//             }}
-//             placeholder={translation.locationPlaceholder}
-//             language={currentLanguage === "ua" ? "uk" : "ru"}
-//             style={{
-//               width: "100%",
-//               height: "56px",
-//               fontSize: "16px",
-//               padding: "0 14px",
-//               border: errors.location
-//                 ? "1px solid red"
-//                 : "1px solid rgba(0, 0, 0, 0.23)",
-//               borderRadius: "4px",
-//               boxSizing: "border-box",
-//               display: "flex",
-//               alignItems: "center",
-//             }}
-//           />
-//           {errors.location && (
-//             <Typography variant="caption" color="error">
-//               {errors.location}
-//             </Typography>
-//           )}
-//         </Box>
-
-//         {/* Кол-во гостей */}
-//         <TextField
-//           type="number"
-//           label={translation.guestsLabel}
-//           fullWidth
-//           value={guests > 0 ? guests : ""}
-//           onChange={(e) => setGuests(Math.max(1, Number(e.target.value)))}
-//           error={!!errors.guests}
-//           helperText={errors.guests}
-//           inputProps={{ min: 1 }}
-//         />
-
-//         {/* Тип жилья */}
-//         <TextField
-//           select
-//           label={translation.typeLabel}
-//           fullWidth
-//           value={type}
-//           onChange={(e) => setType(e.target.value)}
-//           error={!!errors.type}
-//           helperText={errors.type}
-//         >
-//           <MenuItem value="">{translation.typeLabel}</MenuItem>
-//           {Object.entries(translation.options).map(([key, value]) => (
-//             <MenuItem key={key} value={key}>
-//               {value}
-//             </MenuItem>
-//           ))}
-//         </TextField>
-
-//         {/* Кнопка поиска */}
-//         <Button type="submit" variant="contained" color="primary" fullWidth>
-//           {translation.searchButton}
-//         </Button>
-//       </Box>
-//     </Container>
-//   );
-// };
-
-// export default Search;
-
-
-
-// "use client";
-
-// import React, { useState } from "react";
-// import Autocomplete from "react-google-autocomplete";
-// import { useLanguage } from "@/app/LanguageContext";
-// import {
-//   Container,
-//   Typography,
-//   TextField,
-//   MenuItem,
-//   Button,
-//   Box,
+//   Checkbox,
+//   ListItemText,
+//   Popover,
+//   List,
+//   ListItem,
+//   ListItemButton,
+//   ListItemIcon,
 // } from "@mui/material";
 // import LocationOnIcon from "@mui/icons-material/LocationOn";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -472,6 +32,7 @@
 //     nearby: "Поруч зі мною",
 //     guestsLabel: "Кількість гостей",
 //     typeLabel: "Тип помешкання",
+//     selectButton: "Вибрати",
 //     options: {
 //       apart: "Квартири",
 //       hotel: "Готель",
@@ -496,6 +57,7 @@
 //     nearby: "Рядом со мной",
 //     guestsLabel: "Количество гостей",
 //     typeLabel: "Тип жилья",
+//     selectButton: "Выбрать",
 //     options: {
 //       apart: "Квартиры",
 //       hotel: "Гостиница",
@@ -514,7 +76,6 @@
 //   },
 // };
 
-// // ❤️ Анимированное сердечко
 // const HeartSpinner = () => (
 //   <FavoriteIcon
 //     sx={{
@@ -533,10 +94,19 @@
 // const Search = () => {
 //   const [location, setLocation] = useState("");
 //   const [guests, setGuests] = useState(1);
-//   const [type, setType] = useState("");
-//   const [errors, setErrors] = useState({});
+//   const [types, setTypes] = useState([]);
+//   const [errors, setErrors] = useState({
+//     location: false,
+//     guests: false,
+//     type: false,
+//   });
 //   const [loadingGeo, setLoadingGeo] = useState(false);
 //   const [loadingSearch, setLoadingSearch] = useState(false);
+//   const [anchorEl, setAnchorEl] = useState(null);
+  
+//   const selectRef = useRef(null);
+//   const popoverRef = useRef(null);
+//   const autocompleteRef = useRef(null);
 
 //   const { currentLanguage } = useLanguage();
 //   const t = translations[currentLanguage];
@@ -548,6 +118,12 @@
 //     );
 //     const fullAddress = cityComponent?.long_name || place?.formatted_address || "";
 //     setLocation(fullAddress);
+//     setErrors(prev => ({ ...prev, location: false }));
+//   };
+
+//   const handleLocationClear = () => {
+//     setLocation("");
+//     setErrors(prev => ({ ...prev, location: true }));
 //   };
 
 //   const handleNearbySearch = () => {
@@ -573,6 +149,7 @@
 //           if (data.status === "OK" && data.results.length > 0) {
 //             const fullAddress = data.results[0].formatted_address;
 //             setLocation(fullAddress);
+//             setErrors(prev => ({ ...prev, location: false }));
 //           } else {
 //             alert(currentLanguage === "ua"
 //               ? "Не вдалося визначити адресу."
@@ -597,19 +174,90 @@
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-//     const newErrors = {};
-//     if (!location.trim()) newErrors.location = t.errorMessages.location;
-//     if (!guests || guests < 1) newErrors.guests = t.errorMessages.guests;
-//     if (!type) newErrors.type = t.errorMessages.type;
+    
+//     // Проверка всех полей
+//     const newErrors = {
+//       location: !location.trim(),
+//       guests: !guests || guests < 1,
+//       type: types.length === 0,
+//     };
+
 //     setErrors(newErrors);
 
-//     if (Object.keys(newErrors).length === 0) {
-//       setLoadingSearch(true);
-//       await new Promise((resolve) => setTimeout(resolve, 1000));
-//       alert(t.searchAlert);
-//       setLoadingSearch(false);
+//     // Если есть ошибки - не выполняем поиск
+//     if (newErrors.location || newErrors.guests || newErrors.type) {
+//       return;
+//     }
+
+//     // Все поля заполнены - выполняем поиск
+//     setLoadingSearch(true);
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+//     alert(t.searchAlert);
+//     setLoadingSearch(false);
+//   };
+
+//   const handleTypeClick = (event) => {
+//     setAnchorEl(event.currentTarget);
+//   };
+
+//   const handleClose = () => {
+//     setAnchorEl(null);
+//   };
+
+//   const handleSelect = () => {
+//     setErrors(prev => ({ ...prev, type: types.length === 0 }));
+//     handleClose();
+//   };
+
+//   const handleCheckboxChange = (key) => (event) => {
+//     event.stopPropagation();
+//     setTypes((prev) =>
+//       prev.includes(key)
+//         ? prev.filter((item) => item !== key)
+//         : [...prev, key]
+//     );
+//   };
+
+//   const handleGuestsChange = (e) => {
+//     const value = Math.max(1, Number(e.target.value));
+//     setGuests(value);
+//     setErrors(prev => ({ ...prev, guests: value < 1 }));
+//   };
+
+//   const handleClickOutside = (event) => {
+//     if (
+//       selectRef.current && 
+//       !selectRef.current.contains(event.target) &&
+//       popoverRef.current &&
+//       !popoverRef.current.contains(event.target)
+//     ) {
+//       handleClose();
 //     }
 //   };
+
+//   useEffect(() => {
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     // Добавляем обработчик изменения для Autocomplete
+//     if (autocompleteRef.current) {
+//       const input = autocompleteRef.current.querySelector('input');
+//       if (input) {
+//         input.addEventListener('input', (e) => {
+//           if (e.target.value === '') {
+//             handleLocationClear();
+//           }
+//         });
+//       }
+//     }
+//   }, []);
+
+//   const open = Boolean(anchorEl);
+//   const id = open ? "type-popover" : undefined;
 
 //   return (
 //     <Container
@@ -630,7 +278,6 @@
 //       </Typography>
 
 //       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-//         {/* Кнопка: Поруч зі мною */}
 //         <Button
 //           onClick={handleNearbySearch}
 //           variant="contained"
@@ -647,8 +294,7 @@
 //           {loadingGeo ? <HeartSpinner /> : t.nearby}
 //         </Button>
 
-//         {/* Поле местоположения */}
-//         <Box>
+//         <Box ref={autocompleteRef}>
 //           <Autocomplete
 //             apiKey={googleMapsApiKey}
 //             onPlaceSelected={handlePlaceSelected}
@@ -675,42 +321,95 @@
 //           />
 //           {errors.location && (
 //             <Typography variant="caption" color="error">
-//               {errors.location}
+//               {t.errorMessages.location}
 //             </Typography>
 //           )}
 //         </Box>
 
-//         {/* Кол-во гостей */}
 //         <TextField
 //           type="number"
 //           label={t.guestsLabel}
 //           fullWidth
 //           value={guests > 0 ? guests : ""}
-//           onChange={(e) => setGuests(Math.max(1, Number(e.target.value)))}
-//           error={!!errors.guests}
-//           helperText={errors.guests}
+//           onChange={handleGuestsChange}
+//           error={errors.guests}
+//           helperText={errors.guests ? t.errorMessages.guests : ""}
 //           inputProps={{ min: 1 }}
 //         />
 
-//         {/* Тип жилья */}
-//         <TextField
-//           select
-//           label={t.typeLabel}
-//           fullWidth
-//           value={type}
-//           onChange={(e) => setType(e.target.value)}
-//           error={!!errors.type}
-//           helperText={errors.type}
-//         >
-//           <MenuItem value="">{t.typeLabel}</MenuItem>
-//           {Object.entries(t.options).map(([key, label]) => (
-//             <MenuItem key={key} value={key}>
-//               {label}
-//             </MenuItem>
-//           ))}
-//         </TextField>
+//         <Box ref={selectRef}>
+//           <Button
+//             fullWidth
+//             variant="outlined"
+//             onClick={handleTypeClick}
+//             sx={{
+//               justifyContent: "space-between",
+//               textTransform: "none",
+//               height: "56px",
+//               borderColor: errors.type ? "error.main" : "rgba(0, 0, 0, 0.23)",
+//               color: types.length === 0 ? "text.secondary" : "text.primary",
+//               textAlign: "left",
+//             }}
+//           >
+//             {types.length === 0
+//               ? t.typeLabel
+//               : types.map((val) => t.options[val]).join(", ")}
+//           </Button>
+//           {errors.type && (
+//             <Typography variant="caption" color="error">
+//               {t.errorMessages.type}
+//             </Typography>
+//           )}
 
-//         {/* Кнопка Поиск */}
+//           <Popover
+//             id={id}
+//             open={open}
+//             anchorEl={anchorEl}
+//             onClose={handleClose}
+//             anchorOrigin={{
+//               vertical: "bottom",
+//               horizontal: "left",
+//             }}
+//             transformOrigin={{
+//               vertical: "top",
+//               horizontal: "left",
+//             }}
+//             sx={{
+//               mt: 1,
+//             }}
+//           >
+//             <Box ref={popoverRef} sx={{ width: selectRef.current?.clientWidth }}>
+//               <List>
+//                 {Object.entries(t.options).map(([key, label]) => (
+//                   <ListItem key={key} disablePadding>
+//                     <ListItemButton>
+//                       <ListItemIcon>
+//                         <Checkbox
+//                           edge="start"
+//                           checked={types.includes(key)}
+//                           tabIndex={-1}
+//                           disableRipple
+//                           onChange={handleCheckboxChange(key)}
+//                         />
+//                       </ListItemIcon>
+//                       <ListItemText primary={label} />
+//                     </ListItemButton>
+//                   </ListItem>
+//                 ))}
+//               </List>
+//               <Box sx={{ p: 1 }}>
+//                 <Button
+//                   fullWidth
+//                   variant="contained"
+//                   onClick={handleSelect}
+//                 >
+//                   {t.selectButton}
+//                 </Button>
+//               </Box>
+//             </Box>
+//           </Popover>
+//         </Box>
+
 //         <Button
 //           type="submit"
 //           variant="contained"
@@ -731,34 +430,39 @@
 
 
 
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
 import { useLanguage } from "@/app/LanguageContext";
 import {
   Container,
   Typography,
   TextField,
-  MenuItem,
   Button,
   Box,
-  Select,
   Checkbox,
   ListItemText,
+  Popover,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const translations = {
   ua: {
-    title: "Обирайте житло для своєї наступної подорожі",
+    title: "Обирайте житло для своєї подорожі.",
     subtitle: "Від готелів до приватних помешкань – знайдіть те, що потрібно.",
     locationLabel: "Куди прямуєте?",
     locationPlaceholder: "Введіть місцезнаходження",
     nearby: "Поруч зі мною",
     guestsLabel: "Кількість гостей",
     typeLabel: "Тип помешкання",
+    selectButton: "Вибрати",
     options: {
       apart: "Квартири",
       hotel: "Готель",
@@ -776,13 +480,14 @@ const translations = {
     },
   },
   ru: {
-    title: "Выбирайте жилье для следующего путешествия",
+    title: "Выбирайте жилье для путешествия.",
     subtitle: "От отелей до частных домов – найдите то, что нужно.",
     locationLabel: "Куда направляетесь?",
     locationPlaceholder: "Введите местоположение",
     nearby: "Рядом со мной",
     guestsLabel: "Количество гостей",
     typeLabel: "Тип жилья",
+    selectButton: "Выбрать",
     options: {
       apart: "Квартиры",
       hotel: "Гостиница",
@@ -801,7 +506,6 @@ const translations = {
   },
 };
 
-// ❤️ Анимированное сердечко
 const HeartSpinner = () => (
   <FavoriteIcon
     sx={{
@@ -821,9 +525,18 @@ const Search = () => {
   const [location, setLocation] = useState("");
   const [guests, setGuests] = useState(1);
   const [types, setTypes] = useState([]);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    location: false,
+    guests: false,
+    type: false,
+  });
   const [loadingGeo, setLoadingGeo] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  
+  const selectRef = useRef(null);
+  const popoverRef = useRef(null);
+  const autocompleteRef = useRef(null);
 
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
@@ -835,6 +548,12 @@ const Search = () => {
     );
     const fullAddress = cityComponent?.long_name || place?.formatted_address || "";
     setLocation(fullAddress);
+    setErrors(prev => ({ ...prev, location: false }));
+  };
+
+  const handleLocationClear = () => {
+    setLocation("");
+    setErrors(prev => ({ ...prev, location: true }));
   };
 
   const handleNearbySearch = () => {
@@ -860,6 +579,7 @@ const Search = () => {
           if (data.status === "OK" && data.results.length > 0) {
             const fullAddress = data.results[0].formatted_address;
             setLocation(fullAddress);
+            setErrors(prev => ({ ...prev, location: false }));
           } else {
             alert(currentLanguage === "ua"
               ? "Не вдалося визначити адресу."
@@ -884,19 +604,97 @@ const Search = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = {};
-    if (!location.trim()) newErrors.location = t.errorMessages.location;
-    if (!guests || guests < 1) newErrors.guests = t.errorMessages.guests;
-    if (types.length === 0) newErrors.type = t.errorMessages.type;
+    
+    // Проверка всех полей
+    const newErrors = {
+      location: !location.trim(),
+      guests: !guests || guests < 1,
+      type: types.length === 0,
+    };
+
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      setLoadingSearch(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert(t.searchAlert);
-      setLoadingSearch(false);
+    // Если есть ошибки - не выполняем поиск
+    if (newErrors.location || newErrors.guests || newErrors.type) {
+      return;
+    }
+
+    // Все поля заполнены - выполняем поиск
+    setLoadingSearch(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    alert(t.searchAlert);
+    setLoadingSearch(false);
+  };
+
+  const handleTypeClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    // При закрытии проверяем, есть ли выбранные типы
+    setErrors(prev => ({ ...prev, type: types.length === 0 }));
+    setAnchorEl(null);
+  };
+
+  const handleSelect = () => {
+    handleClose();
+  };
+
+  const handleCheckboxChange = (key) => (event) => {
+    event.stopPropagation();
+    setTypes((prev) =>
+      prev.includes(key)
+        ? prev.filter((item) => item !== key)
+        : [...prev, key]
+    );
+    // Сразу убираем ошибку при выборе
+    if (types.length === 0 || (types.length === 1 && types.includes(key))) {
+      setErrors(prev => ({ ...prev, type: false }));
     }
   };
+
+  const handleGuestsChange = (e) => {
+    const value = Math.max(1, Number(e.target.value));
+    setGuests(value);
+    setErrors(prev => ({ ...prev, guests: value < 1 }));
+  };
+
+  const handleClickOutside = (event) => {
+    if (
+      selectRef.current && 
+      !selectRef.current.contains(event.target) &&
+      popoverRef.current &&
+      !popoverRef.current.contains(event.target)
+    ) {
+      // При клике вне меню проверяем выбранные типы
+      setErrors(prev => ({ ...prev, type: types.length === 0 }));
+      handleClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [types]); // Добавляем types в зависимости
+
+  useEffect(() => {
+    // Добавляем обработчик изменения для Autocomplete
+    if (autocompleteRef.current) {
+      const input = autocompleteRef.current.querySelector('input');
+      if (input) {
+        input.addEventListener('input', (e) => {
+          if (e.target.value === '') {
+            handleLocationClear();
+          }
+        });
+      }
+    }
+  }, []);
+
+  const open = Boolean(anchorEl);
+  const id = open ? "type-popover" : undefined;
 
   return (
     <Container
@@ -917,7 +715,6 @@ const Search = () => {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* Кнопка: Поруч зі мною */}
         <Button
           onClick={handleNearbySearch}
           variant="contained"
@@ -934,8 +731,7 @@ const Search = () => {
           {loadingGeo ? <HeartSpinner /> : t.nearby}
         </Button>
 
-        {/* Поле местоположения */}
-        <Box>
+        <Box ref={autocompleteRef}>
           <Autocomplete
             apiKey={googleMapsApiKey}
             onPlaceSelected={handlePlaceSelected}
@@ -962,53 +758,95 @@ const Search = () => {
           />
           {errors.location && (
             <Typography variant="caption" color="error">
-              {errors.location}
+              {t.errorMessages.location}
             </Typography>
           )}
         </Box>
 
-        {/* Кол-во гостей */}
         <TextField
           type="number"
           label={t.guestsLabel}
           fullWidth
           value={guests > 0 ? guests : ""}
-          onChange={(e) => setGuests(Math.max(1, Number(e.target.value)))}
-          error={!!errors.guests}
-          helperText={errors.guests}
+          onChange={handleGuestsChange}
+          error={errors.guests}
+          helperText={errors.guests ? t.errorMessages.guests : ""}
           inputProps={{ min: 1 }}
         />
 
-        {/* Тип жилья (множественный выбор) */}
-        <Box>
-          <Select
-            multiple
+        <Box ref={selectRef}>
+          <Button
             fullWidth
-            displayEmpty
-            value={types}
-            onChange={(e) => setTypes(e.target.value)}
-            renderValue={(selected) =>
-              selected.length === 0
-                ? t.typeLabel
-                : selected.map((val) => t.options[val]).join(", ")
-            }
-            error={!!errors.type}
+            variant="outlined"
+            onClick={handleTypeClick}
+            sx={{
+              justifyContent: "space-between",
+              textTransform: "none",
+              height: "56px",
+              borderColor: errors.type ? "error.main" : "rgba(0, 0, 0, 0.23)",
+              color: types.length === 0 ? "text.secondary" : "text.primary",
+              textAlign: "left",
+            }}
           >
-            {Object.entries(t.options).map(([key, label]) => (
-              <MenuItem key={key} value={key}>
-                <Checkbox checked={types.indexOf(key) > -1} />
-                <ListItemText primary={label} />
-              </MenuItem>
-            ))}
-          </Select>
+            {types.length === 0
+              ? t.typeLabel
+              : types.map((val) => t.options[val]).join(", ")}
+          </Button>
           {errors.type && (
             <Typography variant="caption" color="error">
-              {errors.type}
+              {t.errorMessages.type}
             </Typography>
           )}
+
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            sx={{
+              mt: 1,
+            }}
+          >
+            <Box ref={popoverRef} sx={{ width: selectRef.current?.clientWidth }}>
+              <List>
+                {Object.entries(t.options).map(([key, label]) => (
+                  <ListItem key={key} disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={types.includes(key)}
+                          tabIndex={-1}
+                          disableRipple
+                          onChange={handleCheckboxChange(key)}
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={label} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+              <Box sx={{ p: 1 }}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={handleSelect}
+                >
+                  {t.selectButton}
+                </Button>
+              </Box>
+            </Box>
+          </Popover>
         </Box>
 
-        {/* Кнопка Поиск */}
         <Button
           type="submit"
           variant="contained"

@@ -217,35 +217,24 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
           </Box>
         ))}
 
-        <Box display="flex" gap={1} mb={1}>
-          <Typography
-            variant={isMobile ? 'caption' : 'body2'}
-            sx={{ color: 'text.secondary', minWidth: '110px' }}
-          >
-            Ціна:
-          </Typography>
-          <Typography
-            variant={isMobile ? 'caption' : 'body2'}
-            fontWeight="bold"
-            color="primary"
-          >
-            {apartment.price ? `${apartment.price} грн./доба` : 'Не вказано'}
-          </Typography>
-        </Box>
+       
+<Box display="flex" gap={1} mb={1}>
+  <Typography
+    variant={isMobile ? 'caption' : 'body2'}
+    sx={{ color: 'text.secondary', minWidth: '110px' }}
+  >
+    Ціна:
+  </Typography>
+  <Typography
+    variant={isMobile ? 'caption' : 'body2'}
+    fontWeight="bold"
+    color="primary"
+  >
+    {apartment.price ? `${apartment.price} грн./${apartment.category === 'Сауна/Баня' ? 'година' : 'доба'}` : 'Не вказано'}
+  </Typography>
+</Box>
 
-        {/* {apartment.metro && (
-          <Box display="flex" gap={1}>
-            <Typography
-              variant={isMobile ? 'caption' : 'body2'}
-              sx={{ color: 'text.secondary', minWidth: '110px' }}
-            >
-              Метро:
-            </Typography>
-            <Typography variant={isMobile ? 'caption' : 'body2'} fontWeight={500}>
-              {apartment.metro}
-            </Typography>
-          </Box>
-        )} */}
+      
       </CardContent>
     </Card>
   );

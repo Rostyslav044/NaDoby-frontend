@@ -57,6 +57,7 @@ import Header from '@/app/components/Header';
 import { LanguageProvider } from '@/app/LanguageContext';
 import { Provider } from 'react-redux';
 import { store } from '@/app/store';
+import FileUploadSlider from '@/app/components/FileUploadSlider';
 const ApartmentDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -66,6 +67,15 @@ const ApartmentDetailPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const isMobile = useMediaQuery('(max-width:600px)');
 
+  const handleOpenRoute = () => {
+    if (apartment.latitude && apartment.longitude) {
+      if (userLocation) {
+        window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${apartment.latitude},${apartment.longitude}`);
+      } else {
+        window.open(`https://www.google.com/maps?q=${apartment.latitude},${apartment.longitude}`);
+      }
+    }
+  };
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -193,6 +203,12 @@ const ApartmentDetailPage = () => {
         <Button variant="outlined" onClick={() => router.back()} size="small">
           Назад
         </Button>
+        <Chip 
+          label={apartment.category} 
+          color="primary" 
+          size="small" 
+          icon={getCategoryIcon()}
+        />
         <Box>
           <IconButton onClick={toggleFavorite} color={isFavorite ? "secondary" : "default"}>
             <FavoriteBorderIcon />
@@ -203,136 +219,56 @@ const ApartmentDetailPage = () => {
         </Box>
       </Box>
 
-      {/* Галерея изображений */}
-      {apartment.photos?.length > 0 ? (
-        <Box sx={{ position: 'relative', textAlign: 'center', mb: 3 }}>
-          <Box
-            {...swipeHandlers}
-            component="div"
-            sx={{
-              position: 'relative',
-              width: '100%',
-              height: isMobile ? 300 : 450,
-              borderRadius: 2,
-              overflow: 'hidden',
-            }}
-          >
-            <Box
-              component="img"
-              src={apartment.photos[currentIndex]}
-              alt={`Фото ${currentIndex + 1}`}
-              sx={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-              draggable={false}
-            />
-            
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 16,
-                right: 16,
-                backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                color: 'white',
-                px: 1.5,
-                py: 0.5,
-                borderRadius: 4,
-                fontSize: '0.875rem',
-              }}
-            >
-              {currentIndex + 1} / {apartment.photos.length}
-            </Box>
-          </Box>
-          
-          {apartment.photos.length > 1 && (
-            <>
-              <IconButton onClick={handlePrev} sx={arrowStyle('left')}>
-                <ArrowBackIosNewIcon />
-              </IconButton>
-              <IconButton onClick={handleNext} sx={arrowStyle('right')}>
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </>
-          )}
-        </Box>
-      ) : (
-        <Box sx={{ 
-          height: 200, 
+
+   {/* Блок с названием и ценой */}
+   <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          {apartment.objectName || apartment.name || 'Без названия'}
+        </Typography>
+        <Typography variant="h5" color="primary">
+          {apartment.price || '0'} грн. / {getPriceSuffix()}
+        </Typography>
+      </Box>
+
+      {/* Блок с адресом */}
+      <Box 
+        sx={{ 
           display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          backgroundColor: '#f5f5f5',
-          borderRadius: 2,
-          mb: 3
-        }}>
-          <Typography variant="body1" color="textSecondary">
-            Фото отсутствуют
-          </Typography>
-        </Box>
-      )}
+          alignItems: 'center', 
+          gap: 1,
+          mb: 3,
+          cursor: 'pointer',
+          '&:hover': {
+            textDecoration: 'underline',
+            color: 'primary.main'
+          }
+        }}
+        onClick={handleOpenRoute}
+      >
+        <LocationIcon color="primary" />
+        <Typography variant="body1">
+          {[
+            apartment.city,
+            apartment.street && `${apartment.street} ${apartment.houseNumber}`,
+            apartment.district && `район ${apartment.district}`,
+            apartment.metro && `метро ${apartment.metro}`
+          ].filter(Boolean).join(', ')}
+        </Typography>
+      </Box>
+
+      {/* Галерея изображений */}
+      
+<FileUploadSlider
+ photos={apartment.photos || []} 
+ onDelete={apartment.isOwner ? handleDeletePhoto : null} 
+/>
+
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 3 }}>
-        {/* Категория и адрес
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <Chip 
-            label={apartment.category} 
-            color="primary" 
-            size="small" 
-            icon={getCategoryIcon()}
-          />
-          <Typography variant="body1" color="text.secondary">
-            {apartment.city}, {apartment.street} {apartment.houseNumber}
-            {apartment.district && (
-              <>
-                , <Box component="span" sx={{ fontWeight: 'bold' }}>район</Box>: {apartment.district}
-              </>
-            )}
-            {apartment.metro && `, метро: ${apartment.metro}`}
-          </Typography>
-        </Box>
-
-        {/* Название объекта и цена */}
-        {/* <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h4">
-            {apartment.name || 'Без названия'}
-          </Typography>
-          <Typography variant="h5" color="primary">
-            {apartment.price || '0'} грн. / {getPriceSuffix()}
-          </Typography>
-        </Stack>  */}
+    
 
 
-        {/* Категория и название объекта */}
-<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-  <Chip 
-    label={apartment.category} 
-    color="primary" 
-    size="small" 
-    icon={getCategoryIcon()}
-  />
-  <Typography variant="h4">
-    {apartment.objectName || apartment.name || 'Без названия'}
-  </Typography>
-</Box>
-
-{/* Адрес и цена */}
-<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-  <Typography variant="body1" color="text.secondary">
-    {apartment.city}, {apartment.street} {apartment.houseNumber}
-    {apartment.district && (
-      <>
-        , <Box component="span" sx={{ fontWeight: 'bold' }}>район</Box>: {apartment.district}
-      </>
-    )}
-    {apartment.metro && `, метро: ${apartment.metro}`}
-  </Typography>
-  <Typography variant="h5" color="primary">
-    {apartment.price || '0'} грн. / {getPriceSuffix()}
-  </Typography>
-</Box>
+      
 
         <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
           Описание
@@ -688,6 +624,10 @@ const arrowStyle = (side) => ({
 });
 
 export default ApartmentDetailPage;
+
+
+
+
 
 
 

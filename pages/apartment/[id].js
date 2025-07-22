@@ -192,7 +192,9 @@ const ApartmentDetailPage = () => {
   }
 
   return (
-    <Box maxWidth="1200px" mx="auto" mt={isMobile ? 2 : 4} p={isMobile ? 1 : 3}>
+    <Box maxWidth="1200px" mx="auto" 
+    // mt={isMobile ? 2 : 4} p={isMobile ? 1 : 3}
+    >
 
 <Provider store={store}>
         <LanguageProvider>
@@ -203,12 +205,20 @@ const ApartmentDetailPage = () => {
         <Button variant="outlined" onClick={() => router.back()} size="small">
           Назад
         </Button>
-        <Chip 
+        {/* <Chip 
           label={apartment.category} 
           color="primary" 
-          size="small" 
+          size="medium" 
           icon={getCategoryIcon()}
-        />
+        /> */}
+
+<Chip 
+  label={apartment.category} 
+  color="primary" 
+  icon={getCategoryIcon()}
+  sx={{ fontSize: '15px', height: '30px', padding: '8px' }}
+/>
+
         <Box>
           <IconButton onClick={toggleFavorite} color={isFavorite ? "secondary" : "default"}>
             <FavoriteBorderIcon />
@@ -221,14 +231,12 @@ const ApartmentDetailPage = () => {
 
 
    {/* Блок с названием и ценой */}
-   <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          {apartment.objectName || apartment.name || 'Без названия'}
-        </Typography>
-        <Typography variant="h5" color="primary">
-          {apartment.price || '0'} грн. / {getPriceSuffix()}
-        </Typography>
-      </Box>
+   <Box mb={2}>
+  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+    {apartment.objectName || apartment.name || 'Без названия'}
+  </Typography>
+</Box>
+
 
       {/* Блок с адресом */}
       <Box 
@@ -258,9 +266,19 @@ const ApartmentDetailPage = () => {
 
       {/* Галерея изображений */}
       
-<FileUploadSlider
+{/* <FileUploadSlider
  photos={apartment.photos || []} 
  onDelete={apartment.isOwner ? handleDeletePhoto : null} 
+/> */}
+
+
+<FileUploadSlider 
+  // photos={apartment.photos} 
+  photos={Array.isArray(apartment.photos) ? apartment.photos : []} 
+  price={apartment.price}
+  name={apartment.name}
+  phones={apartment.phones}
+  category={apartment.category} 
 />
 
 
@@ -499,7 +517,7 @@ const ApartmentDetailPage = () => {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
               Контактная информация
             </Typography>
@@ -556,7 +574,7 @@ const ApartmentDetailPage = () => {
                 />
               </ListItem>
             </List>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Paper>
 

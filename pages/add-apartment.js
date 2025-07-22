@@ -47,11 +47,13 @@ const AddApartment = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState({ lat: 50.4501, lng: 30.5234 });
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
+  
   const [photoError, setPhotoError] = useState(false);
-  // const [metroError, setMetroError] = useState(false);
-  // useEffect(() => {
-  //   if (uploudImages.length >= 3) setPhotoError(false);
-  // }, [uploudImages]);
+  const [showPhotoError, setShowPhotoError] = useState(false);
+  
+  
+  
+
 
   useEffect(() => {
     if (uploadImages.length >= 3) setPhotoError(false);
@@ -265,46 +267,112 @@ const AddApartment = () => {
     return !Object.values(newErrors).some(Boolean);
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const isFormValid = validateForm();
+  //   const isInfoValid = infoRef.current?.validate();
+  //   // const hasEnoughPhotos = uploudImages.length >= 3;
+  //   const hasEnoughPhotos = uploadImages.length >= 3;
+
+  //   setPhotoError(!hasEnoughPhotos);
+
+  //   if (!isFormValid || !isInfoValid || !hasEnoughPhotos) {
+  //     setSnackbarMessage('Для подачи объявления нужно заполнить все поля!');
+  //     setSnackbarOpen(true);
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   try {
+  //     await fetch('http://localhost:3000/api/v1/apartments/add', {
+  //       method: 'POST',
+  //       body: JSON.stringify({ ...formData, ...apartmentInfo, photos: uploadImages }),
+  //       headers: { 'Content-Type': 'application/json' },
+  //     });
+  //     setSnackbarMessage('Объявление успешно добавлено!');
+  //   } catch (error) {
+  //     console.error('Ошибка:', error);
+  //     setSnackbarMessage('Произошла ошибка при добавлении объявления');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //     setSnackbarOpen(true);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const isFormValid = validateForm();
-    const isInfoValid = infoRef.current?.validate();
-    // const hasEnoughPhotos = uploudImages.length >= 3;
-    const hasEnoughPhotos = uploadImages.length >= 3;
-
-    setPhotoError(!hasEnoughPhotos);
-
-    if (!isFormValid || !isInfoValid || !hasEnoughPhotos) {
-      setSnackbarMessage('Для подачи объявления нужно заполнить все поля!');
+  
+    // Проверка фото (ваша новая проверка)
+    if (uploadImages.length < 3) {
+      setPhotoError(true);
+      setShowPhotoError(true);
+      setSnackbarMessage('Загрузите минимум 3 фотографии!');
       setSnackbarOpen(true);
       return;
     }
-
+  
+    // Валидация формы (из вашего оригинального кода)
+    const isFormValid = validateForm();
+    const isInfoValid = infoRef.current?.validate();
+  
+    if (!isFormValid || !isInfoValid) {
+      setSnackbarMessage('Заполните все обязательные поля!');
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    // Отправка данных
     setIsSubmitting(true);
     try {
-      await fetch('http://localhost:3000/api/v1/apartments/add', {
+      const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
-        body: JSON.stringify({ ...formData, ...apartmentInfo, photos: uploadImages }),
+        body: JSON.stringify({ 
+          ...formData, 
+          ...apartmentInfo, 
+          photos: uploadImages 
+        }),
         headers: { 'Content-Type': 'application/json' },
       });
+  
+      if (!response.ok) throw new Error('Ошибка сервера');
+      
       setSnackbarMessage('Объявление успешно добавлено!');
+      // Здесь можно добавить сброс формы, если нужно
     } catch (error) {
       console.error('Ошибка:', error);
-      setSnackbarMessage('Произошла ошибка при добавлении объявления');
+      setSnackbarMessage(error.message || 'Произошла ошибка при добавлении');
     } finally {
       setIsSubmitting(false);
       setSnackbarOpen(true);
     }
   };
 
+
+  // const handlePreview = () => {
+  //   const isFormValid = validateForm();
+  //   const isInfoValid = infoRef.current?.validate();
+  //   const hasEnoughPhotos = uploadImages.length >= 3;
+
+    
+  //   setPhotoError(!hasEnoughPhotos);
+    
+  //   if (!isFormValid || !isInfoValid || !hasEnoughPhotos) {
+  //     setSnackbarMessage('Пожалуйста, заполните все обязательные поля!');
+  //     setSnackbarOpen(true);
+  //     return;
+  //   }
+  //   setPreviewOpen(true);
+  // };
+
+
   const handlePreview = () => {
     const isFormValid = validateForm();
     const isInfoValid = infoRef.current?.validate();
     const hasEnoughPhotos = uploadImages.length >= 3;
-
-    
+  
     setPhotoError(!hasEnoughPhotos);
+    setShowPhotoError(!hasEnoughPhotos); // Добавьте эту строку
     
     if (!isFormValid || !isInfoValid || !hasEnoughPhotos) {
       setSnackbarMessage('Пожалуйста, заполните все обязательные поля!');
@@ -539,8 +607,8 @@ const AddApartment = () => {
               sx={{ maxWidth: 200 , mt: 5,}}
             />
 
-            <Box sx={{ mt: 3, border: photoError ? '1px solid red' : 'none', p: 2, borderRadius: 2 }}>
-              {/* <FileUploadSlider setUploudImages={setUploudImages} /> */}
+            {/* <Box sx={{ mt: 3, border: photoError ? '1px solid red' : 'none', p: 2, borderRadius: 2 }}>
+              
               <FileUploadSlider setUploadImages={setUploadImages} />
               {photoError && (
                 <Typography color="error"  size={isMobile ? "small" : "medium"}
@@ -548,7 +616,30 @@ const AddApartment = () => {
                   Загрузите минимум 3 фото
                 </Typography>
               )}
-            </Box>
+            </Box> */}
+
+
+<Box sx={{ 
+  mt: 3, 
+  p: 2, 
+  borderRadius: 2,
+  border: photoError ? '1px solid red' : 'none',
+  transition: 'border 0.3s ease'
+}}>
+  <FileUploadSlider 
+    setUploadImages={setUploadImages}
+    editable={true}
+    onPhotosChange={(count) => {
+      setPhotoError(count < 3);
+      setShowPhotoError(count < 3);
+    }}
+  />
+  {photoError && (
+    <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+      Загрузите минимум 3 фото
+    </Typography>
+  )}
+</Box>
 
             <InfoApartments ref={infoRef} onDataChange={setApartmentInfo} />
 

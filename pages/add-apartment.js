@@ -61,6 +61,13 @@ const AddApartment = () => {
   
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      updateLocation();
+    }, 500); // Дебаунс 500ms
+    return () => clearTimeout(timer);
+  }, [formData.street, formData.houseNumber, formData.city]);
+
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.google) {
       initAutocomplete();
       geocoderRef.current = new window.google.maps.Geocoder();
@@ -582,10 +589,10 @@ const AddApartment = () => {
                   />
                 </GoogleMap>
                 <Box sx={{ mt: 0.5, mb: 0.5, py: 0.5, textAlign: 'center' }}>
-      <Typography variant="body2" color="textSecondary">
-        Вы можете двигать маркер на карте для точного указания местоположения!
-      </Typography>
-    </Box>
+  <Typography variant="body2" sx={{ color: '#ff5722',  }}>
+    Вы можете двигать маркер на карте для точного указания местоположения!
+  </Typography>
+</Box>
 
               </Box>
 
@@ -623,15 +630,16 @@ const AddApartment = () => {
   mt: 3, 
   p: 2, 
   borderRadius: 2,
-  border: photoError ? '1px solid red' : 'none',
-  transition: 'border 0.3s ease'
+  border: photoError ? '1px solid red' : 'none'
 }}>
   <FileUploadSlider 
+    photos={uploadImages}
     setUploadImages={setUploadImages}
     editable={true}
-    onPhotosChange={(count) => {
-      setPhotoError(count < 3);
-      setShowPhotoError(count < 3);
+    onPhotosChange={(newPhotos) => {
+      const hasEnough = newPhotos.length >= 3;
+      setPhotoError(!hasEnough);
+      setShowPhotoError(!hasEnough);
     }}
   />
   {photoError && (

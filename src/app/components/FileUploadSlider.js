@@ -909,6 +909,12 @@
 
 
 
+
+
+
+
+
+
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -932,6 +938,9 @@ import ReportIcon from '@mui/icons-material/Report';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 
+const MAX_PHOTOS = 15;
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 const FileUploadSlider = ({ 
   photos = [], 
   onDelete, 
@@ -949,11 +958,39 @@ const FileUploadSlider = ({
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Инициализация фото
+  // Инициализация и очистка фото
   useEffect(() => {
-    if (Array.isArray(photos) && photos.length > 0) {
-      setLocalPhotos(photos);
+    if (!Array.isArray(photos)) {
+      setLocalPhotos([]);
+      return;
     }
+
+    const processedPhotos = photos.map(photo => {
+      if (typeof photo === 'string') {
+        return { 
+          url: photo, 
+          file: null, 
+          id: `ext-${Math.random().toString(36).substring(2, 9)}` 
+        };
+      } else if (photo instanceof File) {
+        return { 
+          url: URL.createObjectURL(photo), 
+          file: photo, 
+          id: `file-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    setLocalPhotos(processedPhotos);
+
+    return () => {
+      processedPhotos.forEach(photo => {
+        if (photo.file && photo.url.startsWith('blob:')) {
+          URL.revokeObjectURL(photo.url);
+        }
+      });
+    };
   }, [photos]);
 
   // Обработчик загрузки файлов
@@ -961,73 +998,92 @@ const FileUploadSlider = ({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    // Проверка лимита фото
+    if (localPhotos.length + files.length > MAX_PHOTOS) {
+      alert(`Можно загрузить максимум ${MAX_PHOTOS} фотографий`);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const newPhotos = [...localPhotos];
-      
-      // Обрабатываем каждый файл
-      for (const file of files) {
-        // Проверяем тип файла
-        if (!file.type.startsWith('image/')) continue;
-        
-        // Читаем файл как Data URL
-        const reader = new FileReader();
-        const fileUrl = await new Promise((resolve) => {
-          reader.onload = (e) => resolve(e.target.result);
-          reader.readAsDataURL(file);
-        });
+      const newPhotos = await Promise.all(
+        files.map(file => {
+          if (!file.type.startsWith('image/') || !ALLOWED_FILE_TYPES.includes(file.type)) {
+            return null;
+          }
+          
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve({
+              file,
+              url: e.target.result,
+              id: `new-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`
+            });
+            reader.readAsDataURL(file);
+          });
+        })
+      );
 
-        newPhotos.push({
-          file,
-          url: fileUrl,
-          id: Date.now() + Math.random().toString(36).substr(2, 9)
-        });
+      const validPhotos = newPhotos.filter(Boolean);
+      if (validPhotos.length === 0) {
+        alert('Пожалуйста, загружайте только изображения (JPEG, PNG, WebP)');
+        return;
       }
 
-      setLocalPhotos(newPhotos);
-      setCurrentIndex(newPhotos.length - 1);
+      const updatedPhotos = [...localPhotos, ...validPhotos];
+      setLocalPhotos(updatedPhotos);
+      setCurrentIndex(updatedPhotos.length - 1);
+      
       if (setUploadImages) {
-        setUploadImages(newPhotos.map(photo => photo.file));
+        setUploadImages(updatedPhotos.map(photo => photo.file || photo.url));
       }
 
       if (onPhotosChange) {
-        onPhotosChange(newPhotos.length);
+        onPhotosChange(updatedPhotos.length);
       }
     } catch (error) {
       console.error('Ошибка загрузки файлов:', error);
+      alert('Произошла ошибка при загрузке файлов');
     } finally {
       setIsLoading(false);
-      e.target.value = ''; // Сбрасываем input
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   }, [localPhotos, setUploadImages, onPhotosChange]);
 
   // Обработчик удаления фото
   const handleDeletePhoto = useCallback((index) => {
+    const photoToDelete = localPhotos[index];
+    if (photoToDelete?.url && photoToDelete?.file) {
+      URL.revokeObjectURL(photoToDelete.url);
+    }
+
     const newPhotos = localPhotos.filter((_, i) => i !== index);
     setLocalPhotos(newPhotos);
     
     if (setUploadImages) {
-      setUploadImages(newPhotos.map(photo => photo.file));
+      setUploadImages(newPhotos.map(photo => photo.file || photo.url));
     }
     
     if (onPhotosChange) {
       onPhotosChange(newPhotos.length);
     }
 
-    // Корректируем текущий индекс
-    if (currentIndex >= newPhotos.length) {
-      setCurrentIndex(Math.max(0, newPhotos.length - 1));
-    }
-  }, [localPhotos, currentIndex, setUploadImages, onPhotosChange]);
+    // Корректировка индекса
+    setCurrentIndex(prev => {
+      if (prev >= newPhotos.length) return Math.max(0, newPhotos.length - 1);
+      if (prev === index && index > 0) return index - 1;
+      return prev;
+    });
+  }, [localPhotos, setUploadImages, onPhotosChange]);
 
   const handleNext = useCallback(() => {
     if (localPhotos.length <= 1) return;
-    setCurrentIndex((prev) => (prev + 1) % localPhotos.length);
+    setCurrentIndex(prev => (prev + 1) % localPhotos.length);
   }, [localPhotos.length]);
 
   const handlePrev = useCallback(() => {
     if (localPhotos.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + localPhotos.length) % localPhotos.length);
+    setCurrentIndex(prev => (prev - 1 + localPhotos.length) % localPhotos.length);
   }, [localPhotos.length]);
 
   const swipeHandlers = useSwipeable({
@@ -1048,7 +1104,8 @@ const FileUploadSlider = ({
   }, [phones]);
 
   const currentPhone = getSafePhone();
-  const isHourly = category?.toLowerCase().includes('сауна') || category?.toLowerCase().includes('баня');
+  const isHourly = category?.toLowerCase().includes('сауна') || 
+                  category?.toLowerCase().includes('баня');
 
   const sizes = {
     main: { height: '500px', width: '850px' },
@@ -1077,7 +1134,10 @@ const FileUploadSlider = ({
           inputRef={fileInputRef}
           type="file"
           onChange={handleFileUpload}
-          inputProps={{ accept: 'image/*', multiple: true }}
+          inputProps={{ 
+            accept: ALLOWED_FILE_TYPES.join(','), 
+            multiple: true 
+          }}
           sx={{ display: 'none' }}
         />
 
@@ -1093,14 +1153,14 @@ const FileUploadSlider = ({
               variant="contained"
               startIcon={<AddPhotoAlternateIcon />}
               onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
+              disabled={isLoading || localPhotos.length >= MAX_PHOTOS}
             >
               {isLoading ? (
                 <>
                   <CircularProgress size={24} sx={{ mr: 1 }} />
                   Загрузка...
                 </>
-              ) : 'Добавить фото'}
+              ) : `Завантажити фото (${localPhotos.length}/${MAX_PHOTOS})`}
             </Button>
           </Box>
         )}
@@ -1216,7 +1276,7 @@ const FileUploadSlider = ({
           }}>
             {localPhotos.map((photo, index) => (
               <Box
-                key={photo.id || index}
+                key={photo.id}
                 onClick={() => setCurrentIndex(index)}
                 sx={{
                   width: sizes.thumbnails.width,

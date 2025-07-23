@@ -93,6 +93,7 @@ const ApartmentDetailPage = () => {
       const fetchApartment = async () => {
         try {
           const response = await fetch(`http://localhost:3000/api/v1/apartments/${id}`);
+          
           const data = await response.json();
           setApartment(data);
         } catch (error) {
@@ -273,8 +274,8 @@ const ApartmentDetailPage = () => {
 
 
 <FileUploadSlider 
-  // photos={apartment.photos} 
-  photos={Array.isArray(apartment.photos) ? apartment.photos : []} 
+  photos={apartment.photos} 
+
   price={apartment.price}
   name={apartment.name}
   phones={apartment.phones}

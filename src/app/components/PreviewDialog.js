@@ -50,6 +50,15 @@ import {
 } from '@mui/icons-material';
 import FileUploadSlider from './FileUploadSlider';
 
+const formatAddress = (city, street, houseNumber, district, metro) => {
+  const parts = [];
+  if (city) parts.push(city);
+  if (street && houseNumber) parts.push(`${street} ${houseNumber}`);
+  if (district) parts.push(`район ${district}`);
+  if (metro) parts.push(`метро ${metro}`);
+  return parts.join(', ');
+};
+
 const PreviewDialog = ({
   open,
   onClose,
@@ -206,33 +215,33 @@ const PreviewDialog = ({
             </Typography>
           </Box>
 
-          {/* Блок с адресом */}
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1,
-              mb: 3,
-              cursor: 'pointer',
-              '&:hover': {
-                textDecoration: 'underline',
-                color: 'primary.main'
-              }
-            }}
-            onClick={handleOpenRoute}
-          >
-            <LocationIcon color="primary" />
-            <Typography variant="body1">
-              {[
-                formData.city,
-                formData.street && `${formData.street} ${formData.houseNumber}`,
-                formData.district && `район ${formData.district}`,
-                formData.metro && `метро ${formData.metro}`
-              ].filter(Boolean).join(', ')}
-            </Typography>
-          </Box>
-
           
+{/* Блок с адресом */}
+<Box 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: 1,
+    mb: 3,
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline',
+      color: 'primary.main'
+    }
+  }}
+  onClick={handleOpenRoute}
+>
+  <LocationIcon color="primary" />
+  <Typography variant="body1">
+    {formatAddress(
+      formData.city, 
+      formData.street, 
+      formData.houseNumber, 
+      formData.district, 
+      formData.metro
+    )}
+  </Typography>
+</Box>
 
           {/* Основной контент с фото и информацией */}
           <Box sx={{
@@ -246,32 +255,33 @@ const PreviewDialog = ({
               flex: 1,
               minWidth: 0 // Чтобы предотвратить переполнение
             }}>
-              {/* Галерея изображений */}
-              <FileUploadSlider 
-                photos={allImages}
-                price={formData.price}
-                // name={formData.name}
-                // phones={formData.phones}
-                name={
-                  formData.name || 
-                  apartmentInfo.name || 
-                  formData.ownerName || 
-                  'Имя не указано'
-                }
-                phones={
-                  Array.isArray(formData.phones) ? formData.phones :
-                  formData.phones ? [formData.phones] :
-                  Array.isArray(apartmentInfo.phones) ? apartmentInfo.phones :
-                  apartmentInfo.phones ? [apartmentInfo.phones] :
-                  ['+380XXXXXXXXXX']
-                }
-                category={formData.category}
-                address={[
-                  formData.city,
-                  formData.street && `${formData.street} ${formData.houseNumber}`,
-                ].filter(Boolean).join(', ')}
-                editable={false}
-              />
+             
+{/* Галерея изображений */}
+<FileUploadSlider 
+  photos={allImages}
+  price={formData.price}
+  name={
+    formData.name || 
+    apartmentInfo.name || 
+    formData.ownerName || 
+    'Имя не указано'
+  }
+  phones={
+    Array.isArray(formData.phones) ? formData.phones :
+    formData.phones ? [formData.phones] :
+    Array.isArray(apartmentInfo.phones) ? apartmentInfo.phones :
+    apartmentInfo.phones ? [apartmentInfo.phones] :
+    ['+380XXXXXXXXXX']
+  }
+  category={formData.category}
+  address={formatAddress(  // ← Вот здесь заменяем старый код
+    formData.city,
+    formData.street,
+    formData.houseNumber
+  )}
+  editable={false}
+/>
+
 
               {/* Описание и характеристики */}
               <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 3 }}>

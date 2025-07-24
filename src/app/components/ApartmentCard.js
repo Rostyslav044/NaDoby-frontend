@@ -21,6 +21,10 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
 
+
+const formatCity = (city, region) => {
+  return region ? `${city}, ${region}` : city;
+};
 const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
   const photos = apartment.photos || [];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,9 +53,24 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
     router.push(`/apartment/${apartment._id}`);
   };
 
+  // const infoFields = [
+  //   { label: 'Категорія', value: apartment.category },
+  //   { label: 'Місто', value: apartment.city },
+  //   { label: 'Вулиця', value: apartment.street },
+  //   { label: 'Номер будинку', value: apartment.houseNumber },
+  //   { label: 'Район', value: apartment.district },
+  //   apartment.metro && { label: 'Метро', value: apartment.metro },
+  //   { label: 'Кімнат', value: apartment.rooms },
+  //   { label: 'Кількість гостей', value: apartment.beds },
+  // ].filter(Boolean);
+
+  
   const infoFields = [
     { label: 'Категорія', value: apartment.category },
-    { label: 'Місто', value: apartment.city },
+    { 
+      label: 'Місто', 
+      value: formatCity(apartment.city, apartment.region) 
+    },
     { label: 'Вулиця', value: apartment.street },
     { label: 'Номер будинку', value: apartment.houseNumber },
     { label: 'Район', value: apartment.district },
@@ -59,7 +78,6 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
     { label: 'Кімнат', value: apartment.rooms },
     { label: 'Кількість гостей', value: apartment.beds },
   ].filter(Boolean);
-  
 
   return (
     <Card

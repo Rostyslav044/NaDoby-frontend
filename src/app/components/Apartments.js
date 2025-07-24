@@ -19,18 +19,40 @@ const Apartments = () => {
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const { data: session } = useSession();
 
+  // useEffect(() => {
+  //   const fetchApartments = async () => {
+  //     try {
+  //       const response = await axios.get('http://localhost:3000/api/v1/apartments/get-all');
+  //       setApartments(response.data);
+  //     } catch (error) {
+  //       console.error('Помилка при завантаженні апартаментів:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchApartments();
+  // }, []);
+
   useEffect(() => {
     const fetchApartments = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/v1/apartments/get-all');
-        setApartments(response.data);
+        
+        // Обработка данных - добавляем область к названию города
+        const processedApartments = response.data.map(apartment => ({
+          ...apartment,
+          city: apartment.region ? `${apartment.city}, ${apartment.region}` : apartment.city
+        }));
+        
+        setApartments(processedApartments);
       } catch (error) {
         console.error('Помилка при завантаженні апартаментів:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchApartments();
   }, []);
 

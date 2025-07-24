@@ -640,6 +640,20 @@ const Search = () => {
     handleClose();
   };
 
+  // const handleCheckboxChange = (key) => (event) => {
+  //   event.stopPropagation();
+  //   setTypes((prev) =>
+  //     prev.includes(key)
+  //       ? prev.filter((item) => item !== key)
+  //       : [...prev, key]
+  //   );
+  //   // Сразу убираем ошибку при выборе
+  //   if (types.length === 0 || (types.length === 1 && types.includes(key))) {
+  //     setErrors(prev => ({ ...prev, type: false }));
+  //   }
+  // };
+
+
   const handleCheckboxChange = (key) => (event) => {
     event.stopPropagation();
     setTypes((prev) =>
@@ -647,11 +661,9 @@ const Search = () => {
         ? prev.filter((item) => item !== key)
         : [...prev, key]
     );
-    // Сразу убираем ошибку при выборе
-    if (types.length === 0 || (types.length === 1 && types.includes(key))) {
-      setErrors(prev => ({ ...prev, type: false }));
-    }
+    setErrors(prev => ({ ...prev, type: false }));
   };
+
 
   const handleGuestsChange = (e) => {
     const value = Math.max(1, Number(e.target.value));
@@ -820,6 +832,7 @@ const Search = () => {
                 {Object.entries(t.options).map(([key, label]) => (
                   <ListItem key={key} disablePadding>
                     <ListItemButton>
+                 
                       <ListItemIcon>
                         <Checkbox
                           edge="start"
@@ -829,7 +842,19 @@ const Search = () => {
                           onChange={handleCheckboxChange(key)}
                         />
                       </ListItemIcon>
-                      <ListItemText primary={label} />
+                      {/* <ListItemText primary={label} /> */}
+                      <ListItemText 
+              primary={label} 
+              onClick={() => {
+                setTypes(prev => 
+                  prev.includes(key)
+                    ? prev.filter(item => item !== key)
+                    : [...prev, key]
+                );
+                setErrors(prev => ({ ...prev, type: false }));
+              }}
+            />
+
                     </ListItemButton>
                   </ListItem>
                 ))}

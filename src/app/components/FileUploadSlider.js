@@ -940,7 +940,6 @@ import HelpIcon from '@mui/icons-material/Help';
 
 const MAX_PHOTOS = 15;
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
 const FileUploadSlider = ({ 
   photos = [], 
   onDelete, 
@@ -957,7 +956,20 @@ const FileUploadSlider = ({
   const [localPhotos, setLocalPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const thumbnailsRef = useRef(null);
 
+  useEffect(() => {
+    if (thumbnailsRef.current && localPhotos.length > 0) {
+      const thumbWidth = parseInt(sizes.thumbnails.width);
+      const gap = parseInt(sizes.thumbnails.gap);
+      const scrollPos = currentIndex * (thumbWidth + gap) - (thumbnailsRef.current.offsetWidth / 2) + (thumbWidth / 2);
+      
+      thumbnailsRef.current.scrollTo({
+        left: scrollPos,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentIndex, localPhotos.length]);
   // Инициализация и очистка фото
   useEffect(() => {
     if (!Array.isArray(photos)) {
@@ -1076,11 +1088,22 @@ const FileUploadSlider = ({
     });
   }, [localPhotos, setUploadImages, onPhotosChange]);
 
+  // const handleNext = useCallback(() => {
+  //   if (localPhotos.length <= 1) return;
+  //   setCurrentIndex(prev => (prev + 1) % localPhotos.length);
+  // }, [localPhotos.length]);
+
+  // const handlePrev = useCallback(() => {
+  //   if (localPhotos.length <= 1) return;
+  //   setCurrentIndex(prev => (prev - 1 + localPhotos.length) % localPhotos.length);
+  // }, [localPhotos.length]);
+
+
   const handleNext = useCallback(() => {
     if (localPhotos.length <= 1) return;
     setCurrentIndex(prev => (prev + 1) % localPhotos.length);
   }, [localPhotos.length]);
-
+  
   const handlePrev = useCallback(() => {
     if (localPhotos.length <= 1) return;
     setCurrentIndex(prev => (prev - 1 + localPhotos.length) % localPhotos.length);
@@ -1109,7 +1132,7 @@ const FileUploadSlider = ({
 
   const sizes = {
     main: { height: '500px', width: '850px' },
-    thumbnails: { width: '120px', height: '90px', gap: '10px' }
+    thumbnails: { width: '273.4px', height: '250px', gap: '10px' }
   };
 
   return (
@@ -1127,7 +1150,8 @@ const FileUploadSlider = ({
       <Box sx={{ 
         width: sizes.main.width,
         flexShrink: 0,
-        position: 'relative'
+        position: 'relative',
+        // p:2,
       }}>
         {/* Скрытый input для загрузки */}
         <Input
@@ -1172,6 +1196,7 @@ const FileUploadSlider = ({
             height: sizes.main.height,
             position: 'relative',
             overflow: 'hidden',
+            // padding:'10px',
           }}>
             <img
               src={localPhotos[currentIndex]?.url}
@@ -1242,6 +1267,8 @@ const FileUploadSlider = ({
               </IconButton>
             )}
           </Box>
+
+
         ) : (
           <Box
             sx={{
@@ -1265,57 +1292,68 @@ const FileUploadSlider = ({
           </Box>
         )}
 
-        {/* Миниатюры */}
-        {localPhotos.length > 0 && (
-          <Box sx={{
-            display: 'flex',
-            gap: sizes.thumbnails.gap,
-            p: 2,
-            bgcolor: '#f0f0f0',
-            overflowX: 'auto',
-          }}>
-            {localPhotos.map((photo, index) => (
-              <Box
-                key={photo.id}
-                onClick={() => setCurrentIndex(index)}
-                sx={{
-                  width: sizes.thumbnails.width,
-                  height: sizes.thumbnails.height,
-                  flexShrink: 0,
-                  cursor: 'pointer',
-                  border: currentIndex === index ? '3px solid #1976d2' : '1px solid #ddd',
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}
-              >
-                <img
-                  src={photo.url}
-                  alt={`Миниатюра ${index + 1}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                {editable && (
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePhoto(index);
-                    }}
-                    sx={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      bgcolor: 'error.main',
-                      color: 'white',
-                      '&:hover': { bgcolor: 'error.dark' }
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Box>
-            ))}
-          </Box>
+       
+{localPhotos.length > 0 && (
+  <Box 
+    ref={thumbnailsRef}
+    sx={{
+      display: 'flex',
+      gap: sizes.thumbnails.gap,
+      pt: 1.25,
+      overflowX: 'auto',
+      scrollBehavior: 'smooth',
+      '&::-webkit-scrollbar': {
+        height: '6px',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: '#888',
+        borderRadius: '3px',
+      },
+    }}
+  >
+    {localPhotos.map((photo, index) => (
+      <Box
+        key={photo.id}
+        onClick={() => setCurrentIndex(index)}
+        sx={{
+          width: sizes.thumbnails.width,
+          height: sizes.thumbnails.height,
+          flexShrink: 0,
+          cursor: 'pointer',
+          border: currentIndex === index ? '3px solid #1976d2' : '1px solid #ddd',
+          borderRadius: 1,
+          overflow: 'hidden',
+          position: 'relative'
+        }}
+      >
+        <img
+          src={photo.url}
+          alt={`Миниатюра ${index + 1}`}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        {editable && (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeletePhoto(index);
+            }}
+            sx={{
+              position: 'absolute',
+              top: 4,
+              right: 4,
+              bgcolor: 'error.main',
+              color: 'white',
+              '&:hover': { bgcolor: 'error.dark' }
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
         )}
+      </Box>
+    ))}
+  </Box>
+)}
+
       </Box>
 
       {/* Информационный блок */}
@@ -1324,7 +1362,7 @@ const FileUploadSlider = ({
         flexShrink: 0,
         p: 3,
         bgcolor: '#f9f9f9',
-        borderLeft: '1px solid #e0e0e0',
+        // borderLeft: '1px solid #e0e0e0',
         display: 'flex',
         flexDirection: 'column',
       }}>

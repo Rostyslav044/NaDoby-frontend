@@ -518,64 +518,7 @@ const ApartmentDetailPage = () => {
             </Box>
           </Grid>
 
-          {/* <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Контактная информация
-            </Typography>
-            
-            <List dense>
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
-                    <PersonIcon fontSize="small" />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText 
-                  primary="Имя" 
-                  
-                  
-                  secondary={apartment.name || 'Не указано'} 
-                />
-              </ListItem>
-              
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
-                    <PhoneIcon fontSize="small" />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText 
-                  primary="Телефоны" 
-              
-
-
-                  secondary={
-                    apartment.phones?.[0] ? (
-                      <Box 
-                        component="a"
-                        href={`tel:${apartment.phones[0].replace(/\D/g, '')}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePhoneClick(apartment.phones[0]);
-                        }}
-                        sx={{
-                          color: 'primary.main',
-                          textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' },
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {apartment.phones[0]}
-                      </Box>
-                    ) : 'Не указаны'
-                  }
-                  
-
-
-                />
-              </ListItem>
-            </List>
-          </Grid> */}
+     
         </Grid>
       </Paper>
 

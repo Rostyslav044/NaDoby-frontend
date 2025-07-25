@@ -959,13 +959,13 @@ const AddApartment = () => {
     }
 
     setIsSubmitting(true);
-    try {
+    try { console.log(uploadImages);
       const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
         body: JSON.stringify({ 
           ...formData, 
           ...apartmentInfo, 
-          photos: uploadImages 
+          // photos: uploadImages 
         }),
         headers: { 'Content-Type': 'application/json' },
       });

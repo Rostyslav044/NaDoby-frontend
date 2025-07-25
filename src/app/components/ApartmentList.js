@@ -1,6 +1,7 @@
 
 // Этот React-компонент отображает список апартаментов. 
 
+
 'use client';
 
 import React from 'react';

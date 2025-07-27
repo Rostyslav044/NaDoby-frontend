@@ -27,7 +27,9 @@ export default function AuthLogic() {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (!session) return;
+const token = localStorage.getItem('auth_token');
+
+    if (!session || token) return;
 
     const dataRegister = {
       email: session.user.email,

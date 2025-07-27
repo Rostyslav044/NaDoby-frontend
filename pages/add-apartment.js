@@ -706,13 +706,32 @@ const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев
 const AddApartment = () => {
   // Состояния
   const [uploadImages, setUploadImages] = useState([]);
+  // const [formData, setFormData] = useState({
+  //   city: '', street: '', district: '', metro: '', hasMetro: false,
+  //   description: '', price: '', houseNumber: '',
+  //   category: '', objectName: '', latitude: null, longitude: null,
+  //   originalCity: '',  
+  //   region: '',
+  // });
+
   const [formData, setFormData] = useState({
-    city: '', street: '', district: '', metro: '', hasMetro: false,
-    description: '', price: '', houseNumber: '',
-    category: '', objectName: '', latitude: null, longitude: null,
-    originalCity: '',  
-    region: '',
+    city: "Дніпро, Дніпропетровська область",
+    street: "Червоний Камінь",
+    district: "район",
+    metro: "",
+    hasMetro: true,
+    description: "описание т filesToAddfilesToAddfilesToAddfilesToAddfilesToAddfilesToAddfilesToAddмммfilesToAddfilesToAddfilesToAdd",
+    price: "5000",
+    houseNumber: "3",
+    category: "Хостел",
+    objectName: "название обнктао",
+    latitude: 48.48701003500085,
+    longitude: 34.93966902621155,
+    originalCity: "Дніпро",
+    region: "Дніпропетровська область",
   });
+  
+
   const [errors, setErrors] = useState({});
   const [apartmentInfo, setApartmentInfo] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -965,7 +984,7 @@ const AddApartment = () => {
         body: JSON.stringify({ 
           ...formData, 
           ...apartmentInfo, 
-          // photos: uploadImages 
+          photos: uploadImages 
         }),
         headers: { 'Content-Type': 'application/json' },
       });

@@ -1,30 +1,25 @@
-
 'use client';
 import { LanguageProvider } from "@/app/LanguageContext";
 
 import Header from "@/app/components/Header";
 import { store } from "@/app/store";
 import { Provider } from "react-redux";
-import Apartments from "@/app/components/Apartments";
 
 
-export default function 
-MyListings
-() {
+
+export default function Blog() {
     return (
       <div>
         <Provider store={store}>
         <LanguageProvider>
            <Header />
        
-         <h1>my-listings</h1>
+         <h1>Blog</h1>
        
        
-         <Apartments/>
+         
          </LanguageProvider>
          </Provider>
       </div>
     );
   }
-
- 

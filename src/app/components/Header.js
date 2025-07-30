@@ -9,6 +9,7 @@ import Image from "next/image";
 import NoAutorazeMenu from "@/app/components/NoAutorazeMenu"; // Используем уже существующий NoAutorazeMenu
 import styles from "@/app/styles/Header.styles.module.scss";
 import Menu from "./Menu";
+import Link from "next/link";
 
 // Добавляем переводы для текста
 const translations = {
@@ -26,8 +27,11 @@ export default function Header() {
     <>
       <header>
         <div className={styles.headerContainer}>
-          <h1 className={styles.homLogo}>NaDoby.com.ua</h1>
-          
+          {/* <h1 className={styles.homLogo}>NaDoby.com.ua</h1> */}
+          <h1 className={styles.homLogo}>
+          <Link href="/">NaDoby.com.ua</Link>
+          </h1>
+
           <div className={styles.headerDiv}>
             <Image
               src="/burger.svg"

@@ -356,6 +356,8 @@
 //   };
 
 
+
+
 //   // const handlePreview = () => {
 //   //   const isFormValid = validateForm();
 //   //   const isInfoValid = infoRef.current?.validate();
@@ -482,14 +484,7 @@
 //               />
 //             </Box>
 
-//             {/* <MetroSelector
-//               city={formData.city}
-//               onMetroSelect={(metro) => setFormData(prev => ({ ...prev, metro }))}
-//               error={!!errors.metro}
-//               showError={CITIES_WITH_METRO.some(c => 
-//                 c.toLowerCase() === formData.city?.toLowerCase()
-//               )}
-//             /> */}
+          
 
 // <MetroSelector
 //   city={formData.city}
@@ -1322,5 +1317,10 @@ const AddApartment = () => {
 };
 
 export default AddApartment;
+
+
+
+
+
 
 

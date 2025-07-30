@@ -16,10 +16,26 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
-
+import '../globals.css';
 
 const formatCity = (city, region) => {
-  return region ? `${city}, ${region}` : city;
+  if (!region || city.includes(region)) return city;
+  return `${city}, ${region}`;
+};
+const parseCityAndRegion = (fullCity, fullRegion) => {
+  if (fullCity && fullCity.includes(',')) {
+    const parts = fullCity.split(',');
+    const cityOnly = parts[0].trim();
+
+    let regionOnly = fullRegion ? fullRegion.trim() : (parts[1] || '').trim();
+
+    regionOnly = regionOnly.replace(/ область$/i, '');
+
+    return { cityOnly, regionOnly };
+  } else {
+    const regionOnly = fullRegion ? fullRegion.trim().replace(/ область$/i, '') : '';
+    return { cityOnly: fullCity || '', regionOnly };
+  }
 };
 const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
   const photos = apartment.photos || [];
@@ -27,7 +43,7 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
-
+ 
   const handlePrevPhoto = (e) => {
     e.stopPropagation();
     setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
@@ -49,9 +65,29 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
     router.push(`/apartment/${apartment._id}`);
   };
 
+  
+  const { cityOnly, regionOnly } = parseCityAndRegion(apartment.city, apartment.region);
+const infoFields = [
+  { label: 'Категорія', value: apartment.category },
+  { label: 'Місто', value: cityOnly },
+  regionOnly && { label: 'Область', value: regionOnly, isRegion: true },
+  { label: 'Вулиця', value: apartment.street },
+  { label: 'Номер будинку', value: apartment.houseNumber },
+  { label: 'Район', value: apartment.district },
+  apartment.metro && { label: 'Метро', value: apartment.metro },
+  { label: 'Кімнат', value: apartment.rooms },
+  { label: 'Кількість гостей', value: apartment.beds },
+].filter(Boolean);
+
+
+  
+ 
+
+
   // const infoFields = [
   //   { label: 'Категорія', value: apartment.category },
   //   { label: 'Місто', value: apartment.city },
+  //   apartment.region && { label: 'Область', value: apartment.region, isRegion: true },
   //   { label: 'Вулиця', value: apartment.street },
   //   { label: 'Номер будинку', value: apartment.houseNumber },
   //   { label: 'Район', value: apartment.district },
@@ -59,21 +95,7 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
   //   { label: 'Кімнат', value: apartment.rooms },
   //   { label: 'Кількість гостей', value: apartment.beds },
   // ].filter(Boolean);
-
   
-  const infoFields = [
-    { label: 'Категорія', value: apartment.category },
-    { 
-      label: 'Місто', 
-      value: formatCity(apartment.city, apartment.region) 
-    },
-    { label: 'Вулиця', value: apartment.street },
-    { label: 'Номер будинку', value: apartment.houseNumber },
-    { label: 'Район', value: apartment.district },
-    apartment.metro && { label: 'Метро', value: apartment.metro },
-    { label: 'Кімнат', value: apartment.rooms },
-    { label: 'Кількість гостей', value: apartment.beds },
-  ].filter(Boolean);
 
   return (
     <Card
@@ -217,7 +239,7 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
       </Box>
 
       <CardContent sx={{ px: isMobile ? 1.5 : 2, pt: 2, minHeight: 220 }}>
-        {infoFields.map(({ label, value }, index) => (
+        {/* {infoFields.map(({ label, value }, index) => (
           <Box key={index} display="flex" gap={1} mb={0.5}>
             <Typography
               variant={isMobile ? 'caption' : 'body2'}
@@ -228,10 +250,32 @@ const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
             <Typography variant={isMobile ? 'caption' : 'body2'} fontWeight={500}>
               {value || 'Не вказано'}
             </Typography>
+
+
+
           </Box>
-        ))}
+        ))} */}
 
        
+{infoFields.map(({ label, value, isRegion }, index) => (
+  <Box key={index} display="flex" gap={1} mb={0.5}>
+    <Typography
+      variant={isMobile ? 'caption' : 'body2'}
+      sx={{ color: 'text.secondary', minWidth: '110px' }}
+    >
+      {label}:
+    </Typography>
+    <Typography
+      variant={isMobile ? 'caption' : 'body2'}
+      fontWeight={500}
+      className={isRegion ? 'auto-width-card' : ''}
+    >
+      {value || 'Не вказано'}
+    </Typography>
+  </Box>
+))}
+
+
 <Box display="flex" gap={1} mb={1}>
   <Typography
     variant={isMobile ? 'caption' : 'body2'}

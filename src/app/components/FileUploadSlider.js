@@ -1,5 +1,5 @@
 
-// // // етот компонент слайт фото и контактная информация
+// // етот компонент слайт фото и контактная информация
 
 // 'use client';
 
@@ -938,3 +938,11 @@ export default function FileUploadSlider({ setUploadImages , onValidationChange 
     </Box>
   );
 }
+
+
+
+
+
+
+
+

@@ -85,6 +85,8 @@ export default function Layout({ children }) {
       <head />
       <body className={lato.className}>
         <SessionProvider>
+
+        
           <LanguageProvider>
             {/* Оборачиваем все в Providers для Redux */}
             
@@ -98,12 +100,9 @@ export default function Layout({ children }) {
               </main>
               
              <Apartments/>
-            </Providers>
-
-
-
-            
-          </LanguageProvider>
+             </Providers>
+           </LanguageProvider>
+           
         </SessionProvider>
       </body>
     </html>

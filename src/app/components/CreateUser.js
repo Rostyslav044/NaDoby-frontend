@@ -115,6 +115,10 @@ const CreateUser = ({ onClose }) => {
 
           reset();
         }, 3000);
+
+        
+        
+
         }
 
      
@@ -282,7 +286,4 @@ const CreateUser = ({ onClose }) => {
 };
 
 export default CreateUser;
-
-
-
 

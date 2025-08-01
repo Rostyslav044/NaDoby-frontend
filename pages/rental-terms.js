@@ -14,7 +14,7 @@ export default function AboutPlatform() {
         <LanguageProvider>
            <Header />
        
-         <h1>AboutPlatform</h1>
+         <h1>rental-Terms</h1>
        
        
          

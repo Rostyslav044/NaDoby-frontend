@@ -40,8 +40,8 @@ export default function Header() {
               onClick={toggleMenu}
               width={24}
               height={24}
-            />
-          </div>
+              style={{ cursor: 'pointer' }}></Image>
+            </div>
         </div>
         
         {/* Отображаем текст в зависимости от текущего языка */}

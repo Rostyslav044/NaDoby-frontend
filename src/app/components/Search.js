@@ -340,6 +340,7 @@ const Search = () => {
               boxSizing: "border-box",
               display: "flex",
               alignItems: "center",
+              cursor: "pointer",
             }}
           />
           {errors.location && (
@@ -358,6 +359,7 @@ const Search = () => {
           error={errors.guests}
           helperText={errors.guests ? t.errorMessages.guests : ""}
           inputProps={{ min: 1 }}
+         
         />
 
         <Box ref={selectRef}>
@@ -372,6 +374,7 @@ const Search = () => {
               borderColor: errors.type ? "error.main" : "rgba(0, 0, 0, 0.23)",
               color: types.length === 0 ? "text.secondary" : "text.primary",
               textAlign: "left",
+              cursor: "pointer",
             }}
           >
             {types.length === 0

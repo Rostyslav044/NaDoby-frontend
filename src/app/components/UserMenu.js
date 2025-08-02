@@ -15,6 +15,7 @@ import {
   IconButton,
   Collapse,
   MenuItem,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ArrowDropDown } from "@mui/icons-material";
@@ -24,6 +25,8 @@ import { useDispatch } from "react-redux";
 
 const translations = {
   ua: {
+    sloganLine1: "Оренда житла по всій Україні",
+    sloganLine2: "Без посередників !",
     profile: "Мій Профіль",
     myListings: "Мої оголошення",
     rentOut: "Зареєструвати помешкання",
@@ -37,6 +40,8 @@ const translations = {
     blog: "Блог",
   },
   ru: {
+    sloganLine1: "Аренда жилья по всей Украине",
+    sloganLine2: "Без посредников !",
     profile: "Мой Профиль",
     myListings: "Мои объявления",
     rentOut: "Зарегистрировать жильё",
@@ -110,8 +115,8 @@ const UserMenu = () => {
             justifyContent: "space-between",
             px: 2,
             pt: 2,
-            borderBottom: "1px solid #f0f0f0",
-            pb: 2,
+            // borderBottom: "1px solid #f0f0f0",
+            // pb: 2,
           }}
         >
           <Logo />
@@ -120,27 +125,34 @@ const UserMenu = () => {
           </IconButton>
         </Box>
 
+        <Box sx={{ mt: 1,pb: 2, }}>
+  <Typography sx={{
+    color: '#1a365d', // Темно-синий
+    fontSize: '0.98rem',
+    fontWeight: 600,
+    paddingLeft:'20px',
+    // lineHeight: 1.2
+    paddingTop: '15px',
+  }}>
+    {t.sloganLine1}
+  </Typography>
+  <Typography sx={{
+    color: '#e53e3e', // Ярко-красный
+    fontSize: '0.90rem',
+    fontWeight: 600,
+    lineHeight: 1.3,
+    mt: 0.5,
+    fontStyle: 'italic',
+    paddingLeft:'20px',
+  }}>
+    {t.sloganLine2}
+  </Typography>
+</Box>
+  
+<Divider sx={{ my: 1 }} />
+
         <List disablePadding sx={{ flex: 1 }}>
-          {/* {[
-            { text: t.profile, href: "/my-profile" },
-            { text: t.myListings, href: "/my-listings" },
-            { text: t.rentOut, href: "/add-apartment" },
-            { text: t.searchHome, href: "/search-apartment" },
-          ].map((item) => (
-            <Link href={item.href} passHref legacyBehavior key={item.text}>
-              <ListItem component="a" sx={{ px: 3 }}>
-                <ListItemText 
-                  primary={item.text} 
-                  primaryTypographyProps={{ 
-                    color: "#0000FF",
-                    fontWeight: 500 
-                  }} 
-                /> */}
-              {/* </ListItem>
-            </Link>
-          ))} */}
-
-
+      
 {[
   { text: t.profile, href: "/my-profile" },
   { text: t.myListings, href: "/my-listings" },

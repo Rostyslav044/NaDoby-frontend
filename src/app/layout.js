@@ -20,6 +20,7 @@ import Apartments from './components/Apartments';
 import { useSelector } from 'react-redux';
 
 
+
 // Применение шрифтов:
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -56,6 +57,9 @@ export default function Layout({ children }) {
               
              <Apartments/>
              </Providers>
+
+
+
            </LanguageProvider>
            
         </SessionProvider>

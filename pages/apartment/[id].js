@@ -200,8 +200,7 @@ const ApartmentDetailPage = () => {
 <Provider store={store}>
         <LanguageProvider>
            <Header />
-         </LanguageProvider>
-         </Provider>
+       
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Button variant="outlined" onClick={() => router.back()} size="small">
           Назад
@@ -281,7 +280,8 @@ const ApartmentDetailPage = () => {
   phones={apartment.phones}
   category={apartment.category} 
 />
-
+  </LanguageProvider>
+         </Provider>
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 3 }}>
     

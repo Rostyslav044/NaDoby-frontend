@@ -17,7 +17,7 @@ import { store } from './store'; // Подключаем store
 
 
 import Apartments from './components/Apartments';
-import { useSelector } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 
 
 
@@ -39,29 +39,19 @@ export default function Layout({ children }) {
     <html lang="ua">
       <head />
       <body className={lato.className}>
+
         <SessionProvider>
-
-        
-          <LanguageProvider>
-            {/* Оборачиваем все в Providers для Redux */}
-            
-            <Providers>
-           
-          
-              <main>
-              
-            <AuthLogic />
-           
-                {children}
+        <Provider store={store}> 
+         <LanguageProvider>
+              {/* <Providers> */}
+            <main>
+               <AuthLogic />
+            {children}
               </main>
-              
-             <Apartments/>
-             </Providers>
-
-
-
-           </LanguageProvider>
-           
+                 <Apartments/>
+             {/* </Providers> */}
+          </LanguageProvider>
+           </Provider>
         </SessionProvider>
       </body>
     </html>

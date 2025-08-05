@@ -1337,6 +1337,9 @@ import {
   Container, Typography, TextField, Select, MenuItem, Button,
   FormControl, InputLabel, Box, CircularProgress, Snackbar, Alert, Stack
 } from '@mui/material';
+import Header from '@/app/components/Header';
+import { Provider } from 'react-redux';
+import { store } from '@/app/store';
 
 const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
 
@@ -1642,6 +1645,9 @@ const AddApartment = () => {
 
   return (
     <LanguageProvider>
+      <Provider store={store}>
+      <Header/>
+      </Provider>
       <LoadScript
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
         libraries={['places']}
@@ -1668,7 +1674,9 @@ const AddApartment = () => {
                 onChange={handleInputChange}
                 label="Категория *"
               >
-                {['Квартира', 'Гостиница', 'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня'].map((cat) => (
+                {['Квартира', 'Гостиница', 'Готель для тварин',
+                 'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня', 'Глемпінг',
+                'Пансіонат', 'Котедж для компній', 'Коворкінг', 'Автокемпінг'].map((cat) => (
                   <MenuItem key={cat} value={cat}>{cat}</MenuItem>
                 ))}
               </Select>

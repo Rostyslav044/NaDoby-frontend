@@ -47,7 +47,7 @@ const translations = {
       sauna: "Сауна/Баня",
       glamping:"Глемпінг",
       pansionat:"Пансіонат",
-      kotedzi: "Котедж",
+      kotedzi: "Котедж для компній",
       kavorking:"Коворкінг",
       avtokemping: "Автокемпінг",
     },
@@ -78,7 +78,7 @@ const translations = {
       sauna: "Сауна/Баня",
       glamping:"Глемпинг",
       pansionat:"Пансионат",
-      kotedzi: "Котедж",
+      kotedzi: "Котедж для компаний",
       kavorking:"Коворкинг",
       avtokemping: "Автокемпинг",
     },
@@ -352,7 +352,7 @@ const Search = () => {
               boxSizing: "border-box",
               display: "flex",
               alignItems: "center",
-              cursor: "pointer",
+              // cursor: "pointer",
             }}
           />
           {errors.location && (
@@ -386,7 +386,7 @@ const Search = () => {
               borderColor: errors.type ? "error.main" : "rgba(0, 0, 0, 0.23)",
               color: types.length === 0 ? "text.secondary" : "text.primary",
               textAlign: "left",
-              cursor: "pointer",
+              // cursor: "pointer",
             }}
           >
             {types.length === 0

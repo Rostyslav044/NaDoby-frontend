@@ -1341,7 +1341,7 @@ import Header from '@/app/components/Header';
 import { Provider } from 'react-redux';
 import { store } from '@/app/store';
 
-const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
+// const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
 
 const AddApartment = () => {
   // Состояния
@@ -1372,7 +1372,10 @@ const AddApartment = () => {
   const cityInputRef = useRef(null);
   const streetInputRef = useRef(null);
   const geocoderRef = useRef(null);
-
+  const handleMetroSelect = (metro) => {
+    setFormData(prev => ({ ...prev, metro }));
+    setErrors(prev => ({ ...prev, metro: false }));
+  };
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
   // Эффекты
@@ -1421,57 +1424,55 @@ const AddApartment = () => {
     }
   };
 
-  // const handleCitySelect = (place) => {
-  //   const cityComponent = place?.address_components?.find(c => c.types.includes('locality'));
-  //   const city = cityComponent?.long_name || place?.name || '';
-  //   const hasMetro = CITIES_WITH_METRO.some(c => c.toLowerCase() === city.toLowerCase());
-    
-  //   setFormData(prev => ({ 
-  //     ...prev, 
-  //     city,
-  //     metro: '',
-  //     hasMetro
-  //   }));
-    
-  //   setErrors(prev => ({ ...prev, city: false, metro: false }));
 
-  //   if (place?.geometry?.location) {
-  //     updateMapLocation({
-  //       lat: place.geometry.location.lat(),
-  //       lng: place.geometry.location.lng()
-  //     });
-  //   }
-  // };
 
-  const handleCitySelect = (place) => {
-    const addressComponents = place?.address_components || [];
-    const cityComponent = addressComponents.find(c => c.types.includes('locality'));
-    const regionComponent = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
-    
-    const city = cityComponent?.long_name || place?.name || '';
-    const region = regionComponent?.long_name || '';
-    const fullCityName = region ? `${city}, ${region}` : city;
-    
-    const hasMetro = CITIES_WITH_METRO.some(c => c.toLowerCase() === city.toLowerCase());
-    
-    setFormData(prev => ({ 
-      ...prev, 
-      city: fullCityName,
-      originalCity: city,
-      region,
-      metro: '',
-      hasMetro
-    }));
-    
-    setErrors(prev => ({ ...prev, city: false, metro: false }));
+
+// 1. Исправляем массив городов (убираем пробелы)
+const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
+
+
+<MetroSelector
+  city={formData.originalCity}
+  onMetroSelect={handleMetroSelect}
+  error={!!errors.metro}
+  onErrorClear={() => setErrors(prev => ({...prev, metro: false}))}
+  show={formData.hasMetro}
+/>
+
+// 3. Обновляем handleCitySelect для более точной проверки:
+const handleCitySelect = (place) => {
+  const addressComponents = place?.address_components || [];
+  const cityComponent = addressComponents.find(c => c.types.includes('locality'));
+  const regionComponent = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
   
-    if (place?.geometry?.location) {
-      updateMapLocation({
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-      });
-    }
-  };
+  const city = cityComponent?.long_name || place?.name || '';
+  const region = regionComponent?.long_name || '';
+  const fullCityName = region ? `${city}, ${region}` : city;
+  
+  // Нормализуем названия для сравнения (убираем пробелы и приводим к нижнему регистру)
+  const cleanedCity = city.trim().toLowerCase();
+  const hasMetro = CITIES_WITH_METRO.some(
+    c => c.trim().toLowerCase() === cleanedCity
+  );
+  
+  setFormData(prev => ({ 
+    ...prev, 
+    city: fullCityName,
+    originalCity: city,
+    region,
+    metro: '',
+    hasMetro // Устанавливаем флаг наличия метро
+  }));
+  
+  setErrors(prev => ({ ...prev, city: false, metro: false }));
+
+  if (place?.geometry?.location) {
+    updateMapLocation({
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng()
+    });
+  }
+};
 
   const handleStreetSelect = (place) => {
     let street = place?.formatted_address?.split(',')[0] || '';
@@ -1547,34 +1548,54 @@ const AddApartment = () => {
     setErrors(prev => ({ ...prev, houseNumber: false }));
   };
 
-  const handleMetroSelect = (metro) => {
-    setFormData(prev => ({ ...prev, metro }));
-    setErrors(prev => ({ ...prev, metro: false }));
-  };
+ 
+
+  
+
+  // const validateForm = () => {
+  //   const descriptionTooShort = formData.description.length < 85;
+  //   const cityHasMetro = CITIES_WITH_METRO.some(c => 
+  //     c.toLowerCase() === formData.city.toLowerCase()
+  //   );
+  
+  //   const newErrors = {
+  //     category: !formData.category,
+  //     objectName: !formData.objectName || formData.objectName.length > 59,
+  //     description: !formData.description || descriptionTooShort,
+  //     city: !formData.city,
+  //     price: !formData.price,
+  //     street: !formData.street,
+  //     houseNumber: !formData.houseNumber,
+  //     district: !formData.district,
+  //     metro: cityHasMetro && !formData.metro,
+  //   };
+  
+  //   setErrors(newErrors);
+  //   return !Object.values(newErrors).some(Boolean);
+  // };
+
 
   const validateForm = () => {
     const descriptionTooShort = formData.description.length < 85;
-    const forbiddenPattern = /[@]|https?:\/\/|www\./i;
-    const cityHasMetro = CITIES_WITH_METRO.some(c => 
-      c.toLowerCase() === formData.city.toLowerCase()
+    
+    // Проверяем наличие метро по оригинальному названию города (без региона)
+    const cityHasMetro = CITIES_WITH_METRO.some(
+      city => city.toLowerCase() === formData.originalCity?.toLowerCase()
     );
-
+  
     const newErrors = {
       category: !formData.category,
-      objectName: !formData.objectName || 
-                 forbiddenPattern.test(formData.objectName) || 
-                 formData.objectName.length > 59,
-      description: !formData.description || 
-                  forbiddenPattern.test(formData.description) || 
-                  descriptionTooShort,
+      objectName: !formData.objectName || formData.objectName.length > 59,
+      description: !formData.description || descriptionTooShort,
       city: !formData.city,
       price: !formData.price,
       street: !formData.street,
       houseNumber: !formData.houseNumber,
       district: !formData.district,
+      // Поле метро обязательно только для городов с метро
       metro: cityHasMetro && !formData.metro,
     };
-
+  
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
   };
@@ -1696,7 +1717,7 @@ const AddApartment = () => {
                 errors.objectName 
                   ? formData.objectName?.length > 59 
                     ? 'Максимум 59 символов' 
-                    : 'Обязательное поле. Нельзя использовать @ или ссылки.'
+                    : 'Обязательное поле.'
                   : 'Например: Гостиница Уют (максимум 59 символов)'
               }
             />
@@ -1715,7 +1736,7 @@ const AddApartment = () => {
               error={!!errors.description}
               helperText={
                 errors.description 
-                  ? 'Минимум 85 символов. Нельзя использовать @ или ссылки.' 
+                  ? 'Минимум 85 символов.' 
                   : ''
               }
             />
@@ -1737,10 +1758,13 @@ const AddApartment = () => {
 
             {/* Метро */}
             <MetroSelector
-              city={formData.city}
-              onMetroSelect={handleMetroSelect}
-              error={!!errors.metro}
-            />
+  city={formData.originalCity} // Передаем originalCity вместо city
+  onMetroSelect={handleMetroSelect}
+  error={!!errors.metro}
+  show={formData.hasMetro} // Добавляем проп show для контроля видимости
+/>
+
+            
 
             {/* Улица */}
             <Box margin="normal" sx={{ mt: 3 }}>

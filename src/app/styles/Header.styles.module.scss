@@ -54,3 +54,73 @@
     color: inherit;
   }
   
+
+
+  .headerContainer {
+    background: blue;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .headerDiv {
+    display: flex;
+    gap: 35px;
+    align-items: center;
+    margin-right: 4%;
+  }
+  
+  .homLogo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    white-space: nowrap;
+    color: white;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin-left: 7%;
+  }
+  
+  .homLogo a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Новый стиль — обёртка для фиксированного слогана */
+  .sloganFixed {
+    position: fixed;
+    top: 60px; /* чуть ниже хедера */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 999;
+    padding: 5px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* сам текст слогана */
+  .homSlogan {
+    max-width: 100%;
+    padding: 10px;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 1rem;
+    overflow: hidden;
+    font-family: "Roboto", sans-serif;
+    color: blue;
+    text-shadow:
+      0 0 10px yellow,
+      0 0 20px yellow,
+      0 0 30px yellow,
+      0 0 40px yellow,
+      0 0 50px yellow;
+      
+    // margin: 0;
+  }
+  

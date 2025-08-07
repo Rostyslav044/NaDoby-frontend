@@ -523,7 +523,9 @@ function BlogPosts() {
   const content = BLOG_CONTENT[currentLanguage]
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
+    <Container maxWidth="lg" 
+    sx={ { py: 6 } }
+    >
       <Typography variant="h3" component="h1" sx={{ 
         mb: 6, 
         fontWeight: 700,

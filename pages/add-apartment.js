@@ -681,6 +681,8 @@ import {
 import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
 import { Provider } from 'react-redux';
 import { store } from '@/app/store';
+import { useDispatch } from 'react-redux';
+import { updateCity } from '@/app/store/authSlice';
 
 // Компоненты
 import FileUploadSlider from '@/app/components/FileUploadSlider';
@@ -778,7 +780,7 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
-
+  const dispatch = useDispatch();
   // Refs
   const cityAutocompleteRef = useRef(null);
   const streetAutocompleteRef = useRef(null);
@@ -880,6 +882,46 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
     }
   };
 
+  // const handleCitySelect = (place) => {
+  //   try {
+  //     const addressComponents = place?.address_components || [];
+  //     const cityComponent = addressComponents.find(c => c.types.includes('locality'));
+  //     const regionComponent = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
+      
+  //     const city = cityComponent?.long_name || place?.name || '';
+  //     const region = regionComponent?.long_name || '';
+  //     const fullCityName = region ? `${city}, ${region}` : city;
+      
+  //     const cleanedCity = city.trim().toLowerCase();
+  //     const hasMetro = CITIES_WITH_METRO.some(
+  //       c => c.trim().toLowerCase() === cleanedCity
+  //     );
+      
+  //     setFormData(prev => ({ 
+  //       ...prev, 
+  //       city: fullCityName,
+  //       originalCity: city,
+  //       region,
+  //       metro: '',
+  //       hasMetro
+  //     }));
+      
+  //     setErrors(prev => ({ ...prev, city: false, metro: false }));
+
+  //     if (place?.geometry?.location) {
+  //       updateMapLocation({
+  //         lat: place.geometry.location.lat(),
+  //         lng: place.geometry.location.lng()
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('City select error:', error);
+  //     showSnackbar(t.noCityFound, 'error');
+  //   }
+  // };
+
+
+
   const handleCitySelect = (place) => {
     try {
       const addressComponents = place?.address_components || [];
@@ -890,6 +932,12 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
       const region = regionComponent?.long_name || '';
       const fullCityName = region ? `${city}, ${region}` : city;
       
+      // 4. Сохраняем город в Redux
+      dispatch(updateCity({ 
+        fullCityName: fullCityName, 
+        cityName: city 
+      }));
+      
       const cleanedCity = city.trim().toLowerCase();
       const hasMetro = CITIES_WITH_METRO.some(
         c => c.trim().toLowerCase() === cleanedCity
@@ -897,8 +945,8 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
       
       setFormData(prev => ({ 
         ...prev, 
-        city: fullCityName,
-        originalCity: city,
+        city: fullCityName, // В форме сохраняем полное название с регионом
+        originalCity: city, // Сохраняем оригинальное название города
         region,
         metro: '',
         hasMetro
@@ -917,6 +965,7 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
       showSnackbar(t.noCityFound, 'error');
     }
   };
+
 
   const handleStreetSelect = (place) => {
     try {

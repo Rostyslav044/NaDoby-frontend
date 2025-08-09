@@ -1475,17 +1475,34 @@ const FileUploadSlider = ({
     trackMouse: true
   });
 
-  const getSafePhone = useCallback(() => {
+  // const getSafePhone = useCallback(() => {
+  //   try {
+  //     if (!Array.isArray(phones)) return '+380XXXXXXXXX';
+  //     const firstPhone = phones[0];
+  //     return typeof firstPhone === 'string' ? firstPhone : '+380XXXXXXXXX';
+  //   } catch {
+  //     return '+380XXXXXXXXX';
+  //   }
+  // }, [phones]);
+
+  const getPhones = useCallback(() => {
     try {
-      if (!Array.isArray(phones)) return '+380XXXXXXXXX';
-      const firstPhone = phones[0];
-      return typeof firstPhone === 'string' ? firstPhone : '+380XXXXXXXXX';
+      if (!Array.isArray(phones)) return ['+380XXXXXXXXX'];
+      // Фильтруем только валидные телефонные номера
+      return phones.filter(phone => 
+        typeof phone === 'string' && 
+        phone.length >= 12 &&  // Минимальная длина полного номера
+        phone.startsWith('+380') // Проверяем украинский формат
+      );
     } catch {
-      return '+380XXXXXXXXX';
+      return ['+380XXXXXXXXX'];
     }
   }, [phones]);
+  
+  // Удалите строку с currentPhone, так как будем использовать getPhones() напрямую
+ 
 
-  const currentPhone = getSafePhone();
+  // const currentPhone = getSafePhone();
   const isHourly = category?.toLowerCase().includes('сауна') || 
                   category?.toLowerCase().includes('баня');
 
@@ -1761,7 +1778,7 @@ const FileUploadSlider = ({
         </Box>
 
         {/* Contacts */}
-        <Box sx={{ 
+        {/* <Box sx={{ 
           mb: 3,
           backgroundColor: '#f5eee0',
           p: 2,
@@ -1819,9 +1836,85 @@ const FileUploadSlider = ({
               {currentPhone}
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
 
-        <Divider sx={{ my: 2 }} />
+<Box sx={{ 
+  mb: 3,
+  backgroundColor: '#f5eee0',
+  p: 2,
+  borderRadius: 1,
+  border: '1px solid #e0e0e0'
+}}>
+  <Typography variant="h6" sx={{ 
+    fontWeight: 'bold',
+    mb: 1.5,
+    fontSize: '1.1rem'
+  }}>
+    {name}
+  </Typography>
+  
+  <Typography variant="body1" sx={{ 
+    mb: 2,
+    fontSize: '1.1rem',
+    color: 'text.secondary'
+  }}>
+    Зателефонуйте власнику, щоб уточнити всі деталі оренди.
+  </Typography>
+
+  <Box sx={{ 
+    display: 'flex', 
+    flexDirection: 'column',
+    gap: 1,
+    p: 1.5,
+    bgcolor: '#f5f5f5',
+    borderRadius: 1,
+  }}>
+    {getPhones().map((phone, index) => (
+      <Box 
+        key={index} 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            borderRadius: '4px'
+          }
+        }}
+      >
+        <IconButton 
+          sx={{ 
+            p: 0.5,
+            color: 'primary.main',
+            '&:hover': {
+              backgroundColor: 'rgba(25, 118, 210, 0.08)'
+            }
+          }}
+          onClick={() => window.open(`tel:${phone.replace(/\D/g, '')}`)}
+        >
+          <PhoneIcon fontSize="small" />
+        </IconButton>
+        <Typography
+          component="a"
+          href={`tel:${phone.replace(/\D/g, '')}`}
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' },
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            flexGrow: 1
+          }}
+        >
+          {phone}
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+</Box>
+
+        {/* <Divider sx={{ my: 2 }} /> */}
 
         {/* Action buttons */}
         <Box sx={{ mt: 'auto' }}>

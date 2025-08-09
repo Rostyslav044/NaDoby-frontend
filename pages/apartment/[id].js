@@ -193,7 +193,7 @@ const ApartmentDetailPage = () => {
   }
 
   return (
-    <Box maxWidth="1200px" mx="auto" 
+    <Box maxWidth="1200px" mx="auto" marginTop={5}
     // mt={isMobile ? 2 : 4} p={isMobile ? 1 : 3}
     >
 

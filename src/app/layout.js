@@ -77,6 +77,7 @@ import { store } from './store'; // Подключаем store
 
 import Apartments from './components/Apartments';
 import { Provider, useSelector } from 'react-redux';
+import Footer from './components/Footer';
 
 
 
@@ -108,6 +109,7 @@ export default function Layout({ children }) {
             {children}
               </main>
                  <Apartments/>
+                 <Footer/>
              {/* </Providers> */}
           </LanguageProvider>
            </Provider>

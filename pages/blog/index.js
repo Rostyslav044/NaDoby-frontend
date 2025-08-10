@@ -1,350 +1,3 @@
-// 'use client';
-// // import { LanguageProvider } from "@/app/LanguageContext";
-
-// import Header from "@/app/components/Header";
-// // import { store } from "@/app/store";
-// // import { Provider } from "react-redux";
-
-
-
-// export default function Blog() {
-//     return (
-//       <div>
-//         {/* <Provider store={store}>
-//         <LanguageProvider> */}
-//            <Header />
-       
-//          <h1>Blog</h1>
-       
-       
-         
-//          {/* </LanguageProvider>
-//          </Provider> */}
-//       </div>
-//     );
-//   }
-
-
-
-
-
-
-// 'use client'
-
-// import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
-// import Header from "@/app/components/Header"
-// import { store } from "@/app/store"
-// import { Provider } from "react-redux"
-// import { Box, Typography, Container, Card, CardContent, Button } from '@mui/material'
-// import Image from 'next/image'
-
-// // Двухъязычный контент для блога
-// const BLOG_CONTENT = {
-//   ua: {
-//     title: "Наш Блог",
-//     posts: [
-//       {
-//         title: " Квартира як новий старт",
-//         content: "Як короткочасна оренда допомагає перезавантажитися та змінити ритм життя.",
-//         image: "/apartment.png"
-//       },
-//       {
-//         title: " Готелі з характером",
-//         content: "На що звертати увагу, щоб готель був не просто зручним, а надихаючим.",
-//         image: "/hotel.png"
-//       },
-//       {
-//         title: " Хостел — це історії",
-//         content: "Чому проживання в хостелі — це більше ніж бюджетний варіант.",
-//         image: "/hostel.png"
-//       },
-//       {
-//         title: " Дім серед тиші",
-//         content: "Орендуй заміський будинок і влаштуй собі цифровий детокс.",
-//         image: "/house.png"
-//       },
-//       {
-//         title: " Сауна як ритуал",
-//         content: "Традиції, переваги та чому варто подарувати тілу спокій.",
-//         image: "/sauna.png"
-//       },
-//       {
-//         title: " Бази відпочинку - гармонія",
-//         content: "Як час серед природи змінює стан та світовідчуття.",
-//         image: "/camp.png"
-//       }
-//     ]
-//   },
-//   ru: {
-//     title: "Наш Блог",
-//     posts: [
-//       {
-//         title: " Квартира как новый старт",
-//         content: "Как краткосрочная аренда помогает перезагрузиться и сменить ритм жизни.",
-//         image: "/apartment.png"
-//       },
-//       {
-//         title: " Гостиницы с душой",
-//         content: "На что обращать внимание, чтобы отель был не просто удобным",
-//         image: "/hotel.png"
-//       },
-//       {
-//         title: " Хостел — это истории",
-//         content: "Почему проживание в хостеле — больше, чем бюджетный вариант.",
-//         image: "/hostel.png"
-//       },
-//       {
-//         title: " Дом среди тишины",
-//         content: "Арендуй загородный дом и устрой себе цифровой детокс.",
-//         image: "/house.png"
-//       },
-//       {
-//         title: " Сауна как ритуал",
-//         content: "Традиции, польза и почему стоит подарить телу покой.",
-//         image: "/sauna.png"
-//       },
-//       {
-//         title: " Базы отдыха - гармония",
-//         content: "Как время на природе меняет состояние и восприятие.",
-//         image: "/camp.png"
-//       }
-//     ]
-//   }
-// }
-
-// function BlogContent () {
-//   const { currentLanguage } = useLanguage()
-//   const content = BLOG_CONTENT[currentLanguage]
-
-//   return (
-//     <Container sx={{ py: 6 }}>
-//       <Typography variant="h3" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
-//         {content.title}
-//       </Typography>
-
-//       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 4 }}>
-//         {content.posts.map((post, index) => (
-//           <Card key={index} sx={{ display: 'flex', flexDirection: 'column' }}>
-//             <Box sx={{ position: 'relative', height: 200 }}>
-//               <Image
-//                 src={post.image}
-//                 alt={post.title}
-//                 fill
-//                 // style={{ objectFit: 'cover' }}
-//               />
-//             </Box>
-//             <CardContent sx={{ flexGrow: 1 }}>
-//               <Typography variant="h5" sx={{ mb: 2 }}>
-//                 {post.title}
-//               </Typography>
-//               <Typography variant="body1" sx={{ mb: 3 }}>
-//                 {post.content}
-//               </Typography>
-//               <Button variant="contained">
-//                 {currentLanguage === 'ua' ? 'Читати далі' : 'Читать далее'}
-//               </Button>
-//             </CardContent>
-//           </Card>
-//         ))}
-//       </Box>
-//     </Container>
-//   )
-// }
-
-// export default function Blog() {
-//   return (
-//     <Provider store={store}>
-//       <LanguageProvider>
-//         <Header />
-//         <BlogContent />
-//       </LanguageProvider>
-//     </Provider>
-//   )
-// }
-
-
-// 'use client'
-
-// import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
-// import Header from "@/app/components/Header"
-// import { store } from "@/app/store"
-// import { Provider } from "react-redux"
-// import { Box, Typography, Container, Card, CardContent, Button } from '@mui/material'
-// import Image from 'next/image'
-
-// const BLOG_CONTENT = {
-//   ua: {
-//     title: "Наш Блог",
-//     posts: [
-//       {
-//         title: "Як уникнути шахрайства",
-//         content: "7 простих правил безпечної оренди житла від NaDoby.com.ua",
-//         image: "/scams.png"
-//       },
-//       {
-//         title: "Квартира як новий старт",
-//         content: "Як короткочасна оренда допомагає перезавантажитися та змінити ритм життя.",
-//         image: "/apartment.png"
-//       },
-//       {
-//         title: "Готелі з характером",
-//         content: "На що звертати увагу, щоб готель був не просто зручним, а надихаючим.",
-//         image: "/hotel.png"
-//       },
-//       {
-//         title: "Хостел — це історії",
-//         content: "Чому проживання в хостелі — це більше ніж бюджетний варіант.",
-//         image: "/hostel.png"
-//       },
-//       {
-//         title: "Дім серед тиші",
-//         content: "Орендуй заміський будинок і влаштуй собі цифровий детокс.",
-//         image: "/house.png"
-//       },
-//       {
-//         title: "Сауна як ритуал",
-//         content: "Традиції, переваги та чому варто подарувати тілу спокій.",
-//         image: "/sauna.png"
-//       },
-//       {
-//         title: "Бази відпочинку - гармонія",
-//         content: "Як час серед природи змінює стан та світовідчуття.",
-//         image: "/camp.png"
-//       },
-     
-//     ]
-//   },
-//   ru: {
-//     title: "Наш Блог",
-//     posts: [
-//       {
-//         title: "Как избежать мошенничества",
-//         content: "7 простых правил безопасной аренды жилья от NaDoby.com.ua",
-//         image: "/scams.png"
-//       },
-//       {
-//         title: "Квартира как новый старт",
-//         content: "Как краткосрочная аренда помогает перезагрузиться и сменить ритм жизни.",
-//         image: "/apartment.png"
-//       },
-//       {
-//         title: "Гостиницы с душой",
-//         content: "На что обращать внимание, чтобы отель был не просто удобным.",
-//         image: "/hotel.png"
-//       },
-//       {
-//         title: "Хостел — это истории",
-//         content: "Почему проживание в хостеле — больше, чем бюджетный вариант.",
-//         image: "/hostel.png"
-//       },
-//       {
-//         title: "Дом среди тишины",
-//         content: "Арендуй загородный дом и устрой себе цифровой детокс.",
-//         image: "/house.png"
-//       },
-//       {
-//         title: "Сауна как ритуал",
-//         content: "Традиции, польза и почему стоит подарить телу покой.",
-//         image: "/sauna.png"
-//       },
-//       {
-//         title: "Базы отдыха - гармония",
-//         content: "Как время на природе меняет состояние и восприятие.",
-//         image: "/camp.png"
-//       },
-     
-//     ]
-//   }
-// }
-
-// function BlogPosts() {
-//   const { currentLanguage } = useLanguage()
-//   const content = BLOG_CONTENT[currentLanguage]
-
-//   return (
-//     <Container sx={{ py: 6 }}>
-//       <Typography variant="h3" component="h1" sx={{ 
-//         mb: 4, 
-//         fontWeight: 'bold',
-//         textAlign: 'center'
-//       }}>
-//         {content.title}
-//       </Typography>
-
-//       <Box sx={{ 
-//         display: 'grid', 
-//         gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-//         gap: 4,
-//         alignItems: 'stretch'
-//       }}>
-//         {content.posts.map((post, index) => (
-//           <Card key={index} sx={{ 
-//             display: 'flex', 
-//             flexDirection: 'column',
-//             height: '100%',
-//             transition: 'transform 0.3s',
-//             '&:hover': {
-//               transform: 'translateY(-5px)',
-//               boxShadow: 3
-//             }
-//           }}>
-//             <Box sx={{ 
-//               position: 'relative', 
-//               height: 200,
-//               mb: 2
-//             }}>
-//               <Image
-//                 src={post.image}
-//                 alt={post.title}
-//                 fill
-//                 style={{ 
-//                   // objectFit: 'cover',
-//                   borderTopLeftRadius: '4px',
-//                   borderTopRightRadius: '4px'
-//                 }}
-//               />
-//             </Box>
-//             <CardContent sx={{ 
-//               flexGrow: 1,
-//               display: 'flex',
-//               flexDirection: 'column'
-//             }}>
-//               <Typography variant="h5" sx={{ mb: 2 }}>
-//                 {post.title}
-//               </Typography>
-//               <Typography variant="body1" sx={{ 
-//                 mb: 3,
-//                 flexGrow: 1
-//               }}>
-//                 {post.content}
-//               </Typography>
-//               <Button 
-//                 variant="contained" 
-//                 sx={{ 
-//                   alignSelf: 'flex-start',
-//                   mt: 'auto'
-//                 }}
-//               >
-//                 {currentLanguage === 'ua' ? 'Читати далі' : 'Читать далее'}
-//               </Button>
-//             </CardContent>
-//           </Card>
-//         ))}
-//       </Box>
-//     </Container>
-//   )
-// }
-
-// export default function Blog() {
-//   return (
-//     <Provider store={store}>
-//       <LanguageProvider>
-//         <Header />
-//         <BlogPosts />
-//       </LanguageProvider>
-//     </Provider>
-//   )
-// }
 
 
 
@@ -354,8 +7,10 @@ import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
 import Header from "@/app/components/Header"
 import { store } from "@/app/store"
 import { Provider } from "react-redux"
-import { Box, Typography, Container, Card, CardContent, Button, Chip } from '@mui/material'
+import { Warning } from '@mui/icons-material';  
+import { Box,Typography, Container, Card, CardContent, Button, Chip } from '@mui/material'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const BLOG_CONTENT = {
   ua: {
@@ -366,19 +21,24 @@ const BLOG_CONTENT = {
         title: "Як уникнути шахрайства при оренді",
         content: "7 золотих правил безпечної угоди від експертів NaDoby",
         image: "/scams.png",
-        category: "Безпека"
+        category: "Безпека",
+        link: "/blog/scams" 
       },
       {
         title: "Міські квартири для комфортного відпочинку",
         content: "Як вибрати ідеальну квартиру для короткострокової оренди",
         image: "/apartment.png",
-        category: "Квартири"
+        category: "Квартири",
+        link: "/blog/apartmentGuide" 
       },
       {
         title: "Готелі з особливою атмосферою",
         content: "На що звертати увагу при виборі готельного номеру",
         image: "/hotel.png",
-        category: "Готелі"
+        category: "Готелі",
+        // link: "/apartmentGuide" ,
+        link: "/blog/hotelGuide"
+        
       },
       {
         title: " Хостели ",
@@ -445,19 +105,22 @@ const BLOG_CONTENT = {
         title: "Как избежать мошенничества при аренде",
         content: "7 золотых правил безопасной сделки от экспертов NaDoby",
         image: "/scams.png",
-        category: "Безопасность"
+        category: "Безопасность",
+        link: "/blog/scams",
       },
       {
         title: "Городские квартиры для комфортного отдыха",
         content: "Как выбрать идеальную квартиру для краткосрочной аренды",
         image: "/apartment.png",
-        category: "Квартиры"
+        category: "Квартиры",
+        link: "/blog/apartmentGuide" 
       },
       {
         title: "Отели с особой атмосферой",
         content: "На что обращать внимание при выборе гостиничного номера",
         image: "/hotel.png",
-        category: "Отели"
+        category: "Отели",
+        link: "/blog/hotelGuide"
       },
       {
         title: " Хостелы ",
@@ -607,7 +270,7 @@ function BlogPosts() {
               }}>
                 {post.content}
               </Typography>
-              <Button 
+              {/* <Button 
                 variant="contained" 
                 size="medium"
                 sx={{ 
@@ -620,7 +283,43 @@ function BlogPosts() {
                 }}
               >
                 {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
-              </Button>
+              </Button> */}
+
+{post.link ? (
+  <Link href={post.link} passHref legacyBehavior>
+    <Button 
+      component="a"
+      variant="contained" 
+      size="medium"
+      sx={{ 
+        mt: 'auto',
+        alignSelf: 'flex-start',
+        px: 3,
+        py: 1,
+        fontWeight: 600,
+        transition: 'background-color 0.3s ease'
+      }}
+    >
+      {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
+    </Button>
+  </Link>
+) : (
+  <Button 
+    variant="contained" 
+    size="medium"
+    sx={{ 
+      mt: 'auto',
+      alignSelf: 'flex-start',
+      px: 3,
+      py: 1,
+      fontWeight: 600,
+      transition: 'background-color 0.3s ease'
+    }}
+  >
+    {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
+  </Button>
+)}
+
             </CardContent>
           </Card>
         ))}

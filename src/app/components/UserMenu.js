@@ -157,7 +157,7 @@ const UserMenu = () => {
   { text: t.profile, href: "/my-profile" },
   { text: t.myListings, href: "/my-listings" },
   { text: t.rentOut, href: "/add-apartment" },
-  { text: t.searchHome, href: "/search-apartment" },
+  { text: t.searchHome, href: "/" },
 ].map((item) => (
   <Link href={item.href} passHref legacyBehavior key={item.text}>
     <ListItem component="a" sx={{ px: 3 }}>

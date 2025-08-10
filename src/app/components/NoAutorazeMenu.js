@@ -195,7 +195,7 @@ const NoAutorazeMenu = () => {
 
                 <ListItem 
                   component={Link}
-                  href="/search-apartment"
+                  href="/"
                   sx={{ 
                     px: 3, 
                     py: 1.5,

@@ -41,34 +41,39 @@ const BLOG_CONTENT = {
         
       },
       {
-        title: " Хостели ",
+        title: " Хостели – бюджетно та весело!",
         content: "Чому хостели - це не просто дешевий варіант",
         image: "/hostel.png",
-        category: "Хостели"
+        category: "Хостели",
+        link: "/blog/hostelGuide"
       },
       {
         title: "Будинки для відпочинку",
         content: "Переваги оренди приватного будинку перед готелем",
         image: "/house.png",
-        category: "Будинки"
+        category: "Будинки",
+        link: "/blog/houseGuide"
       },
       {
         title: "Сауни/Бані  для здоров'я",
         content: "Як правильно відпочивати у сауні для максимальної користі",
         image: "/sauna.png",
-        category: "Сауни/Бані"
+        category: "Сауни/Бані",
+        link: "/blog/saunaGuide"
       },
       {
         title: "Бази відпочинку серед природи",
         content: "Як провести час на базі відпочинку з максимальною користю",
         image: "/camp.png",
-        category: "Бази відпочинку"
+        category: "Бази відпочинку",
+        link: "/blog/campGuide"
       },
       {
         title: "Глемпінг - комфорт серед природи",
         content: "Топ незвичайних глемпінг локацій в Україні",
-        image: "/glemping.png",
-        category: "Глемпінг"
+        image: "/glamping.png",
+        category: "Глемпінг",
+        link: "/blog/glampingGuide"
       },
       // Нові категорії
       {
@@ -123,34 +128,39 @@ const BLOG_CONTENT = {
         link: "/blog/hotelGuide"
       },
       {
-        title: " Хостелы ",
+        title: " Хостелы – бюджетно и весело! ",
         content: "Почему хостелы - это не просто дешевый вариант",
         image: "/hostel.png",
-        category: "Хостелы"
+        category: "Хостелы",
+        link: "/blog/hostelGuide"
       },
       {
         title: " Дома для отдыха",
         content: "Преимущества аренды частного дома перед отелем",
         image: "/house.png",
-        category: "Дома"
+        category: "Дома",
+        link: "/blog/houseGuide"
       },
       {
         title: "Сауны/Бани  для здоровья",
         content: "Как правильно отдыхать в сауне для максимальной пользы",
         image: "/sauna.png",
-        category: "Сауны/Бани"
+        category: "Сауны/Бани",
+        link: "/blog/saunaGuide"
       },
       {
         title: "Базы отдыха на природе",
         content: "Как провести время на базе отдыха с максимальной пользой",
         image: "/camp.png",
-        category: "Туризм"
+        category: "Туризм",
+        link: "/blog/campGuide"
       },
       {
         title: "Глэмпинг - комфорт среди природы",
         content: "Топ необычных глэмпинг локаций в Украине",
-        image: "/glemping.png",
-        category: "Глэмпинг"
+        image: "/glamping.png",
+        category: "Глэмпинг",
+        link: "/blog/glampingGuide"
       },
       // Новые категории
       {

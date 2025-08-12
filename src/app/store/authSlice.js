@@ -1,39 +1,4 @@
 
-// import { createSlice } from '@reduxjs/toolkit';
-// import { signIn, signOut, useSession } from "next-auth/react"
-// const initialState = {
-//   isAuthenticated: false,
-//   user: null,
-// };
-
-// const authSlice = createSlice({
-//   name: 'auth',
-//   initialState,
-//   reducers: {
-//     login(state, action) {
-//       state.isAuthenticated = true;
-//     //   state.user = action.payload;
-//       localStorage.setItem('auth_token', action.payload);
-//     },
-//     logout(state) {
-//       state.isAuthenticated = false;
-//       state.user = null;
-//       signOut();
-//       localStorage.removeItem('auth_token');
-//     },
-//     loadFromStorage(state) {
-//       const stored = localStorage.getItem('auth_token');
-//       if (stored) {
-//         state.isAuthenticated = true;
-//         // state.user = JSON.parse(stored);
-//       }
-//     },
-//   },
-// });
-
-// export const { login, logout, loadFromStorage } = authSlice.actions;
-
-// export default authSlice.reducer;
 
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -43,6 +8,7 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   profile: {
+  _id: "",
     name: "",
     city: "",
     phones: ["", "", ""],
@@ -58,7 +24,8 @@ const authSlice = createSlice({
   reducers: {
     login(state, action) {
       state.isAuthenticated = true;
-      state.user = action.payload.user;
+      console.log(action.payload);
+      // state.user = action.payload.user;
       if (action.payload.profile) {
         state.profile = { ...state.profile, ...action.payload.profile };
       }
@@ -100,3 +67,5 @@ const authSlice = createSlice({
 export const { login, logout, loadFromStorage, updateProfile, updateCity } = authSlice.actions;
 
 export default authSlice.reducer;
+
+

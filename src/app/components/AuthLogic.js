@@ -189,7 +189,7 @@ export default function AuthLogic() {
             setJustRegistered(true);
             localStorage.setItem('justRegistered', 'true');
             if (dataResponse.success && dataResponse.token) {
-              dispatch(login(dataResponse.token));
+              dispatch(login(dataResponse));
             }
           }
         } catch (err) {

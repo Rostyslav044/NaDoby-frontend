@@ -679,7 +679,7 @@ import {
   Stack
 } from '@mui/material';
 import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from '@/app/store';
 import { useDispatch } from 'react-redux';
 import { updateCity } from '@/app/store/authSlice';
@@ -818,7 +818,8 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
   const [mapCenter, setMapCenter] = useState({ lat: 50.4501, lng: 30.5234 });
   const [autocompleteError, setAutocompleteError] = useState(false);
   const [photoError, setPhotoError] = useState(false);
-
+  const profile = useSelector(state => state.auth.profile )
+  console.log(profile);
   // Эффекты
   useEffect(() => {
     if (uploadImages.length >= 3) setPhotoError(false);
@@ -1096,12 +1097,14 @@ const AddApartmentForm = ({ isGoogleMapsLoaded, mapError, onMapError }) => {
 
     setIsSubmitting(true);
     try {
+      
       const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
         body: JSON.stringify({ 
           ...formData, 
           ...apartmentInfo, 
-          photos: uploadImages 
+          photos: uploadImages, 
+          _id:profile._id
         }),
         headers: { 'Content-Type': 'application/json' },
       });

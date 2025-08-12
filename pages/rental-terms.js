@@ -25,7 +25,7 @@ export default function RentalTerms() {
                 mb: 6,
                 fontSize: '2.5rem'
               }}>
-                NaDoby.com.ua
+                Умови оренди
               </Typography>
 
               <Typography variant="h5" component="p" sx={{

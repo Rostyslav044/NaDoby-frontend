@@ -111,7 +111,7 @@ const CreateUser = ({ onClose }) => {
         if (dataResponse.success && dataResponse.token) {
              setTimeout(() => {
           onClose();
-          dispatch(login(dataResponse.token));
+          dispatch(login(dataResponse));
 
           reset();
         }, 3000);

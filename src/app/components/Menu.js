@@ -8,6 +8,8 @@ import NoAutorazeMenu from './NoAutorazeMenu';
 
 
 
+
+
 export default function Menu() {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -35,29 +37,5 @@ export default function Menu() {
 
 
 
-// 'use client';
 
-// import { useDispatch, useSelector } from 'react-redux';
-// import { loadFromStorage } from '../store/authSlice';
-// import { useEffect } from 'react';
-// import UserMenu from './UserMenu';
-// import NoAutorazeMenu from './NoAutorazeMenu';
 
-// export default function Menu() {
-//   const dispatch = useDispatch();
-//   const { isAuthenticated } = useSelector((state) => state.auth);
-
-//   useEffect(() => {
-//     dispatch(loadFromStorage());
-//   }, [dispatch]);
-
-//   return (
-//     <div>
-//       {isAuthenticated ? (
-//         <UserMenu />
-//       ) : (
-//         <NoAutorazeMenu />
-//       )}
-//     </div>
-//   );
-// }

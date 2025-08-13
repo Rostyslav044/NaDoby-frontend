@@ -25,7 +25,7 @@ const BLOG_CONTENT = {
         link: "/blog/scams" 
       },
       {
-        title: "Міські квартири для комфортного відпочинку",
+        title: "Квартири подобово для комфортного відпочинку",
         content: "Як вибрати ідеальну квартиру для короткострокової оренди",
         image: "/apartment.png",
         category: "Квартири",
@@ -39,6 +39,13 @@ const BLOG_CONTENT = {
         // link: "/apartmentGuide" ,
         link: "/blog/hotelGuide"
         
+      },
+      {
+        title: "Готелі для тварин з турботою",
+        content: "Як обрати найкращий готель для вашого улюбленця",
+        image: "/animal.png",
+        category: "Готелі для тварин",
+        link: "/blog/petHotelGuide"
       },
       {
         title: " Хостели – бюджетно та весело!",
@@ -80,25 +87,30 @@ const BLOG_CONTENT = {
         title: "Пансіонати з лікувальними програмами",
         content: "Як вибрати пансіонат з максимальною користю для здоров'я",
         image: "/pansionat.png",
-        category: "Пансіонати"
+        category: "Пансіонати",
+        link: "/blog/sanatoriumGuide"
       },
       {
         title: "Котеджні містечка для великих компаній",
         content: "Переваги оренди цілого комплексу для сімейних свят",
         image: "/kotedzi.png",
-        category: "Котеджі"
+        category: "Котеджі",
+        link: "/blog/cottageComplexGuide"
       },
       {
-        title: "Робочі простори ",
+        title: "Коворкінг - робочі простори ",
         content: "Ідеальні умови для digital-кочівників та фрілансерів",
         image: "/kavorking.png",
-        category: "Коворкінг"
+        category: "Коворкінг",
+        link: "/blog/coworkingGuide"
+        
       },
       {
         title: "Автокемпінги для мандрівників",
         content: "Найкращі місця для автотуристів по всій Україні",
         image: "/avtokemping.png",
-        category: "Автокемпінг"
+        category: "Автокемпінг",
+        link: "/blog/autocampingGuide",
       }
     ]
   },
@@ -114,7 +126,7 @@ const BLOG_CONTENT = {
         link: "/blog/scams",
       },
       {
-        title: "Городские квартиры для комфортного отдыха",
+        title: "Квартиры посуточно для комфортного отдыха",
         content: "Как выбрать идеальную квартиру для краткосрочной аренды",
         image: "/apartment.png",
         category: "Квартиры",
@@ -126,6 +138,13 @@ const BLOG_CONTENT = {
         image: "/hotel.png",
         category: "Отели",
         link: "/blog/hotelGuide"
+      },
+       {
+        title: "Отели для животных с заботой",
+        content: "Как выбрать лучший отель для вашего любимца",
+        image: "/animal.png",
+        category: "Отель для животных",
+        link: "/blog/petHotelGuide"
       },
       {
         title: " Хостелы – бюджетно и весело! ",
@@ -167,25 +186,32 @@ const BLOG_CONTENT = {
         title: "Пансионаты с лечебными программами",
         content: "Как выбрать пансионат с максимальной пользой для здоровья",
         image: "/pansionat.png",
-        category: "Пансионаты"
+        category: "Пансионаты",
+        link: "/blog/sanatoriumGuide"
       },
       {
         title: "Коттеджные городки для больших компаний",
         content: "Преимущества аренды целого комплекса для семейных праздников",
         image: "/kotedzi.png",
-        category: "Коттеджи"
+        category: "Коттеджи",
+        link: "/blog/cottageComplexGuide"
+        
       },
       {
-        title: "Рабочие пространства с проживанием",
+        title: " Коворкинг - рабочие пространства с проживанием",
         content: "Идеальные условия для digital-кочевников и фрилансеров",
-        image: "/co-working.png",
-        category: "Коворкинги"
+        image: "/kavorking.png",
+        category: "Коворкинги",
+        link: "/blog/coworkingGuide",
+
+        
       },
       {
         title: "Автокемпинги для путешественников",
         content: "Лучшие места для автотуристов по всей Украине",
-        image: "/car-camping.png",
-        category: "Автокемпинг"
+        image: "/avtokemping.png",
+        category: "Автокемпинг",
+        link: "/blog/autocampingGuide",
       }
     ]
   }

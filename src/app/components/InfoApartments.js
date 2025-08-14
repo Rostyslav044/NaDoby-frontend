@@ -3,6 +3,7 @@
 
 
 
+
 'use client';
 
 
@@ -473,7 +474,3 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
 });
 
 export default InfoApartments;
-
-
-
-

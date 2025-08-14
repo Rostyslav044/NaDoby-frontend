@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react';
 import { CircularProgress, Box } from '@mui/material';
 import ApartmentList from './ApartmentList';
 
-const Apartments = () => {
+const Apartments = ({userId}) => { 
   const [apartments, setApartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState({});
@@ -22,7 +22,8 @@ const Apartments = () => {
   useEffect(() => {
     const fetchApartments = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/apartments/get-all');
+        const endEndpoint = userId?`user-apartment/${userId}`:'get-all';
+        const response = await axios.get(`http://localhost:3000/api/v1/apartments/${endEndpoint}`);
         setApartments(response.data);
       } catch (error) {
         console.error('Помилка при завантаженні апартаментів:', error);

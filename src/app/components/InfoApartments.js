@@ -174,15 +174,31 @@ const InfoApartments = forwardRef(({ onDataChange }, ref) => {
   };
   
 
+  // useImperativeHandle(ref, () => ({
+  //   validate: () => {
+  //     const newErrors = validateFields();
+  //     return !Object.values(newErrors).some(Boolean);
+  //   }
+  // }));
+
+
   useImperativeHandle(ref, () => ({
     validate: () => {
       const newErrors = validateFields();
       return !Object.values(newErrors).some(Boolean);
+    },
+    reset: () => {
+      setFormData({
+        rooms: "", beds: "", size: "", floor: "", totalFloors: "",
+        checkIn: "", checkOut: "", minRent: "", fullDayCheckIn: "",
+        smoking: "", parties: "", pets: "", reportDocs: "", deposit: "",
+        ageLimit: "", name: "", kidsAge: "", conveniences: []
+      });
+      setPhones(["+380"]);
+      setErrors({});
+      // Если нужно сбросить другие состояния, добавьте их здесь
     }
   }));
-
-
-
 
   
 

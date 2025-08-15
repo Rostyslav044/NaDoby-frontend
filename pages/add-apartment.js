@@ -232,27 +232,6 @@ const handleCitySelect = (place) => {
 
   
 
-  // const validateForm = () => {
-  //   const descriptionTooShort = formData.description.length < 85;
-  //   const cityHasMetro = CITIES_WITH_METRO.some(c => 
-  //     c.toLowerCase() === formData.city.toLowerCase()
-  //   );
-  
-  //   const newErrors = {
-  //     category: !formData.category,
-  //     objectName: !formData.objectName || formData.objectName.length > 59,
-  //     description: !formData.description || descriptionTooShort,
-  //     city: !formData.city,
-  //     price: !formData.price,
-  //     street: !formData.street,
-  //     houseNumber: !formData.houseNumber,
-  //     district: !formData.district,
-  //     metro: cityHasMetro && !formData.metro,
-  //   };
-  
-  //   setErrors(newErrors);
-  //   return !Object.values(newErrors).some(Boolean);
-  // };
 
 
   const validateForm = () => {
@@ -280,27 +259,71 @@ const handleCitySelect = (place) => {
     return !Object.values(newErrors).some(Boolean);
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (uploadImages.length < 3) {
+  //     setPhotoError(true);
+  //     setSnackbarMessage('Загрузите минимум 3 фотографии!');
+  //     setSnackbarOpen(true);
+  //     return;
+  //   }
+
+  //   const isFormValid = validateForm();
+  //   const isInfoValid = infoRef.current?.validate();
+
+  //   if (!isFormValid || !isInfoValid) {
+  //     setSnackbarMessage('Заполните все обязательные поля!');
+  //     setSnackbarOpen(true);
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   try { console.log(uploadImages);
+  //     const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
+  //       method: 'POST',
+  //       body: JSON.stringify({ 
+  //         ...formData, 
+  //         ...apartmentInfo, 
+  //         photos: uploadImages 
+  //       }),
+  //       headers: { 'Content-Type': 'application/json' },
+  //     });
+
+  //     if (!response.ok) throw new Error('Ошибка сервера');
+  //     setSnackbarMessage('Объявление успешно добавлено!');
+  //   } catch (error) {
+  //     console.error('Ошибка:', error);
+  //     setSnackbarMessage(error.message || 'Произошла ошибка при добавлении');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //     setSnackbarOpen(true);
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (uploadImages.length < 3) {
       setPhotoError(true);
       setSnackbarMessage('Загрузите минимум 3 фотографии!');
       setSnackbarOpen(true);
       return;
     }
-
+  
     const isFormValid = validateForm();
     const isInfoValid = infoRef.current?.validate();
-
+  
     if (!isFormValid || !isInfoValid) {
       setSnackbarMessage('Заполните все обязательные поля!');
       setSnackbarOpen(true);
       return;
     }
-
+  
     setIsSubmitting(true);
-    try { console.log(uploadImages);
+    try {
+      console.log(uploadImages);
       const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
         method: 'POST',
         body: JSON.stringify({ 
@@ -310,8 +333,27 @@ const handleCitySelect = (place) => {
         }),
         headers: { 'Content-Type': 'application/json' },
       });
-
+  
       if (!response.ok) throw new Error('Ошибка сервера');
+      
+      // Очищаем поля после успешной отправки
+      setFormData({
+        city: '', street: '', district: '', metro: '', hasMetro: false,
+        description: '', price: '', houseNumber: '',
+        category: '', objectName: '', latitude: null, longitude: null,
+        originalCity: '',  
+        region: '',
+      });
+      setUploadImages([]);
+      setApartmentInfo({});
+      setSelectedLocation(null);
+      setMapCenter({ lat: 50.4501, lng: 30.5234 });
+      
+      // Если используете ref для InfoApartments, можно сбросить его состояние
+      if (infoRef.current && infoRef.current.reset) {
+        infoRef.current.reset();
+      }
+      
       setSnackbarMessage('Объявление успешно добавлено!');
     } catch (error) {
       console.error('Ошибка:', error);
@@ -321,7 +363,6 @@ const handleCitySelect = (place) => {
       setSnackbarOpen(true);
     }
   };
-
 
   
   const handlePreview = () => {

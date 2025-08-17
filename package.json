@@ -19,6 +19,7 @@
     "axios": "^1.8.1",
     "bcryptjs": "^2.4.3",
     "emotion": "^11.0.0",
+    "framer-motion": "^12.23.12",
     "multer": "^1.4.5-lts.1",
     "next": "15.0.3",
     "next-auth": "^4.24.11",

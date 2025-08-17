@@ -1281,6 +1281,9 @@
 
 
 
+
+
+
 'use client';
 
 import { useRouter } from 'next/router';
@@ -1336,6 +1339,8 @@ import Footer from '@/app/components/Footer';
 
 const translations = {
   ua: {
+    district: "район",
+    metro: "метро",
     backButton: "Назад",
     description: "Опис",
     characteristics: "Основні характеристики",
@@ -1457,6 +1462,9 @@ const translations = {
     }
   },
   ru: {
+    district: "район",
+    metro: "метро",
+
     backButton: "Назад",
     description: "Описание",
     characteristics: "Основные характеристики",
@@ -1728,18 +1736,34 @@ const ApartmentDetailContent = () => {
     return `${hours}:${minutes}`;
   };
 
-  const formatAddress = () => {
-    if (!apartment) return '';
+  // const formatAddress = () => {
+  //   if (!apartment) return '';
     
-    const parts = [];
-    if (apartment.city) parts.push(apartment.city);
-    if (apartment.street && apartment.houseNumber) {
-      parts.push(`${apartment.street} ${apartment.houseNumber}`);
-    }
-    if (apartment.district) parts.push(`${t.district} ${apartment.district}`);
-    if (apartment.metro) parts.push(`${t.metro} ${apartment.metro}`);
-    return parts.join(', ');
-  };
+  //   const parts = [];
+  //   if (apartment.city) parts.push(apartment.city);
+  //   if (apartment.street && apartment.houseNumber) {
+  //     parts.push(`${apartment.street} ${apartment.houseNumber}`);
+  //   }
+  //   if (apartment.district) parts.push(`${t.district} ${apartment.district}`);
+  //   if (apartment.metro) parts.push(`${t.metro} ${apartment.metro}`);
+  //   return parts.join(', ');
+  // };
+
+
+
+// В ApartmentDetailContent замените formatAddress на:
+const formatAddress = () => {
+  if (!apartment) return '';
+  
+  const parts = [];
+  if (apartment.city) parts.push(apartment.city);
+  if (apartment.street && apartment.houseNumber) {
+    parts.push(`${apartment.street} ${apartment.houseNumber}`);
+  }
+  if (apartment.district) parts.push(`район ${apartment.district}`);
+  if (apartment.metro) parts.push(`метро ${apartment.metro}`);
+  return parts.join(', ');
+};
 
   if (!apartment) {
     return (

@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import {
@@ -21,7 +21,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { ArrowDropDown } from "@mui/icons-material";
 import { useLanguage } from "@/app/LanguageContext";
 import { logout } from "../store/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 const translations = {
   ua: {
@@ -61,9 +62,28 @@ const UserMenu = () => {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isCurrencyMenuOpen, setIsCurrencyMenuOpen] = useState(false);
   const { currentLanguage, onLanguageToggle } = useLanguage();
+  const [myListingsCount,setMyListingsCount] = useState(false);
+  
   const t = translations[currentLanguage];
   const dispatch = useDispatch();
+  const profile = useSelector(state=>state.auth.profile);
+  useEffect(()=>{
 
+  const fetchApartments = async () => {
+      try {
+
+        const response = await axios.get(`http://localhost:3000/api/v1/apartments/user-apartment-count/${profile._id}`);
+     console.log(response.data)
+     setMyListingsCount(response.data.count)
+      } catch (error) {
+        console.error('Помилка при завантаженні апартаментів:', error);
+      } 
+    };
+  
+    fetchApartments();
+
+
+  } ,[]);
   const handleLogout = () => {
     dispatch(logout());
     setIsOpen(false);
@@ -155,7 +175,7 @@ const UserMenu = () => {
       
 {[
   { text: t.profile, href: "/my-profile" },
-  { text: t.myListings, href: "/my-listings" },
+  { text: `${t.myListings} ${myListingsCount}`, href: "/my-listings" },
   { text: t.rentOut, href: "/add-apartment" },
   { text: t.searchHome, href: "/" },
 ].map((item) => (

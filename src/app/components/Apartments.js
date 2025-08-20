@@ -70,3 +70,5 @@ const Apartments = ({userId}) => {
 };
 
 export default Apartments;
+
+

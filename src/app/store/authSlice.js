@@ -4,7 +4,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { signIn, signOut, useSession } from "next-auth/react";
 
-const initialState = {
+const localProfile = typeof window !== "undefined"
+  ? localStorage.getItem('user_profile')
+  : null;
+let initialState = {
   isAuthenticated: false,
   user: null,
   profile: {
@@ -17,6 +20,18 @@ const initialState = {
     avatar: "/default-avatar.jpg"
   }
 };
+
+
+if(localProfile){
+  initialState={
+    isAuthenticated: true,
+    user: null,
+    profile:JSON.parse(localProfile),
+  }
+}
+
+
+
 
 const authSlice = createSlice({
   name: 'auth',

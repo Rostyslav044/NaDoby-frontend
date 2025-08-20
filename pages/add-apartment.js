@@ -713,7 +713,7 @@ import {
   FormControl, InputLabel, Box, CircularProgress, Snackbar, Alert, Stack
 } from '@mui/material';
 import Header from '@/app/components/Header';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from '@/app/store';
 
 const translations = {
@@ -723,7 +723,7 @@ const translations = {
     categories: [
       'Квартира', 'Готель', 'Готель для тварин',
       'Хостел', 'Будинок', 'База відпочинку', 'Сауна/Лазня', 'Глемпінг',
-      'Пансіонат', 'Котедж для компаній', 'Коворкінг', 'Автокемпінг'
+      'Санаторій/Пансіонат', 'Котедж для компаній', 'Коворкінг', 'Автокемпінг'
     ],
     objectNameLabel: 'Назва об\'єкта *',
     objectNameHelper: 'Наприклад: Готель Затишок (максимум 59 символів)',
@@ -753,7 +753,7 @@ const translations = {
     categories: [
       'Квартира', 'Гостиница', 'Отель для животных',
       'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня', 'Глэмпинг',
-      'Пансионат', 'Коттедж для компаний', 'Коворкинг', 'Автокемпинг'
+      'Санаторий/Пансионат', 'Коттедж для компаний', 'Коворкинг', 'Автокемпинг'
     ],
     objectNameLabel: 'Название объекта *',
     objectNameHelper: 'Например: Гостиница Уют (максимум 59 символов)',
@@ -809,6 +809,10 @@ function AddApartmentForm() {
   const cityInputRef = useRef(null);
   const streetInputRef = useRef(null);
   const geocoderRef = useRef(null);
+const profile = useSelector(state=>state.auth.profile);
+console.log(profile);
+
+
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
   useEffect(() => {
@@ -1010,7 +1014,8 @@ function AddApartmentForm() {
         body: JSON.stringify({ 
           ...formData, 
           ...apartmentInfo, 
-          photos: uploadImages 
+          photos: uploadImages ,
+          user_id:profile._id,
         }),
         headers: { 'Content-Type': 'application/json' },
       });

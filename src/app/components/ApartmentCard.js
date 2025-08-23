@@ -529,6 +529,14 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
         </IconButton>
       </Tooltip>
 
+
+      {/* КНОВКА ДЕЙСТВИЙ - ДОБАВЬТЕ ЭТОТ КОД ПОСЛЕ КНОПКИ ИЗБРАННОГО */}
+      {apartment.actions && (
+  <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 2 }}>
+    {apartment.actions}
+  </Box>
+)}
+
       {/* Photo Gallery */}
       <Box
         position="relative"
@@ -755,3 +763,6 @@ export default function ApartmentCard({ apartment, isFavorite, toggleFavorite })
     </Provider>
   );
 }
+
+
+

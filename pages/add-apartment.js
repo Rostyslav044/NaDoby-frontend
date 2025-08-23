@@ -4,11 +4,13 @@
 // После отправки формы он получает ответ от сервера с данными о добавленном
 //  объявлении и выводит сообщение
 
+
+
 // 'use client';
 
 // import React, { useState, useEffect, useRef } from 'react';
+// import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 // import FileUploadSlider from '@/app/components/FileUploadSlider';
-// import { LanguageProvider } from '@/app/LanguageContext';
 // import MetroSelector from '@/app/components/MetroSelector';
 // import InfoApartments from '@/app/components/InfoApartments';
 // import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
@@ -18,20 +20,83 @@
 //   FormControl, InputLabel, Box, CircularProgress, Snackbar, Alert, Stack
 // } from '@mui/material';
 // import Header from '@/app/components/Header';
-// import { Provider } from 'react-redux';
+// import { Provider, useSelector } from 'react-redux';
 // import { store } from '@/app/store';
 
-// // const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
+// const translations = {
+//   ua: {
+//     addTitle: 'Додати нове оголошення',
+//     categoryLabel: 'Категорія *',
+//     categories: [
+//       'Квартира', 'Готель', 'Готель для тварин',
+//       'Хостел', 'Будинок', 'База відпочинку', 'Сауна/Лазня', 'Глемпінг',
+//       'Санаторій/Пансіонат', 'Котедж для компаній', 'Коворкінг', 'Автокемпінг'
+//     ],
+//     objectNameLabel: 'Назва об\'єкта *',
+//     objectNameHelper: 'Наприклад: Готель Затишок (максимум 59 символів)',
+//     descriptionLabel: 'Опис *',
+//     descriptionHelper: 'Мінімум 85 символів.',
+//     cityLabel: 'Місто *',
+//     streetLabel: 'Вулиця *',
+//     manualStreetPrompt: 'Не знайшли вулицю? Введіть вручну',
+//     googleStreetPrompt: 'Повернутися до пошуку вулиці через Google',
+//     houseNumberLabel: 'Номер будинку *',
+//     priceLabel: 'Ціна *',
+//     districtLabel: 'Район *',
+//     moveMarkerText: 'Ви можете переміщати маркер на карті для точного вказання місця!',
+//     uploadPhotosText: 'Завантажте мінімум 3 фото',
+//     previewButton: 'Попередній перегляд',
+//     submitButton: 'Створити оголошення',
+//     successMessage: 'Оголошення успішно додано!',
+//     errorMessage: 'Будь ласка, заповніть всі обов\'язкові поля!',
+//     minPhotosError: 'Завантажте мінімум 3 фотографії!',
+//     serverError: 'Сталася помилка сервера',
+//     requiredField: 'Це поле обов\'язкове',
+//     maxCharsError: 'Максимум 59 символів'
+//   },
+//   ru: {
+//     addTitle: 'Добавить новое объявление',
+//     categoryLabel: 'Категория *',
+//     categories: [
+//       'Квартира', 'Гостиница', 'Отель для животных',
+//       'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня', 'Глэмпинг',
+//       'Санаторий/Пансионат', 'Коттедж для компаний', 'Коворкинг', 'Автокемпинг'
+//     ],
+//     objectNameLabel: 'Название объекта *',
+//     objectNameHelper: 'Например: Гостиница Уют (максимум 59 символов)',
+//     descriptionLabel: 'Описание *',
+//     descriptionHelper: 'Минимум 85 символов.',
+//     cityLabel: 'Город *',
+//     streetLabel: 'Улица *',
+//     manualStreetPrompt: 'Не нашли улицу? Введите вручную',
+//     googleStreetPrompt: 'Вернуться к поиску улицы с помощью Google',
+//     houseNumberLabel: 'Номер дома *',
+//     priceLabel: 'Цена *',
+//     districtLabel: 'Район *',
+//     moveMarkerText: 'Вы можете двигать маркер на карте для точного указания местоположения!',
+//     uploadPhotosText: 'Загрузите минимум 3 фото',
+//     previewButton: 'Предпросмотр',
+//     submitButton: 'Создать объявление',
+//     successMessage: 'Объявление успешно добавлено!',
+//     errorMessage: 'Пожалуйста, заполните все обязательные поля!',
+//     minPhotosError: 'Загрузите минимум 3 фотографии!',
+//     serverError: 'Произошла ошибка сервера',
+//     requiredField: 'Это поле обязательно',
+//     maxCharsError: 'Максимум 59 символов'
+//   }
+// };
 
-// const AddApartment = () => {
-//   // Состояния
+// const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
+
+// function AddApartmentForm() {
+//   const { currentLanguage } = useLanguage();
+//   const t = translations[currentLanguage];
 //   const [uploadImages, setUploadImages] = useState([]);
 //   const [formData, setFormData] = useState({
 //     city: '', street: '', district: '', metro: '', hasMetro: false,
 //     description: '', price: '', houseNumber: '',
 //     category: '', objectName: '', latitude: null, longitude: null,
-//     originalCity: '',  
-//     region: '',
+//     originalCity: '', region: '',
 //   });
 //   const [errors, setErrors] = useState({});
 //   const [apartmentInfo, setApartmentInfo] = useState({});
@@ -45,20 +110,18 @@
 //   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
 //   const [photoError, setPhotoError] = useState(false);
 
-//   // Рефы
 //   const infoRef = useRef();
 //   const cityAutocompleteRef = useRef(null);
 //   const streetAutocompleteRef = useRef(null);
 //   const cityInputRef = useRef(null);
 //   const streetInputRef = useRef(null);
 //   const geocoderRef = useRef(null);
-//   const handleMetroSelect = (metro) => {
-//     setFormData(prev => ({ ...prev, metro }));
-//     setErrors(prev => ({ ...prev, metro: false }));
-//   };
+// const profile = useSelector(state=>state.auth.profile);
+// console.log(profile);
+
+
 //   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
-//   // Эффекты
 //   useEffect(() => {
 //     if (uploadImages.length >= 3) setPhotoError(false);
 //   }, [uploadImages]);
@@ -75,11 +138,9 @@
 //     }
 //   }, [isGoogleMapsLoaded, showManualStreetInput]);
 
-//   // Функции
 //   const initAutocomplete = () => {
 //     if (!window.google) return;
 
-//     // Инициализация автодополнения для города
 //     if (cityInputRef.current && !cityAutocompleteRef.current) {
 //       cityAutocompleteRef.current = new window.google.maps.places.Autocomplete(
 //         cityInputRef.current, 
@@ -91,7 +152,6 @@
 //       });
 //     }
 
-//     // Инициализация автодополнения для улицы (только если не в ручном режиме)
 //     if (!showManualStreetInput && streetInputRef.current && !streetAutocompleteRef.current) {
 //       streetAutocompleteRef.current = new window.google.maps.places.Autocomplete(
 //         streetInputRef.current, 
@@ -104,55 +164,38 @@
 //     }
 //   };
 
+//   const handleCitySelect = (place) => {
+//     const addressComponents = place?.address_components || [];
+//     const cityComponent = addressComponents.find(c => c.types.includes('locality'));
+//     const regionComponent = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
+    
+//     const city = cityComponent?.long_name || place?.name || '';
+//     const region = regionComponent?.long_name || '';
+//     const fullCityName = region ? `${city}, ${region}` : city;
+    
+//     const cleanedCity = city.trim().toLowerCase();
+//     const hasMetro = CITIES_WITH_METRO.some(
+//       c => c.trim().toLowerCase() === cleanedCity
+//     );
+    
+//     setFormData(prev => ({ 
+//       ...prev, 
+//       city: fullCityName,
+//       originalCity: city,
+//       region,
+//       metro: '',
+//       hasMetro
+//     }));
+    
+//     setErrors(prev => ({ ...prev, city: false, metro: false }));
 
-
-
-// // 1. Исправляем массив городов (убираем пробелы)
-// const CITIES_WITH_METRO = ['Київ', 'Харків', 'Дніпро', 'Киев', 'Харьков', 'Днепр'];
-
-
-// <MetroSelector
-//   city={formData.originalCity}
-//   onMetroSelect={handleMetroSelect}
-//   error={!!errors.metro}
-//   onErrorClear={() => setErrors(prev => ({...prev, metro: false}))}
-//   show={formData.hasMetro}
-// />
-
-// // 3. Обновляем handleCitySelect для более точной проверки:
-// const handleCitySelect = (place) => {
-//   const addressComponents = place?.address_components || [];
-//   const cityComponent = addressComponents.find(c => c.types.includes('locality'));
-//   const regionComponent = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
-  
-//   const city = cityComponent?.long_name || place?.name || '';
-//   const region = regionComponent?.long_name || '';
-//   const fullCityName = region ? `${city}, ${region}` : city;
-  
-//   // Нормализуем названия для сравнения (убираем пробелы и приводим к нижнему регистру)
-//   const cleanedCity = city.trim().toLowerCase();
-//   const hasMetro = CITIES_WITH_METRO.some(
-//     c => c.trim().toLowerCase() === cleanedCity
-//   );
-  
-//   setFormData(prev => ({ 
-//     ...prev, 
-//     city: fullCityName,
-//     originalCity: city,
-//     region,
-//     metro: '',
-//     hasMetro // Устанавливаем флаг наличия метро
-//   }));
-  
-//   setErrors(prev => ({ ...prev, city: false, metro: false }));
-
-//   if (place?.geometry?.location) {
-//     updateMapLocation({
-//       lat: place.geometry.location.lat(),
-//       lng: place.geometry.location.lng()
-//     });
-//   }
-// };
+//     if (place?.geometry?.location) {
+//       updateMapLocation({
+//         lat: place.geometry.location.lat(),
+//         lng: place.geometry.location.lng()
+//       });
+//     }
+//   };
 
 //   const handleStreetSelect = (place) => {
 //     let street = place?.formatted_address?.split(',')[0] || '';
@@ -165,6 +208,11 @@
 //         lng: place.geometry.location.lng()
 //       });
 //     }
+//   };
+
+//   const handleMetroSelect = (metro) => {
+//     setFormData(prev => ({ ...prev, metro }));
+//     setErrors(prev => ({ ...prev, metro: false }));
 //   };
 
 //   const updateMapLocation = (location) => {
@@ -198,16 +246,13 @@
 
 //   const toggleStreetInputMode = () => {
 //     if (showManualStreetInput) {
-//       // Возврат к автодополнению
 //       setShowManualStreetInput(false);
-//       // Нужно подождать следующего рендера для повторной инициализации
 //       setTimeout(() => {
 //         if (streetInputRef.current && !streetAutocompleteRef.current) {
 //           initAutocomplete();
 //         }
 //       }, 0);
 //     } else {
-//       // Переход в ручной режим
 //       if (streetAutocompleteRef.current) {
 //         window.google.maps.event.clearInstanceListeners(streetInputRef.current);
 //         streetAutocompleteRef.current = null;
@@ -228,16 +273,8 @@
 //     setErrors(prev => ({ ...prev, houseNumber: false }));
 //   };
 
- 
-
-  
-
-
-
 //   const validateForm = () => {
 //     const descriptionTooShort = formData.description.length < 85;
-    
-//     // Проверяем наличие метро по оригинальному названию города (без региона)
 //     const cityHasMetro = CITIES_WITH_METRO.some(
 //       city => city.toLowerCase() === formData.originalCity?.toLowerCase()
 //     );
@@ -251,7 +288,6 @@
 //       street: !formData.street,
 //       houseNumber: !formData.houseNumber,
 //       district: !formData.district,
-//       // Поле метро обязательно только для городов с метро
 //       metro: cityHasMetro && !formData.metro,
 //     };
   
@@ -259,55 +295,12 @@
 //     return !Object.values(newErrors).some(Boolean);
 //   };
 
-//   // const handleSubmit = async (e) => {
-//   //   e.preventDefault();
-
-//   //   if (uploadImages.length < 3) {
-//   //     setPhotoError(true);
-//   //     setSnackbarMessage('Загрузите минимум 3 фотографии!');
-//   //     setSnackbarOpen(true);
-//   //     return;
-//   //   }
-
-//   //   const isFormValid = validateForm();
-//   //   const isInfoValid = infoRef.current?.validate();
-
-//   //   if (!isFormValid || !isInfoValid) {
-//   //     setSnackbarMessage('Заполните все обязательные поля!');
-//   //     setSnackbarOpen(true);
-//   //     return;
-//   //   }
-
-//   //   setIsSubmitting(true);
-//   //   try { console.log(uploadImages);
-//   //     const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
-//   //       method: 'POST',
-//   //       body: JSON.stringify({ 
-//   //         ...formData, 
-//   //         ...apartmentInfo, 
-//   //         photos: uploadImages 
-//   //       }),
-//   //       headers: { 'Content-Type': 'application/json' },
-//   //     });
-
-//   //     if (!response.ok) throw new Error('Ошибка сервера');
-//   //     setSnackbarMessage('Объявление успешно добавлено!');
-//   //   } catch (error) {
-//   //     console.error('Ошибка:', error);
-//   //     setSnackbarMessage(error.message || 'Произошла ошибка при добавлении');
-//   //   } finally {
-//   //     setIsSubmitting(false);
-//   //     setSnackbarOpen(true);
-//   //   }
-//   // };
-
-
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
   
 //     if (uploadImages.length < 3) {
 //       setPhotoError(true);
-//       setSnackbarMessage('Загрузите минимум 3 фотографии!');
+//       setSnackbarMessage(t.minPhotosError);
 //       setSnackbarOpen(true);
 //       return;
 //     }
@@ -316,55 +309,51 @@
 //     const isInfoValid = infoRef.current?.validate();
   
 //     if (!isFormValid || !isInfoValid) {
-//       setSnackbarMessage('Заполните все обязательные поля!');
+//       setSnackbarMessage(t.errorMessage);
 //       setSnackbarOpen(true);
 //       return;
 //     }
   
 //     setIsSubmitting(true);
 //     try {
-//       console.log(uploadImages);
 //       const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
 //         method: 'POST',
 //         body: JSON.stringify({ 
 //           ...formData, 
 //           ...apartmentInfo, 
-//           photos: uploadImages 
+//           photos: uploadImages ,
+//           user_id:profile._id,
 //         }),
 //         headers: { 'Content-Type': 'application/json' },
 //       });
   
-//       if (!response.ok) throw new Error('Ошибка сервера');
+//       if (!response.ok) throw new Error(t.serverError);
       
-//       // Очищаем поля после успешной отправки
 //       setFormData({
 //         city: '', street: '', district: '', metro: '', hasMetro: false,
 //         description: '', price: '', houseNumber: '',
 //         category: '', objectName: '', latitude: null, longitude: null,
-//         originalCity: '',  
-//         region: '',
+//         originalCity: '', region: '',
 //       });
 //       setUploadImages([]);
 //       setApartmentInfo({});
 //       setSelectedLocation(null);
 //       setMapCenter({ lat: 50.4501, lng: 30.5234 });
       
-//       // Если используете ref для InfoApartments, можно сбросить его состояние
-//       if (infoRef.current && infoRef.current.reset) {
+//       if (infoRef.current?.reset) {
 //         infoRef.current.reset();
 //       }
       
-//       setSnackbarMessage('Объявление успешно добавлено!');
+//       setSnackbarMessage(t.successMessage);
 //     } catch (error) {
-//       console.error('Ошибка:', error);
-//       setSnackbarMessage(error.message || 'Произошла ошибка при добавлении');
+//       console.error('Error:', error);
+//       setSnackbarMessage(error.message || t.serverError);
 //     } finally {
 //       setIsSubmitting(false);
 //       setSnackbarOpen(true);
 //     }
 //   };
 
-  
 //   const handlePreview = () => {
 //     const isFormValid = validateForm();
 //     const isInfoValid = infoRef.current?.validate();
@@ -373,7 +362,7 @@
 //     setPhotoError(!hasEnoughPhotos);
     
 //     if (!isFormValid || !isInfoValid || !hasEnoughPhotos) {
-//       setSnackbarMessage('Пожалуйста, заполните все обязательные поля!');
+//       setSnackbarMessage(t.errorMessage);
 //       setSnackbarOpen(true);
 //       return;
 //     }
@@ -386,314 +375,294 @@
 //   };
 
 //   return (
-//     <LanguageProvider>
-//       <Provider store={store}>
-//       <Header/>
-//       </Provider>
-//       <LoadScript
-//         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-//         libraries={['places']}
-//         onLoad={() => setIsGoogleMapsLoaded(true)}
-//         onError={(error) => console.error('Error loading Google Maps API:', error)}
-//       >
-//         <Container maxWidth="md" sx={{ 
-//           py: isMobile ? 2 : 4,
-//           '& .MuiTextField-root, & .MuiFormControl-root': {
-//             fontSize: isMobile ? '14px' : 'inherit'
-//           }
-//         }}>
-//           <Typography variant={isMobile ? "h5" : "h4"} align="center" gutterBottom>
-//             Добавить новое объявление
-//           </Typography>
+//     <LoadScript
+//       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+//       libraries={['places']}
+//       onLoad={() => setIsGoogleMapsLoaded(true)}
+//       onError={(error) => console.error('Error loading Google Maps API:', error)}
+//     >
+//       <Container maxWidth="md" sx={{ 
+//         py: isMobile ? 2 : 4,
+//         '& .MuiTextField-root, & .MuiFormControl-root': {
+//           fontSize: isMobile ? '14px' : 'inherit'
+//         }
+//       }}>
+//         <Typography variant={isMobile ? "h5" : "h4"} align="center" gutterBottom>
+//           {t.addTitle}
+//         </Typography>
 
-//           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-//             {/* Категория */}
-//             <FormControl fullWidth margin="normal" error={!!errors.category}>
-//               <InputLabel>Категория *</InputLabel>
-//               <Select
-//                 name="category"
-//                 value={formData.category || ''}
-//                 onChange={handleInputChange}
-//                 label="Категория *"
-//               >
-//                 {['Квартира', 'Гостиница', 'Готель для тварин',
-//                  'Хостел', 'Дом', 'База отдыха', 'Сауна/Баня', 'Глемпінг',
-//                 'Пансіонат', 'Котедж для компній', 'Коворкінг', 'Автокемпінг'].map((cat) => (
-//                   <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-//                 ))}
-//               </Select>
-//             </FormControl>
-
-//             {/* Название объекта */}
-//             <TextField
-//               fullWidth
-//               margin="normal"
-//               size={isMobile ? "small" : "medium"}
-//               name="objectName"
-//               label="Название объекта *"
-//               value={formData.objectName || ''}
+//         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+//           <FormControl fullWidth margin="normal" error={!!errors.category}>
+//             <InputLabel>{t.categoryLabel}</InputLabel>
+//             <Select
+//               name="category"
+//               value={formData.category || ''}
 //               onChange={handleInputChange}
-//               error={!!errors.objectName}
-//               helperText={
-//                 errors.objectName 
-//                   ? formData.objectName?.length > 59 
-//                     ? 'Максимум 59 символов' 
-//                     : 'Обязательное поле.'
-//                   : 'Например: Гостиница Уют (максимум 59 символов)'
-//               }
-//             />
+//               label={t.categoryLabel}
+//             >
+//               {t.categories.map((cat) => (
+//                 <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+//               ))}
+//             </Select>
+//           </FormControl>
 
-//             {/* Описание */}
-//             <TextField
-//               fullWidth
-//               margin="normal"
-//               size={isMobile ? "small" : "medium"}
-//               name="description"
-//               label="Описание *"
-//               multiline
-//               rows={4}
-//               value={formData.description}
-//               onChange={handleInputChange}
-//               error={!!errors.description}
-//               helperText={
-//                 errors.description 
-//                   ? 'Минимум 85 символов.' 
-//                   : ''
-//               }
-//             />
-
-//             {/* Город */}
-//             <Box margin="normal" sx={{ mt: 3 }}>
-//               <TextField
-//                 fullWidth
-//                 size={isMobile ? "small" : "medium"}
-//                 inputRef={cityInputRef}
-//                 label="Город *"
-//                 value={formData.city}
-//                 onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-//                 error={errors.city}
-//                 helperText={errors.city ? 'Это поле обязательно' : ''}
-//                 placeholder="Введите город"
-//               />
-//             </Box>
-
-//             {/* Метро */}
-//             <MetroSelector
-//   city={formData.originalCity} // Передаем originalCity вместо city
-//   onMetroSelect={handleMetroSelect}
-//   error={!!errors.metro}
-//   show={formData.hasMetro} // Добавляем проп show для контроля видимости
-// />
-
-            
-
-//             {/* Улица */}
-//             <Box margin="normal" sx={{ mt: 3 }}>
-//               {!showManualStreetInput ? (
-//                 <>
-//                   <TextField
-//                     fullWidth
-//                     size={isMobile ? "small" : "medium"}
-//                     inputRef={streetInputRef}
-//                     label="Улица *"
-//                     value={formData.street}
-//                     onChange={(e) => setFormData(prev => ({ ...prev, street: e.target.value }))}
-//                     error={errors.street}
-//                     helperText={errors.street ? 'Это поле обязательно' : ''}
-//                     placeholder="Начните вводить название улицы"
-//                   />
-//                   <Button
-//                     variant="text"
-//                     size={isMobile ? "small" : "medium"}
-//                     sx={{
-//                       textTransform: 'none',
-//                       color: '#1976d2',
-//                       mt: 1,
-//                       '&:hover': {
-//                         backgroundColor: 'transparent',
-//                         textDecoration: 'underline',
-//                       },
-//                     }}
-//                     onClick={toggleStreetInputMode}
-//                   >
-//                     Не нашли улицу? Введите вручную
-//                   </Button>
-//                 </>
-//               ) : (
-//                 <>
-//                   <TextField
-//                     fullWidth
-//                     label="Улица *"
-//                     size={isMobile ? "small" : "medium"}
-//                     name="street"
-//                     value={formData.street}
-//                     onChange={handleInputChange}
-//                     error={errors.street}
-//                     helperText={errors.street ? 'Это поле обязательно' : ''}
-//                     placeholder="Введите название улицы вручную"
-//                   />
-//                   <Button
-//                     variant="text"
-//                     size={isMobile ? "small" : "medium"}
-//                     sx={{
-//                       textTransform: 'none',
-//                       color: '#1976d2',
-//                       mt: 1,
-//                       '&:hover': {
-//                         backgroundColor: 'transparent',
-//                         textDecoration: 'underline',
-//                       },
-//                     }}
-//                     onClick={toggleStreetInputMode}
-//                   >
-//                     Вернуться к поиску улицы с помощью Google
-//                   </Button>
-//                 </>
-//               )}
-//             </Box>
-
-//             {/* Номер дома и цена */}
-//             <Box sx={{ mt: 2 }}>
-//               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 200, mb: 2 }}>
-//                 <TextField 
-//                   fullWidth 
-//                   name="houseNumber" 
-//                   size={isMobile ? "small" : "medium"}
-//                   label="Номер дома *" 
-//                   value={formData.houseNumber} 
-//                   onChange={handleHouseNumberChange} 
-//                   error={errors.houseNumber} 
-//                   helperText={errors.houseNumber ? "Это поле обязательно" : ""} 
-//                 />
-//                 <TextField 
-//                   fullWidth 
-//                   name="price" 
-//                   label="Цена *" 
-//                   type="number" 
-//                   size={isMobile ? "small" : "medium"}
-//                   value={formData.price} 
-//                   onChange={handleInputChange} 
-//                   error={errors.price} 
-//                   helperText={errors.price ? "Это поле обязательно" : ""} 
-//                 />
-//               </Box>
-//             </Box>
-
-//             {/* Карта */}
-//             {selectedLocation && (
-//               <Box sx={{ height: '300px', width: '100%', mt: 2 }}>
-//                 <GoogleMap
-//                   mapContainerStyle={{ width: '100%', height: '100%' }}
-//                   center={mapCenter}
-//                   zoom={17}
-//                 >
-//                   <Marker
-//                     position={selectedLocation}
-//                     draggable
-//                     onDragEnd={(e) => {
-//                       updateMapLocation({
-//                         lat: e.latLng.lat(),
-//                         lng: e.latLng.lng()
-//                       });
-//                     }}
-//                   />
-//                 </GoogleMap>
-//                 <Box sx={{ mt: 1.5, mb: 0.5, py: 0.5, textAlign: 'center' }}>
-//                   <Typography variant="body2" sx={{ color: '#ff5722' }}>
-//                     Вы можете двигать маркер на карте для точного указания местоположения!
-//                   </Typography>
-//                 </Box>
-//               </Box>
-//             )}
-
-//             {/* Район */}
-//             <TextField
-//               fullWidth
-//               margin="normal"
-//               size={isMobile ? "small" : "medium"}
-//               name="district"
-//               label="Район *"
-//               placeholder="Укажите район"
-//               value={formData.district}
-//               onChange={handleInputChange}
-//               error={!!errors.district}
-//               helperText={errors.district ? 'Это поле обязательно' : ''}
-//               sx={{ maxWidth: 200, mt: 8 }}
-//             />
-
-//             {/* Загрузка фото */}
-//             <Box sx={{ 
-//               mt: 3, 
-//               // p: 2, 
-//               borderRadius: 2,
-//               border: photoError ? '1px solid red' : 'none'
-//             }}>
-//               <FileUploadSlider 
-//                 photos={uploadImages}
-//                 setUploadImages={setUploadImages}
-//                 editable={true}
-//                 onPhotosChange={(newPhotos) => {
-//                   setPhotoError(newPhotos.length < 3);
-//                 }}
-//               />
-//               {photoError && (
-//                 <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-//                   Загрузите минимум 3 фото
-//                 </Typography>
-//               )}
-//             </Box>
-
-//             {/* Дополнительная информация */}
-//             <InfoApartments ref={infoRef} onDataChange={setApartmentInfo} />
-
-//             {/* Кнопки */}
-//             <Stack direction="column" spacing={2} sx={{ mt: 4 }}>
-//               <Button variant="outlined" size="large" onClick={handlePreview}>
-//                 Предпросмотр
-//               </Button>
-//               <Button 
-//                 variant="contained" 
-//                 size="large" 
-//                 type="submit" 
-//                 disabled={isSubmitting}
-//               >
-//                 {isSubmitting ? <CircularProgress size={24} /> : 'Создать объявление'}
-//               </Button>
-//             </Stack>
-//           </Box>
-
-//           {/* Диалог предпросмотра */}
-//           <PreviewDialog
-//             open={previewOpen}
-//             onClose={handleClosePreview}
-//             formData={formData}
-//             uploudImages={uploadImages}
-//             apartmentInfo={apartmentInfo}
-//             photoError={photoError}
+//           <TextField
+//             fullWidth
+//             margin="normal"
+//             size={isMobile ? "small" : "medium"}
+//             name="objectName"
+//             label={t.objectNameLabel}
+//             value={formData.objectName || ''}
+//             onChange={handleInputChange}
+//             error={!!errors.objectName}
+//             helperText={
+//               errors.objectName 
+//                 ? formData.objectName?.length > 59 
+//                   ? t.maxCharsError 
+//                   : t.requiredField
+//                 : t.objectNameHelper
+//             }
 //           />
 
-//           {/* Уведомления */}
-//           <Snackbar 
-//             open={snackbarOpen} 
-//             autoHideDuration={6000} 
-//             onClose={() => setSnackbarOpen(false)}
-//           >
-//             <Alert 
-//               onClose={() => setSnackbarOpen(false)} 
-//               severity="success"
-//               sx={{ width: '100%' }}
+//           <TextField
+//             fullWidth
+//             margin="normal"
+//             size={isMobile ? "small" : "medium"}
+//             name="description"
+//             label={t.descriptionLabel}
+//             multiline
+//             rows={4}
+//             value={formData.description}
+//             onChange={handleInputChange}
+//             error={!!errors.description}
+//             helperText={errors.description ? t.descriptionHelper : ''}
+//           />
+
+//           <Box margin="normal" sx={{ mt: 3 }}>
+//             <TextField
+//               fullWidth
+//               size={isMobile ? "small" : "medium"}
+//               inputRef={cityInputRef}
+//               label={t.cityLabel}
+//               value={formData.city}
+//               onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+//               error={errors.city}
+//               helperText={errors.city ? t.requiredField : ''}
+//               placeholder={t.cityLabel}
+//             />
+//           </Box>
+
+//           <MetroSelector
+//             city={formData.originalCity}
+//             onMetroSelect={handleMetroSelect}
+//             error={!!errors.metro}
+//             show={formData.hasMetro}
+//           />
+
+//           <Box margin="normal" sx={{ mt: 3 }}>
+//             {!showManualStreetInput ? (
+//               <>
+//                 <TextField
+//                   fullWidth
+//                   size={isMobile ? "small" : "medium"}
+//                   inputRef={streetInputRef}
+//                   label={t.streetLabel}
+//                   value={formData.street}
+//                   onChange={(e) => setFormData(prev => ({ ...prev, street: e.target.value }))}
+//                   error={errors.street}
+//                   helperText={errors.street ? t.requiredField : ''}
+//                   placeholder={t.streetLabel}
+//                 />
+//                 <Button
+//                   variant="text"
+//                   size={isMobile ? "small" : "medium"}
+//                   sx={{
+//                     textTransform: 'none',
+//                     color: '#1976d2',
+//                     mt: 1,
+//                     '&:hover': {
+//                       backgroundColor: 'transparent',
+//                       textDecoration: 'underline',
+//                     },
+//                   }}
+//                   onClick={toggleStreetInputMode}
+//                 >
+//                   {t.manualStreetPrompt}
+//                 </Button>
+//               </>
+//             ) : (
+//               <>
+//                 <TextField
+//                   fullWidth
+//                   label={t.streetLabel}
+//                   size={isMobile ? "small" : "medium"}
+//                   name="street"
+//                   value={formData.street}
+//                   onChange={handleInputChange}
+//                   error={errors.street}
+//                   helperText={errors.street ? t.requiredField : ''}
+//                   placeholder={t.streetLabel}
+//                 />
+//                 <Button
+//                   variant="text"
+//                   size={isMobile ? "small" : "medium"}
+//                   sx={{
+//                     textTransform: 'none',
+//                     color: '#1976d2',
+//                     mt: 1,
+//                     '&:hover': {
+//                       backgroundColor: 'transparent',
+//                       textDecoration: 'underline',
+//                     },
+//                   }}
+//                   onClick={toggleStreetInputMode}
+//                 >
+//                   {t.googleStreetPrompt}
+//                 </Button>
+//               </>
+//             )}
+//           </Box>
+
+//           <Box sx={{ mt: 2 }}>
+//             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 200, mb: 2 }}>
+//               <TextField 
+//                 fullWidth 
+//                 name="houseNumber" 
+//                 size={isMobile ? "small" : "medium"}
+//                 label={t.houseNumberLabel} 
+//                 value={formData.houseNumber} 
+//                 onChange={handleHouseNumberChange} 
+//                 error={errors.houseNumber} 
+//                 helperText={errors.houseNumber ? t.requiredField : ""} 
+//               />
+//               <TextField 
+//                 fullWidth 
+//                 name="price" 
+//                 label={t.priceLabel} 
+//                 type="number" 
+//                 size={isMobile ? "small" : "medium"}
+//                 value={formData.price} 
+//                 onChange={handleInputChange} 
+//                 error={errors.price} 
+//                 helperText={errors.price ? t.requiredField : ""} 
+//               />
+//             </Box>
+//           </Box>
+
+//           {selectedLocation && (
+//             <Box sx={{ height: '300px', width: '100%', mt: 2 }}>
+//               <GoogleMap
+//                 mapContainerStyle={{ width: '100%', height: '100%' }}
+//                 center={mapCenter}
+//                 zoom={17}
+//               >
+//                 <Marker
+//                   position={selectedLocation}
+//                   draggable
+//                   onDragEnd={(e) => {
+//                     updateMapLocation({
+//                       lat: e.latLng.lat(),
+//                       lng: e.latLng.lng()
+//                     });
+//                   }}
+//                 />
+//               </GoogleMap>
+//               <Box sx={{ mt: 1.5, mb: 0.5, py: 0.5, textAlign: 'center' }}>
+//                 <Typography variant="body2" sx={{ color: '#ff5722' }}>
+//                   {t.moveMarkerText}
+//                 </Typography>
+//               </Box>
+//             </Box>
+//           )}
+
+//           <TextField
+//             fullWidth
+//             margin="normal"
+//             size={isMobile ? "small" : "medium"}
+//             name="district"
+//             label={t.districtLabel}
+//             placeholder={t.districtLabel}
+//             value={formData.district}
+//             onChange={handleInputChange}
+//             error={!!errors.district}
+//             helperText={errors.district ? t.requiredField : ''}
+//             sx={{ maxWidth: 200, mt: 8 }}
+//           />
+
+//           <Box sx={{ 
+//             mt: 3, 
+//             borderRadius: 2,
+//             border: photoError ? '1px solid red' : 'none'
+//           }}>
+//             <FileUploadSlider 
+//               photos={uploadImages}
+//               setUploadImages={setUploadImages}
+//               editable={true}
+//               onPhotosChange={(newPhotos) => {
+//                 setPhotoError(newPhotos.length < 3);
+//               }}
+//             />
+//             {photoError && (
+//               <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+//                 {t.uploadPhotosText}
+//               </Typography>
+//             )}
+//           </Box>
+
+//           <InfoApartments ref={infoRef} onDataChange={setApartmentInfo} />
+
+//           <Stack direction="column" spacing={2} sx={{ mt: 4 }}>
+//             <Button variant="outlined" size="large" onClick={handlePreview}>
+//               {t.previewButton}
+//             </Button>
+//             <Button 
+//               variant="contained" 
+//               size="large" 
+//               type="submit" 
+//               disabled={isSubmitting}
 //             >
-//               {snackbarMessage}
-//             </Alert>
-//           </Snackbar>
-//         </Container>
-//       </LoadScript>
-//     </LanguageProvider>
+//               {isSubmitting ? <CircularProgress size={24} /> : t.submitButton}
+//             </Button>
+//           </Stack>
+//         </Box>
+
+//         <PreviewDialog
+//           open={previewOpen}
+//           onClose={handleClosePreview}
+//           formData={formData}
+//           uploudImages={uploadImages}
+//           apartmentInfo={apartmentInfo}
+//           photoError={photoError}
+//         />
+
+//         <Snackbar 
+//           open={snackbarOpen} 
+//           autoHideDuration={6000} 
+//           onClose={() => setSnackbarOpen(false)}
+//         >
+//           <Alert 
+//             onClose={() => setSnackbarOpen(false)} 
+//             severity="success"
+//             sx={{ width: '100%' }}
+//           >
+//             {snackbarMessage}
+//           </Alert>
+//         </Snackbar>
+//       </Container>
+//     </LoadScript>
 //   );
-// };
+// }
 
-// export default AddApartment;
-
+// export default function AddApartment() {
+//   return (
+//     <Provider store={store}>
+//       <LanguageProvider>
+//         <Header/>
+//         <AddApartmentForm />
+//       </LanguageProvider>
+//     </Provider>
+//   );
+// }
 
 
 
@@ -714,11 +683,13 @@ import {
 } from '@mui/material';
 import Header from '@/app/components/Header';
 import { Provider, useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 import { store } from '@/app/store';
 
 const translations = {
   ua: {
     addTitle: 'Додати нове оголошення',
+    editTitle: 'Редагувати оголошення',
     categoryLabel: 'Категорія *',
     categories: [
       'Квартира', 'Готель', 'Готель для тварин',
@@ -740,7 +711,9 @@ const translations = {
     uploadPhotosText: 'Завантажте мінімум 3 фото',
     previewButton: 'Попередній перегляд',
     submitButton: 'Створити оголошення',
+    saveButton: 'Зберегти зміни',
     successMessage: 'Оголошення успішно додано!',
+    updateMessage: 'Оголошення успішно оновлено!',
     errorMessage: 'Будь ласка, заповніть всі обов\'язкові поля!',
     minPhotosError: 'Завантажте мінімум 3 фотографії!',
     serverError: 'Сталася помилка сервера',
@@ -749,6 +722,7 @@ const translations = {
   },
   ru: {
     addTitle: 'Добавить новое объявление',
+    editTitle: 'Редактировать объявление',
     categoryLabel: 'Категория *',
     categories: [
       'Квартира', 'Гостиница', 'Отель для животных',
@@ -770,7 +744,9 @@ const translations = {
     uploadPhotosText: 'Загрузите минимум 3 фото',
     previewButton: 'Предпросмотр',
     submitButton: 'Создать объявление',
+    saveButton: 'Сохранить изменения',
     successMessage: 'Объявление успешно добавлено!',
+    updateMessage: 'Объявление успешно обновлено!',
     errorMessage: 'Пожалуйста, заполните все обязательные поля!',
     minPhotosError: 'Загрузите минимум 3 фотографии!',
     serverError: 'Произошла ошибка сервера',
@@ -802,6 +778,8 @@ function AddApartmentForm() {
   const [mapCenter, setMapCenter] = useState({ lat: 50.4501, lng: 30.5234 });
   const [isGoogleMapsLoaded, setIsGoogleMapsLoaded] = useState(false);
   const [photoError, setPhotoError] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [apartmentId, setApartmentId] = useState(null);
 
   const infoRef = useRef();
   const cityAutocompleteRef = useRef(null);
@@ -809,9 +787,8 @@ function AddApartmentForm() {
   const cityInputRef = useRef(null);
   const streetInputRef = useRef(null);
   const geocoderRef = useRef(null);
-const profile = useSelector(state=>state.auth.profile);
-console.log(profile);
-
+  const profile = useSelector(state => state.auth.profile);
+  const searchParams = useSearchParams();
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
@@ -830,6 +807,15 @@ console.log(profile);
       geocoderRef.current = new window.google.maps.Geocoder();
     }
   }, [isGoogleMapsLoaded, showManualStreetInput]);
+
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId) {
+      setIsEditMode(true);
+      setApartmentId(editId);
+      fetchApartmentData(editId);
+    }
+  }, [searchParams]);
 
   const initAutocomplete = () => {
     if (!window.google) return;
@@ -854,6 +840,53 @@ console.log(profile);
         const place = streetAutocompleteRef.current.getPlace();
         handleStreetSelect(place);
       });
+    }
+  };
+
+  const fetchApartmentData = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/apartments/${id}`);
+      if (!response.ok) throw new Error('Ошибка загрузки данных');
+      
+      const apartmentData = await response.json();
+      
+      setFormData({
+        city: apartmentData.city || '',
+        street: apartmentData.street || '',
+        district: apartmentData.district || '',
+        metro: apartmentData.metro || '',
+        hasMetro: apartmentData.hasMetro || false,
+        description: apartmentData.description || '',
+        price: apartmentData.price || '',
+        houseNumber: apartmentData.houseNumber || '',
+        category: apartmentData.category || '',
+        objectName: apartmentData.objectName || '',
+        latitude: apartmentData.latitude || null,
+        longitude: apartmentData.longitude || null,
+        originalCity: apartmentData.originalCity || '',
+        region: apartmentData.region || '',
+      });
+
+      setUploadImages(apartmentData.photos || []);
+      
+      if (apartmentData.latitude && apartmentData.longitude) {
+        setSelectedLocation({
+          lat: apartmentData.latitude,
+          lng: apartmentData.longitude
+        });
+        setMapCenter({
+          lat: apartmentData.latitude,
+          lng: apartmentData.longitude
+        });
+      }
+
+      if (infoRef.current && apartmentData) {
+        infoRef.current.setData(apartmentData);
+      }
+
+    } catch (error) {
+      console.error('Ошибка загрузки данных объявления:', error);
+      alert('Не удалось загрузить данные для редактирования');
     }
   };
 
@@ -988,40 +1021,140 @@ console.log(profile);
     return !Object.values(newErrors).some(Boolean);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
   
-    if (uploadImages.length < 3) {
-      setPhotoError(true);
-      setSnackbarMessage(t.minPhotosError);
-      setSnackbarOpen(true);
-      return;
-    }
+//     if (uploadImages.length < 3) {
+//       setPhotoError(true);
+//       setSnackbarMessage(t.minPhotosError);
+//       setSnackbarOpen(true);
+//       return;
+//     }
   
-    const isFormValid = validateForm();
-    const isInfoValid = infoRef.current?.validate();
+//     const isFormValid = validateForm();
+//     const isInfoValid = infoRef.current?.validate();
   
-    if (!isFormValid || !isInfoValid) {
-      setSnackbarMessage(t.errorMessage);
-      setSnackbarOpen(true);
-      return;
-    }
+//     if (!isFormValid || !isInfoValid) {
+//       setSnackbarMessage(t.errorMessage);
+//       setSnackbarOpen(true);
+//       return;
+//     }
   
-    setIsSubmitting(true);
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/apartments/add', {
-        method: 'POST',
-        body: JSON.stringify({ 
-          ...formData, 
-          ...apartmentInfo, 
-          photos: uploadImages ,
-          user_id:profile._id,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-  
-      if (!response.ok) throw new Error(t.serverError);
+//     setIsSubmitting(true);
+//     try {
+//       const url = isEditMode 
+//   ? `http://localhost:3000/api/v1/apartments/update/${apartmentId}`
+//   : 'http://localhost:3000/api/v1/apartments/add';
+
+// const method = isEditMode ? 'PUT' : 'POST'; // Используем PUT для обновления
       
+//       const response = await fetch(url, {
+//         method,
+//         body: JSON.stringify({ 
+//           ...formData, 
+//           ...apartmentInfo, 
+//           photos: uploadImages,
+//           user_id: profile._id,
+//         }),
+//         headers: { 'Content-Type': 'application/json' },
+//       });
+  
+//       if (!response.ok) throw new Error(t.serverError);
+      
+//       if (!isEditMode) {
+//         setFormData({
+//           city: '', street: '', district: '', metro: '', hasMetro: false,
+//           description: '', price: '', houseNumber: '',
+//           category: '', objectName: '', latitude: null, longitude: null,
+//           originalCity: '', region: '',
+//         });
+//         setUploadImages([]);
+//         setApartmentInfo({});
+//         setSelectedLocation(null);
+//         setMapCenter({ lat: 50.4501, lng: 30.5234 });
+        
+//         if (infoRef.current?.reset) {
+//           infoRef.current.reset();
+//         }
+//       }
+      
+//       setSnackbarMessage(isEditMode ? t.updateMessage : t.successMessage);
+//     } catch (error) {
+//       console.error('Error:', error);
+//       setSnackbarMessage(error.message || t.serverError);
+//     } finally {
+//       setIsSubmitting(false);
+//       setSnackbarOpen(true);
+//     }
+//   };
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (uploadImages.length < 3) {
+    setPhotoError(true);
+    setSnackbarMessage(t.minPhotosError);
+    setSnackbarOpen(true);
+    return;
+  }
+
+  const isFormValid = validateForm();
+  const isInfoValid = infoRef.current?.validate();
+
+  if (!isFormValid || !isInfoValid) {
+    setSnackbarMessage(t.errorMessage);
+    setSnackbarOpen(true);
+    return;
+  }
+
+  setIsSubmitting(true);
+  try {
+    const url = isEditMode 
+      ? `http://localhost:3000/api/v1/apartments/update/${apartmentId}`
+      : 'http://localhost:3000/api/v1/apartments/add';
+
+    const method = isEditMode ? 'PUT' : 'POST';
+
+    // ДОБАВЬТЕ ЛОГ ДЛЯ ОТЛАДКИ
+    console.log('Отправляемые данные:', {
+      ...formData, 
+      ...apartmentInfo, 
+      photos: uploadImages,
+      user_id: profile._id,
+    });
+
+    const response = await fetch(url, {
+      method,
+      body: JSON.stringify({ 
+        ...formData, 
+        ...apartmentInfo, 
+        photos: uploadImages,
+        user_id: profile._id,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    // ВАЖНО: Получите текст ответа сначала
+    const responseText = await response.text();
+    console.log('Ответ сервера:', responseText);
+
+    // Попробуйте распарсить JSON
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Ошибка парсинга JSON:', e);
+      throw new Error('Неверный формат ответа от сервера: ' + responseText);
+    }
+
+    if (!response.ok) {
+      // Теперь мы видим реальное сообщение об ошибке от сервера
+      throw new Error(responseData.message || t.serverError);
+    }
+    
+    if (!isEditMode) {
       setFormData({
         city: '', street: '', district: '', metro: '', hasMetro: false,
         description: '', price: '', houseNumber: '',
@@ -1036,16 +1169,17 @@ console.log(profile);
       if (infoRef.current?.reset) {
         infoRef.current.reset();
       }
-      
-      setSnackbarMessage(t.successMessage);
-    } catch (error) {
-      console.error('Error:', error);
-      setSnackbarMessage(error.message || t.serverError);
-    } finally {
-      setIsSubmitting(false);
-      setSnackbarOpen(true);
     }
-  };
+    
+    setSnackbarMessage(isEditMode ? t.updateMessage : t.successMessage);
+  } catch (error) {
+    console.error('Error:', error);
+    setSnackbarMessage(error.message || t.serverError);
+  } finally {
+    setIsSubmitting(false);
+    setSnackbarOpen(true);
+  }
+};
 
   const handlePreview = () => {
     const isFormValid = validateForm();
@@ -1081,7 +1215,7 @@ console.log(profile);
         }
       }}>
         <Typography variant={isMobile ? "h5" : "h4"} align="center" gutterBottom>
-          {t.addTitle}
+          {isEditMode ? t.editTitle : t.addTitle}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
@@ -1314,7 +1448,8 @@ console.log(profile);
               type="submit" 
               disabled={isSubmitting}
             >
-              {isSubmitting ? <CircularProgress size={24} /> : t.submitButton}
+              {isSubmitting ? <CircularProgress size={24} /> : 
+                (isEditMode ? t.saveButton : t.submitButton)}
             </Button>
           </Stack>
         </Box>
@@ -1356,6 +1491,3 @@ export default function AddApartment() {
     </Provider>
   );
 }
-
-
-

@@ -1641,11 +1641,16 @@ const ApartmentDetailContent = () => {
     return convenience;
   };
 
+
+
+
   const handleOpenRoute = () => {
     if (apartment?.latitude && apartment?.longitude) {
       if (userLocation) {
+        // Если есть местоположение пользователя, строим маршрут от пользователя к объекту
         window.open(`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${apartment.latitude},${apartment.longitude}`);
       } else {
+        // Если нет местоположения, просто открываем карту с меткой объекта
         window.open(`https://www.google.com/maps?q=${apartment.latitude},${apartment.longitude}`);
       }
     }
@@ -1736,22 +1741,7 @@ const ApartmentDetailContent = () => {
     return `${hours}:${minutes}`;
   };
 
-  // const formatAddress = () => {
-  //   if (!apartment) return '';
-    
-  //   const parts = [];
-  //   if (apartment.city) parts.push(apartment.city);
-  //   if (apartment.street && apartment.houseNumber) {
-  //     parts.push(`${apartment.street} ${apartment.houseNumber}`);
-  //   }
-  //   if (apartment.district) parts.push(`${t.district} ${apartment.district}`);
-  //   if (apartment.metro) parts.push(`${t.metro} ${apartment.metro}`);
-  //   return parts.join(', ');
-  // };
-
-
-
-// В ApartmentDetailContent замените formatAddress на:
+  
 const formatAddress = () => {
   if (!apartment) return '';
   
@@ -2063,51 +2053,54 @@ const formatAddress = () => {
         </Grid>
       </Paper>
 
-      {apartment.latitude && apartment.longitude && (
-        <Paper elevation={3} sx={{ p: 2, borderRadius: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            {t.location}
-          </Typography>
-          
-          <Box sx={{ height: 300, borderRadius: 2, overflow: 'hidden', mb: 2 }}>
-            {isLoaded ? (
-              <GoogleMap
-                mapContainerStyle={{ width: '100%', height: '100%' }}
-                center={{
-                  lat: parseFloat(apartment.latitude),
-                  lng: parseFloat(apartment.longitude),
-                }}
-                zoom={15}
-              >
-                <Marker
-                  position={{
-                    lat: parseFloat(apartment.latitude),
-                    lng: parseFloat(apartment.longitude),
-                  }}
-                />
-              </GoogleMap>
-            ) : (
-              <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                <CircularProgress />
-              </Box>
-            )}
-          </Box>
 
-          {userLocation && (
-            <Box textAlign="center">
-              <Button 
-                variant="contained" 
-                color="primary"
-                startIcon={<DirectionsIcon />}
-                onClick={handleOpenRoute}
-                fullWidth
-              >
-                {t.buildRoute}
-              </Button>
-            </Box>
-          )}
-        </Paper>
+{apartment.latitude && apartment.longitude && (
+  <Paper elevation={3} sx={{ p: 2, borderRadius: 2, mb: 3 }}>
+    <Typography variant="h6" gutterBottom>
+      {t.location}
+    </Typography>
+    
+    <Box sx={{ height: 300, borderRadius: 2, overflow: 'hidden', mb: 2 }}>
+      {isLoaded ? (
+        <GoogleMap
+          mapContainerStyle={{ width: '100%', height: '100%' }}
+          center={{
+            lat: parseFloat(apartment.latitude),
+            lng: parseFloat(apartment.longitude),
+          }}
+          zoom={15}
+        >
+          <Marker
+            position={{
+              lat: parseFloat(apartment.latitude),
+              lng: parseFloat(apartment.longitude),
+            }}
+          />
+        </GoogleMap>
+      ) : (
+        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+          <CircularProgress />
+        </Box>
       )}
+    </Box>
+
+    {/* ВСЕГДА показываем кнопку, даже если нет userLocation */}
+    <Box textAlign="center">
+      <Button 
+        variant="contained" 
+        color="primary"
+        startIcon={<DirectionsIcon />}
+        onClick={handleOpenRoute}
+        fullWidth
+        sx={{ mt: 2 }}
+      >
+        {t.buildRoute}
+      </Button>
+    </Box>
+  </Paper>
+)}
+
+
     </Box>
   );
 };

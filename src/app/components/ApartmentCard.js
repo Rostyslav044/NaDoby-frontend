@@ -763,6 +763,3 @@ export default function ApartmentCard({ apartment, isFavorite, toggleFavorite })
     </Provider>
   );
 }
-
-
-

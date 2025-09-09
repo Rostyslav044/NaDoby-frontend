@@ -1,4 +1,5 @@
 
+// // карточка для отображения объявления об аренде.
 
 // 'use client';
 
@@ -10,18 +11,18 @@
 //   Card,
 //   CardContent,
 //   CardMedia,
-//   Chip,
 //   Divider,
 //   Grid,
 //   useTheme,
 //   useMediaQuery,
 //   Badge,
-//   Tooltip
+//   Tooltip,
+//   Snackbar,
+//   Alert,
 // } from '@mui/material';
 // import {
 //   Favorite,
 //   FavoriteBorder,
-//   Place,
 //   KingBed,
 //   MeetingRoom,
 //   DirectionsSubway,
@@ -29,30 +30,66 @@
 //   ArrowForwardIos,
 //   PhotoCamera,
 //   MapOutlined,
-//   Pets // Иконка для категории "Готель для тварин"
 // } from '@mui/icons-material';
 // import { useSwipeable } from 'react-swipeable';
 // import { useRouter } from 'next/navigation';
+// import { useLanguage } from '@/app/LanguageContext';
+// import { useSelector } from 'react-redux';
 
-// const ApartmentCard = ({ apartment, isFavorite, toggleFavorite }) => {
-//   const photos = apartment.photos || [];
+// const APARTMENT_CARD_CONTENT = {
+//   ua: {
+//     noPhotos: 'Немає фото',
+//     noCity: 'Місто не вказано',
+//     noStreet: 'вулиця не вказана',
+//     noHouseNumber: 'без номера',
+//     guests: (count) => (count === 1 ? 'гість' : 'гостей'),
+//     rooms: (count) => (count === 1 ? 'кімната' : 'кімнати'),
+//     noPrice: 'Ціна не вказана',
+//     favoriteAdd: 'Додати в обране',
+//     favoriteRemove: 'Видалити з обраного',
+//     apartmentDefault: 'Апартаменти',
+//     loginRequired: 'Увійдіть, щоб додати в обране',
+//     favoriteError: 'Помилка при оновленні обраного',
+//   },
+//   ru: {
+//     noPhotos: 'Нет фото',
+//     noCity: 'Город не указан',
+//     noStreet: 'улица не указана',
+//     noHouseNumber: 'без номера',
+//     guests: (count) => (count === 1 ? 'гость' : 'гостей'),
+//     rooms: (count) => (count === 1 ? 'комната' : 'комнаты'),
+//     noPrice: 'Цена не указана',
+//     favoriteAdd: 'Добавить в избранное',
+//     favoriteRemove: 'Удалить из избранного',
+//     apartmentDefault: 'Апартаменты',
+//     loginRequired: 'Войдите, чтобы добавить в избранное',
+//     favoriteError: 'Ошибка при обновлении избранного',
+//   },
+// };
+
+// const ApartmentCardComponent = ({
+//   apartment,
+//   isFavorite,
+//   toggleFavorite,
+//   showCreateUserDialog,
+// }) => {
+//   const { currentLanguage } = useLanguage();
+//   const t = APARTMENT_CARD_CONTENT[currentLanguage];
+//   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+//   const photos = Array.isArray(apartment?.photos) ? apartment.photos : [];
 //   const [currentIndex, setCurrentIndex] = useState(0);
 //   const [isHovered, setIsHovered] = useState(false);
+//   const [snackbar, setSnackbar] = useState({
+//     open: false,
+//     message: '',
+//     severity: 'info',
+//   });
+//   const [isLoading, setIsLoading] = useState(false);
+
 //   const theme = useTheme();
 //   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 //   const router = useRouter();
-
-//   // Функция для выбора иконки категории
-//   const getCategoryIcon = () => {
-//     switch(apartment.category) {
-//       case 'Готель для тварин':
-//         return <Pets fontSize="small" />;
-//       case 'Котедж для компаній':
-//         return <MeetingRoom fontSize="small" />;
-//       default:
-//         return <Place fontSize="small" />;
-//     }
-//   };
 
 //   const handlePrevPhoto = (e) => {
 //     e.stopPropagation();
@@ -65,8 +102,10 @@
 //   };
 
 //   const swipeHandlers = useSwipeable({
-//     onSwipedLeft: () => setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
-//     onSwipedRight: () => setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
+//     onSwipedLeft: () =>
+//       setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
+//     onSwipedRight: () =>
+//       setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
 //     preventDefaultTouchmoveEvent: true,
 //     trackMouse: true,
 //   });
@@ -75,13 +114,42 @@
 //     router.push(`/apartment/${apartment._id}`);
 //   };
 
+//   const handleFavoriteClick = async (e) => {
+//     e.stopPropagation();
+//     if (isLoading) return;
+
+//     if (!isAuthenticated) {
+//       if (typeof showCreateUserDialog === 'function') {
+//         showCreateUserDialog();
+//       } else {
+//         setSnackbar({ open: true, message: t.loginRequired, severity: 'info' });
+//       }
+//       return;
+//     }
+
+//     setIsLoading(true);
+//     try {
+//       if (typeof toggleFavorite === 'function') {
+//         await toggleFavorite(apartment._id);
+//       } else {
+//         setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
+//       }
+//     } catch {
+//       setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
 //   const formatPrice = (price) => {
-//     if (!price) return 'Цена не указана';
-//     return new Intl.NumberFormat('uk-UA', { 
-//       style: 'currency', 
-//       currency: 'UAH', 
-//       maximumFractionDigits: 0 
-//     }).format(price).replace('₴', '');
+//     if (!price) return t.noPrice;
+//     return new Intl.NumberFormat('uk-UA', {
+//       style: 'currency',
+//       currency: 'UAH',
+//       maximumFractionDigits: 0,
+//     })
+//       .format(price)
+//       .replace('₴', '');
 //   };
 
 //   return (
@@ -95,39 +163,51 @@
 //         borderRadius: 3,
 //         boxShadow: theme.shadows[3],
 //         transition: 'all 0.3s ease',
-//         height: '500px',
 //         display: 'flex',
 //         flexDirection: 'column',
 //         position: 'relative',
 //         overflow: 'hidden',
+//         // мобилка — авто по высоте; планшет/десктоп — как было (500px)
+//         height: { xs: 'auto', sm: 500 },
+//         mb: { xs: 2, sm: 0 },
 //         '&:hover': {
 //           boxShadow: theme.shadows[6],
-//           transform: 'translateY(-5px)',
-//           '& .MuiCardMedia-root': {
-//             transform: 'scale(1.03)'
-//           }
-//         }
+//           transform: { sm: 'translateY(-5px)' },
+//         },
 //       }}
 //     >
-//       {/* Favorite Button */}
-//       <Tooltip title={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'} arrow>
+//       {/* Favorite */}
+//       <Tooltip title={isFavorite ? t.favoriteRemove : t.favoriteAdd} arrow>
 //         <IconButton
-//           onClick={(e) => {
-//             e.stopPropagation();
-//             toggleFavorite();
-//           }}
+//           onClick={handleFavoriteClick}
+//           disabled={isLoading}
 //           sx={{
 //             position: 'absolute',
 //             top: 10,
 //             right: 10,
 //             zIndex: 2,
 //             bgcolor: 'rgba(255,255,255,0.9)',
-//             '&:hover': {
-//               bgcolor: 'rgba(255,255,255,1)'
-//             }
+//             '&:hover': { bgcolor: 'rgba(255,255,255,1)' },
+//             '&:disabled': { opacity: 0.7 },
 //           }}
 //         >
-//           {isFavorite ? (
+//           {isLoading ? (
+//             <Box
+//               sx={{
+//                 width: 24,
+//                 height: 24,
+//                 border: '2px solid',
+//                 borderColor: 'primary.main',
+//                 borderTopColor: 'transparent',
+//                 borderRadius: '50%',
+//                 animation: 'spin 1s linear infinite',
+//                 '@keyframes spin': {
+//                   '0%': { transform: 'rotate(0deg)' },
+//                   '100%': { transform: 'rotate(360deg)' },
+//                 },
+//               }}
+//             />
+//           ) : isFavorite ? (
 //             <Favorite color="error" />
 //           ) : (
 //             <FavoriteBorder color="action" />
@@ -135,12 +215,19 @@
 //         </IconButton>
 //       </Tooltip>
 
-//       {/* Photo Gallery */}
+//       {/* Кнопка действий (если передана сверху) */}
+//       {apartment?.actions && (
+//         <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 2 }}>
+//           {apartment.actions}
+//         </Box>
+//       )}
+
+//       {/* Photos */}
 //       <Box
 //         position="relative"
 //         {...swipeHandlers}
 //         sx={{
-//           height: isMobile ? 180 : 220,
+//           height: { xs: 210, sm: 220, md: 240 },
 //           overflow: 'hidden',
 //           borderRadius: '12px 12px 0 0',
 //           userSelect: 'none',
@@ -150,17 +237,18 @@
 //           <>
 //             <CardMedia
 //               component="img"
-//               height="100%"
 //               image={photos[currentIndex]}
-//               alt={`Apartment photo ${currentIndex + 1}`}
+//               alt={`apartment-${currentIndex + 1}`}
+//               loading="lazy"
 //               sx={{
 //                 objectFit: 'cover',
+//                 width: '100%',
+//                 height: '100%',
 //                 transition: 'transform 0.5s ease',
-//                 width: '100%'
 //               }}
 //             />
 
-//             {/* Photo Counter */}
+//             {/* Счётчик фото */}
 //             {photos.length > 1 && (
 //               <Badge
 //                 badgeContent={`${currentIndex + 1}/${photos.length}`}
@@ -168,17 +256,18 @@
 //                 sx={{
 //                   position: 'absolute',
 //                   bottom: 10,
-//                   right: 10,
+//                   right: 12,
 //                   '& .MuiBadge-badge': {
 //                     bgcolor: 'rgba(0,0,0,0.6)',
-//                     color: 'white',
-//                     fontSize: '0.7rem'
-//                   }
+//                     color: '#fff',
+//                     fontSize: '0.75rem',
+//                     px: 1,
+//                   },
 //                 }}
 //               />
 //             )}
 
-//             {/* Navigation Arrows */}
+//             {/* Навигация по фото */}
 //             {photos.length > 1 && (
 //               <>
 //                 <IconButton
@@ -191,9 +280,8 @@
 //                     bgcolor: 'rgba(0,0,0,0.4)',
 //                     color: 'white',
 //                     '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
-//                     opacity: isMobile ? 1 : 0,
-//                     transition: 'opacity 0.3s ease',
-//                     ...(isHovered && { opacity: 1 })
+//                     opacity: { xs: 1, sm: isHovered ? 1 : 0 },
+//                     transition: 'opacity 0.25s ease',
 //                   }}
 //                 >
 //                   <ArrowBackIos fontSize="small" />
@@ -209,9 +297,8 @@
 //                     bgcolor: 'rgba(0,0,0,0.4)',
 //                     color: 'white',
 //                     '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
-//                     opacity: isMobile ? 1 : 0,
-//                     transition: 'opacity 0.3s ease',
-//                     ...(isHovered && { opacity: 1 })
+//                     opacity: { xs: 1, sm: isHovered ? 1 : 0 },
+//                     transition: 'opacity 0.25s ease',
 //                   }}
 //                 >
 //                   <ArrowForwardIos fontSize="small" />
@@ -224,84 +311,95 @@
 //             sx={{
 //               height: '100%',
 //               display: 'flex',
-//               flexDirection: 'column',
-//               justifyContent: 'center',
 //               alignItems: 'center',
+//               justifyContent: 'center',
 //               bgcolor: '#f5f5f5',
 //               color: '#757575',
-//               gap: 1
+//               gap: 1,
 //             }}
 //           >
 //             <PhotoCamera fontSize="large" />
-//             <Typography variant="body2">Нет фото</Typography>
+//             <Typography variant="body2">{t.noPhotos}</Typography>
 //           </Box>
 //         )}
 //       </Box>
 
-//       {/* Card Content */}
-//       <CardContent sx={{ 
-//         p: 2, 
-//         flexGrow: 1, 
-//         display: 'flex', 
-//         flexDirection: 'column',
-//         overflow: 'hidden'
-//       }}>
-//         {/* Category - Выделенный блок */}
-      
+//       {/* Content */}
+//       <CardContent
+//         sx={{
+//           p: { xs: 1.5, sm: 2 },
+//           flexGrow: 1,
+//           display: 'flex',
+//           flexDirection: 'column',
+//           overflow: 'hidden',
+//         }}
+//       >
+//         {/* Категория (плашка по центру в мобилке) */}
+//         {/* <Box
+//           sx={{
+//             mb: { xs: 1.25, sm: 2 },
+//             px: 2,
+//             py: 0.5,
+//             bgcolor: 'primary.light',
+//             borderRadius: 1,
+//             display: 'inline-flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             mx: { xs: 'auto', sm: 0 },
+//             width: 'fit-content',
+//             maxWidth: '100%',
+//           }}
+//         > */}
 
-// <Box sx={{
-//   mb: 2,
-//   px: 2, // Горизонтальные отступы
-//   py: 0.5, // Вертикальные отступы
-//   // bgcolor: 'primary.main',
-//   bgcolor: 'primary.light',
-  
-//   borderRadius: 1,
-//   display: 'inline-flex', // Важно: inline-flex вместо flex
-//   alignItems: 'center',
-//   justifyContent: 'center', // Центрирование по горизонтали
-//   mx: 'auto', // Автоматические отступы по бокам для центрирования
-//   width: 'fit-content', // Ширина по содержимому
-//   maxWidth: '100%', // Чтобы не выходил за границы
-// }}>
-//   <Typography 
-//     variant="subtitle1" 
-//     // fontWeight={600} 
-//     color="white"
-//     sx={{
-//       whiteSpace: 'nowrap',
-//       overflow: 'hidden',
-//       textOverflow: 'ellipsis'
-//     }}
-//   >
-//     {apartment.category || 'Апартаменты'}
-//   </Typography>
-// </Box>
+// <Box
+//   sx={{
+//     mb: { xs: 1.25, sm: 2 },
+//     px: 2,
+//     py: 0.5,
+//     bgcolor: 'primary.light',
+//     borderRadius: 1,
+//     display: 'flex', // Меняем на flex
+//     alignItems: 'center',
+//     justifyContent: 'center', // Центрируем содержимое
+//     mx: 'auto', // Всегда авто-отступы по бокам
+//     width: 'fit-content', // Ширина по содержимому
+//     maxWidth: '100%',
+//   }}
+// >
+//           <Typography
+//             variant="subtitle2"
+//             color="white"
+//             sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+//           >
+//             {apartment?.category || t.apartmentDefault}
+//           </Typography>
+//         </Box>
 
-//         {/* Address Section - Полный адрес */}
-//         <Box sx={{ mb: 1.5 }}>
-//           <Typography variant="body1" fontWeight={500} sx={{ mb: 1 }}>
-//             {apartment.city || 'Город не указан'}, {apartment.street || 'улица не указана'}, {apartment.houseNumber || 'без номера'}
+//         {/* Адрес */}
+//         <Box sx={{ mb: 1.25 }}>
+//           <Typography
+//             variant="body2"
+//             fontWeight={500}
+//             sx={{ mb: 0.5, lineHeight: 1.35 }}
+//           >
+//             {apartment?.city || t.noCity}, {apartment?.street || t.noStreet}
+//             , {apartment?.houseNumber || t.noHouseNumber}
 //           </Typography>
 
-//           <Grid container spacing={1}>
-//             {apartment.district && (
+//           <Grid container spacing={0.5}>
+//             {!!apartment?.district && (
 //               <Grid item xs={12}>
 //                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//                   <MapOutlined fontSize="small" color="primary" sx={{ mr: 1 }} />
-//                   <Typography variant="body2">
-//                     {apartment.district}
-//                   </Typography>
+//                   <MapOutlined fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+//                   <Typography variant="caption">{apartment.district}</Typography>
 //                 </Box>
 //               </Grid>
 //             )}
-//             {apartment.metro && (
+//             {!!apartment?.metro && (
 //               <Grid item xs={12}>
 //                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//                   <DirectionsSubway fontSize="small" color="primary" sx={{ mr: 1 }} />
-//                   <Typography variant="body2">
-//                     {apartment.metro}
-//                   </Typography>
+//                   <DirectionsSubway fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+//                   <Typography variant="caption">{apartment.metro}</Typography>
 //                 </Box>
 //               </Grid>
 //             )}
@@ -310,55 +408,78 @@
 
 //         <Divider sx={{ my: 1 }} />
 
-//         {/* Parameters */}
-//         <Grid container spacing={1} sx={{ mb: 1.5 }}>
+//         {/* Параметры */}
+//         <Grid container spacing={1} sx={{ mb: 1.25 }}>
 //           <Grid item xs={6}>
 //             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//               <KingBed fontSize="small" color="primary" sx={{ mr: 1 }} />
-//               <Typography variant="body2">
-//                 {apartment.beds || '?'} {apartment.beds === 1 ? 'гость' : 'гостей'}
+//               <KingBed fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+//               <Typography variant="caption">
+//                 {apartment?.beds ?? '?'} {t.guests(apartment?.beds)}
 //               </Typography>
 //             </Box>
 //           </Grid>
 //           <Grid item xs={6}>
 //             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-//               <MeetingRoom fontSize="small" color="primary" sx={{ mr: 1 }} />
-//               <Typography variant="body2">
-//                 {apartment.rooms || '?'} {apartment.rooms === 1 ? 'комната' : 'комнаты'}
+//               <MeetingRoom fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+//               <Typography variant="caption">
+//                 {apartment?.rooms ?? '?'} {t.rooms(apartment?.rooms)}
 //               </Typography>
 //             </Box>
 //           </Grid>
 //         </Grid>
 
-//         {/* Price */}
+//         {/* Цена */}
 //         <Box
 //           sx={{
 //             bgcolor: 'primary.main',
 //             borderRadius: 2,
-//             p: 1.5,
+//             p: { xs: 1, sm: 1.5 },
 //             textAlign: 'center',
 //             mt: 'auto',
 //             transition: 'all 0.3s ease',
-//             '&:hover': {
-//               bgcolor: 'primary.dark'
-//             }
+//             '&:hover': { bgcolor: { sm: 'primary.dark' } },
+            
 //           }}
 //         >
-//           <Typography variant="h6" fontWeight={700} color="white">
-//             {formatPrice(apartment.price)}
+//           <Typography
+//             variant={{ xs: 'body1', sm: 'h6' }}
+//             fontWeight={700}
+//             color="white"
+//             sx={{ 
+//               lineHeight: 1,
+//               fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' 
+//             }}
+//           >
+//             {formatPrice(apartment?.price)}
 //           </Typography>
 //         </Box>
 //       </CardContent>
+
+//       {/* Snackbar */}
+//       <Snackbar
+//         open={snackbar.open}
+//         autoHideDuration={2000}
+//         onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+//         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+//       >
+//         <Alert
+//           severity={snackbar.severity}
+//           onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+//         >
+//           {snackbar.message}
+//         </Alert>
+//       </Snackbar>
 //     </Card>
 //   );
 // };
 
-// export default ApartmentCard;
+// export default function ApartmentCard(props) {
+//   return <ApartmentCardComponent {...props} />;
+// }
 
 
 
-
-
+// // карточка для отображения объявления об аренде.
 
 'use client';
 
@@ -370,18 +491,18 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Chip,
   Divider,
   Grid,
   useTheme,
   useMediaQuery,
   Badge,
-  Tooltip
+  Tooltip,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   Favorite,
   FavoriteBorder,
-  Place,
   KingBed,
   MeetingRoom,
   DirectionsSubway,
@@ -389,64 +510,66 @@ import {
   ArrowForwardIos,
   PhotoCamera,
   MapOutlined,
-  Pets
 } from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from "@/app/LanguageContext";
-import { Provider } from "react-redux";
-import { store } from "@/app/store";
-import { LanguageProvider } from "@/app/LanguageContext";
+import { useLanguage } from '@/app/LanguageContext';
+import { useSelector } from 'react-redux';
 
 const APARTMENT_CARD_CONTENT = {
   ua: {
-    noPhotos: "Немає фото",
-    noCity: "Місто не вказано",
-    noStreet: "вулиця не вказана",
-    noHouseNumber: "без номера",
-    guests: (count) => count === 1 ? 'гість' : 'гостей',
-    rooms: (count) => count === 1 ? 'кімната' : 'кімнати',
-    noPrice: "Ціна не вказана",
-    favoriteAdd: "Додати в обране",
-    favoriteRemove: "Видалити з обраного",
-    apartmentDefault: "Апартаменти"
+    noPhotos: 'Немає фото',
+    noCity: 'Місто не вказано',
+    noStreet: 'вулиця не вказана',
+    noHouseNumber: 'без номера',
+    guests: (count) => (count === 1 ? 'гість' : 'гостей'),
+    rooms: (count) => (count === 1 ? 'кімната' : 'кімнати'),
+    noPrice: 'Ціна не вказана',
+    favoriteAdd: 'Додати в обране',
+    favoriteRemove: 'Видалити з обраного',
+    apartmentDefault: 'Апартаменти',
+    loginRequired: 'Увійдіть, щоб додати в обране',
+    favoriteError: 'Помилка при оновленні обраного',
   },
   ru: {
-    noPhotos: "Нет фото",
-    noCity: "Город не указан",
-    noStreet: "улица не указана",
-    noHouseNumber: "без номера",
-    guests: (count) => count === 1 ? 'гость' : 'гостей',
-    rooms: (count) => count === 1 ? 'комната' : 'комнаты',
-    noPrice: "Цена не указана",
-    favoriteAdd: "Добавить в избранное",
-    favoriteRemove: "Удалить из избранного",
-    apartmentDefault: "Апартаменты"
-  }
+    noPhotos: 'Нет фото',
+    noCity: 'Город не указан',
+    noStreet: 'улица не указана',
+    noHouseNumber: 'без номера',
+    guests: (count) => (count === 1 ? 'гость' : 'гостей'),
+    rooms: (count) => (count === 1 ? 'комната' : 'комнаты'),
+    noPrice: 'Цена не указана',
+    favoriteAdd: 'Добавить в избранное',
+    favoriteRemove: 'Удалить из избранного',
+    apartmentDefault: 'Апартаменты',
+    loginRequired: 'Войдите, чтобы добавить в избранное',
+    favoriteError: 'Ошибка при обновлении избранного',
+  },
 };
 
-const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
+const ApartmentCardComponent = ({
+  apartment,
+  isFavorite,
+  toggleFavorite,
+  showCreateUserDialog,
+}) => {
   const { currentLanguage } = useLanguage();
   const t = APARTMENT_CARD_CONTENT[currentLanguage];
-  const photos = apartment.photos || [];
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  const photos = Array.isArray(apartment?.photos) ? apartment.photos : [];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'info',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
-
-  const getCategoryIcon = () => {
-    switch(apartment.category) {
-      case 'Готель для тварин':
-      case 'Отель для животных':
-        return <Pets fontSize="small" />;
-      case 'Котедж для компаній':
-      case 'Коттедж для компаний':
-        return <MeetingRoom fontSize="small" />;
-      default:
-        return <Place fontSize="small" />;
-    }
-  };
 
   const handlePrevPhoto = (e) => {
     e.stopPropagation();
@@ -459,8 +582,10 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
   };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
-    onSwipedRight: () => setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
+    onSwipedLeft: () =>
+      setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
+    onSwipedRight: () =>
+      setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
@@ -469,13 +594,42 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
     router.push(`/apartment/${apartment._id}`);
   };
 
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation();
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
+      if (typeof showCreateUserDialog === 'function') {
+        showCreateUserDialog();
+      } else {
+        setSnackbar({ open: true, message: t.loginRequired, severity: 'info' });
+      }
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      if (typeof toggleFavorite === 'function') {
+        await toggleFavorite(apartment._id);
+      } else {
+        setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
+      }
+    } catch {
+      setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const formatPrice = (price) => {
     if (!price) return t.noPrice;
-    return new Intl.NumberFormat('uk-UA', { 
-      style: 'currency', 
-      currency: 'UAH', 
-      maximumFractionDigits: 0 
-    }).format(price).replace('₴', '');
+    return new Intl.NumberFormat('uk-UA', {
+      style: 'currency',
+      currency: 'UAH',
+      maximumFractionDigits: 0,
+    })
+      .format(price)
+      .replace('₴', '');
   };
 
   return (
@@ -489,39 +643,51 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
         borderRadius: 3,
         boxShadow: theme.shadows[3],
         transition: 'all 0.3s ease',
-        height: '500px',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
         overflow: 'hidden',
+        // мобилка — авто по высоте; планшет/десктоп — как было (500px)
+        height: { xs: 'auto', sm: 500 },
+        mb: { xs: 2, sm: 0 },
         '&:hover': {
           boxShadow: theme.shadows[6],
-          transform: 'translateY(-5px)',
-          '& .MuiCardMedia-root': {
-            transform: 'scale(1.03)'
-          }
-        }
+          transform: { sm: 'translateY(-5px)' },
+        },
       }}
     >
-      {/* Favorite Button */}
+      {/* Favorite */}
       <Tooltip title={isFavorite ? t.favoriteRemove : t.favoriteAdd} arrow>
         <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite();
-          }}
+          onClick={handleFavoriteClick}
+          disabled={isLoading}
           sx={{
             position: 'absolute',
             top: 10,
             right: 10,
             zIndex: 2,
             bgcolor: 'rgba(255,255,255,0.9)',
-            '&:hover': {
-              bgcolor: 'rgba(255,255,255,1)'
-            }
+            '&:hover': { bgcolor: 'rgba(255,255,255,1)' },
+            '&:disabled': { opacity: 0.7 },
           }}
         >
-          {isFavorite ? (
+          {isLoading ? (
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                border: '2px solid',
+                borderColor: 'primary.main',
+                borderTopColor: 'transparent',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                '@keyframes spin': {
+                  '0%': { transform: 'rotate(0deg)' },
+                  '100%': { transform: 'rotate(360deg)' },
+                },
+              }}
+            />
+          ) : isFavorite ? (
             <Favorite color="error" />
           ) : (
             <FavoriteBorder color="action" />
@@ -529,20 +695,19 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
         </IconButton>
       </Tooltip>
 
+      {/* Кнопка действий (если передана сверху) */}
+      {apartment?.actions && (
+        <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 2 }}>
+          {apartment.actions}
+        </Box>
+      )}
 
-      {/* КНОВКА ДЕЙСТВИЙ - ДОБАВЬТЕ ЭТОТ КОД ПОСЛЕ КНОПКИ ИЗБРАННОГО */}
-      {apartment.actions && (
-  <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 2 }}>
-    {apartment.actions}
-  </Box>
-)}
-
-      {/* Photo Gallery */}
+      {/* Photos */}
       <Box
         position="relative"
         {...swipeHandlers}
         sx={{
-          height: isMobile ? 180 : 220,
+          height: { xs: 210, sm: 220, md: 240 },
           overflow: 'hidden',
           borderRadius: '12px 12px 0 0',
           userSelect: 'none',
@@ -552,35 +717,37 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
           <>
             <CardMedia
               component="img"
-              height="100%"
               image={photos[currentIndex]}
-              alt={`Apartment photo ${currentIndex + 1}`}
+              alt={`apartment-${currentIndex + 1}`}
+              loading="lazy"
               sx={{
                 objectFit: 'cover',
+                width: '100%',
+                height: '100%',
                 transition: 'transform 0.5s ease',
-                width: '100%'
               }}
             />
 
-            {/* Photo Counter */}
+            {/* Счётчик фото */}
             {photos.length > 1 && (
               <Badge
                 badgeContent={`${currentIndex + 1}/${photos.length}`}
                 color="primary"
                 sx={{
                   position: 'absolute',
-                  bottom: 15,
-                  right: 20,
+                  bottom: 10,
+                  right: 12,
                   '& .MuiBadge-badge': {
                     bgcolor: 'rgba(0,0,0,0.6)',
-                    color: 'white',
-                    fontSize: '0.9rem'
-                  }
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    px: 1,
+                  },
                 }}
               />
             )}
 
-            {/* Navigation Arrows */}
+            {/* Навигация по фото */}
             {photos.length > 1 && (
               <>
                 <IconButton
@@ -593,9 +760,8 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
                     bgcolor: 'rgba(0,0,0,0.4)',
                     color: 'white',
                     '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
-                    opacity: isMobile ? 1 : 0,
-                    transition: 'opacity 0.3s ease',
-                    ...(isHovered && { opacity: 1 })
+                    opacity: { xs: 1, sm: isHovered ? 1 : 0 },
+                    transition: 'opacity 0.25s ease',
                   }}
                 >
                   <ArrowBackIos fontSize="small" />
@@ -611,9 +777,8 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
                     bgcolor: 'rgba(0,0,0,0.4)',
                     color: 'white',
                     '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
-                    opacity: isMobile ? 1 : 0,
-                    transition: 'opacity 0.3s ease',
-                    ...(isHovered && { opacity: 1 })
+                    opacity: { xs: 1, sm: isHovered ? 1 : 0 },
+                    transition: 'opacity 0.25s ease',
                   }}
                 >
                   <ArrowForwardIos fontSize="small" />
@@ -626,12 +791,11 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
             sx={{
               height: '100%',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
               alignItems: 'center',
+              justifyContent: 'center',
               bgcolor: '#f5f5f5',
-              color: '#757575',
-              gap: 1
+              color: 'text.secondary',
+              gap: 1,
             }}
           >
             <PhotoCamera fontSize="large" />
@@ -640,65 +804,66 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
         )}
       </Box>
 
-      {/* Card Content */}
-      <CardContent sx={{ 
-        p: 2, 
-        flexGrow: 1, 
-        display: 'flex', 
-        flexDirection: 'column',
-        overflow: 'hidden'
-      }}>
-        {/* Category */}
-        <Box sx={{
-          mb: 2,
-          px: 2,
-          py: 0.5,
-          bgcolor: 'primary.light',
-          borderRadius: 1,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mx: 'auto',
-          width: 'fit-content',
-          maxWidth: '100%',
-        }}>
-          <Typography 
-            variant="subtitle1" 
+      {/* Content */}
+      <CardContent
+        sx={{
+          p: { xs: 1.5, sm: 2 },
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Категория */}
+        <Box
+          sx={{
+            mb: { xs: 1.25, sm: 2 },
+            px: 2,
+            py: 0.5,
+            bgcolor: 'primary.light',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mx: 'auto',
+            width: 'fit-content',
+            maxWidth: '100%',
+          }}
+        >
+          <Typography
+            variant="subtitle2"
             color="white"
-            sx={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}
+            sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
           >
-            {apartment.category || t.apartmentDefault}
+            {apartment?.category || t.apartmentDefault}
           </Typography>
         </Box>
 
-        {/* Address Section */}
-        <Box sx={{ mb: 1.5 }}>
-          <Typography variant="body1" fontWeight={500} sx={{ mb: 1 }}>
-            {apartment.city || t.noCity}, {apartment.street || t.noStreet}, {apartment.houseNumber || t.noHouseNumber}
+        {/* Адрес */}
+        <Box sx={{ mb: 1.25 }}>
+          <Typography
+            variant="body2"
+            fontWeight={500}
+            sx={{ mb: 0.5, lineHeight: 1.35 }}
+          >
+            {apartment?.city || t.noCity}, {apartment?.street || t.noStreet}
+            {apartment?.houseNumber ? `, ${apartment.houseNumber}` : `, ${t.noHouseNumber}`}
           </Typography>
 
-          <Grid container spacing={1}>
-            {apartment.district && (
+          <Grid container spacing={0.5}>
+            {!!apartment?.district && (
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MapOutlined fontSize="small" color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="body2">
-                    {apartment.district}
-                  </Typography>
+                  <MapOutlined fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+                  <Typography variant="caption">{apartment.district}</Typography>
                 </Box>
               </Grid>
             )}
-            {apartment.metro && (
+            {!!apartment?.metro && (
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <DirectionsSubway fontSize="small" color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="body2">
-                    {apartment.metro}
-                  </Typography>
+                  <DirectionsSubway fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+                  <Typography variant="caption">{apartment.metro}</Typography>
                 </Box>
               </Grid>
             )}
@@ -707,59 +872,70 @@ const ApartmentCardComponent = ({ apartment, isFavorite, toggleFavorite }) => {
 
         <Divider sx={{ my: 1 }} />
 
-        {/* Parameters */}
-        <Grid container spacing={1} sx={{ mb: 1.5 }}>
+        {/* Параметры */}
+        <Grid container spacing={1} sx={{ mb: 1.25 }}>
           <Grid item xs={6}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <KingBed fontSize="small" color="primary" sx={{ mr: 1 }} />
-              <Typography variant="body2">
-                {apartment.beds || '?'} {t.guests(apartment.beds)}
+              <KingBed fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+              <Typography variant="caption">
+                {apartment?.beds ?? '?'} {t.guests(apartment?.beds)}
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={6}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <MeetingRoom fontSize="small" color="primary" sx={{ mr: 1 }} />
-              <Typography variant="body2">
-                {apartment.rooms || '?'} {t.rooms(apartment.rooms)}
+              <MeetingRoom fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+              <Typography variant="caption">
+                {apartment?.rooms ?? '?'} {t.rooms(apartment?.rooms)}
               </Typography>
             </Box>
           </Grid>
         </Grid>
 
-        {/* Price */}
+        {/* Цена */}
         <Box
           sx={{
             bgcolor: 'primary.main',
             borderRadius: 2,
-            p: 1.5,
+            p: { xs: 1, sm: 1.5 },
             textAlign: 'center',
             mt: 'auto',
             transition: 'all 0.3s ease',
-            '&:hover': {
-              bgcolor: 'primary.dark'
-            }
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
-          <Typography variant="h6" fontWeight={700} color="white">
-            {formatPrice(apartment.price)}
+          <Typography
+            variant={{ xs: 'body1', sm: 'h6' }}
+            fontWeight={700}
+            color="white"
+            sx={{ 
+              lineHeight: 1,
+              fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' 
+            }}
+          >
+            {formatPrice(apartment?.price)}
           </Typography>
         </Box>
       </CardContent>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 };
 
-export default function ApartmentCard({ apartment, isFavorite, toggleFavorite }) {
-  return (
-    <Provider store={store}>
-      <LanguageProvider>
-        <ApartmentCardComponent 
-          apartment={apartment}
-          isFavorite={isFavorite}
-          toggleFavorite={toggleFavorite}
-        />
-      </LanguageProvider>
-    </Provider>
-  );
+export default function ApartmentCard(props) {
+  return <ApartmentCardComponent {...props} />;
 }

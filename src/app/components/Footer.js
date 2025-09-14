@@ -387,18 +387,7 @@ const Footer = () => {
             {t.copyright.replace('{year}', new Date().getFullYear())}
           </Typography>
           
-          {/* Закомментированные ссылки */}
-          {/* <Box sx={{ mt: 1 }}>
-            <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-              {t.links.privacy}
-            </Link>
-            <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-              {t.links.terms}
-            </Link>
-            <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-              {t.links.help}
-            </Link>
-          </Box> */}
+        
         </Box>
       </Box>
     </Box>

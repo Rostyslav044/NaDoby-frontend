@@ -123,6 +123,7 @@ const CreateUser = ({ onClose }) => {
 
      
       } else {
+        console.log("error user")
         setMessage(t.error);
       }
 

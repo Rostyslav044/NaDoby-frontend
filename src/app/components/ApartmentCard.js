@@ -1,5 +1,5 @@
 
-// // карточка для отображения объявления об аренде.
+ // карточка для отображения объявления об аренде.
 
 // 'use client';
 
@@ -314,7 +314,7 @@
 //               alignItems: 'center',
 //               justifyContent: 'center',
 //               bgcolor: '#f5f5f5',
-//               color: '#757575',
+//               color: 'text.secondary',
 //               gap: 1,
 //             }}
 //           >
@@ -334,38 +334,22 @@
 //           overflow: 'hidden',
 //         }}
 //       >
-//         {/* Категория (плашка по центру в мобилке) */}
-//         {/* <Box
+//         {/* Категория */}
+//         <Box
 //           sx={{
 //             mb: { xs: 1.25, sm: 2 },
 //             px: 2,
 //             py: 0.5,
 //             bgcolor: 'primary.light',
 //             borderRadius: 1,
-//             display: 'inline-flex',
+//             display: 'flex',
 //             alignItems: 'center',
 //             justifyContent: 'center',
-//             mx: { xs: 'auto', sm: 0 },
+//             mx: 'auto',
 //             width: 'fit-content',
 //             maxWidth: '100%',
 //           }}
-//         > */}
-
-// <Box
-//   sx={{
-//     mb: { xs: 1.25, sm: 2 },
-//     px: 2,
-//     py: 0.5,
-//     bgcolor: 'primary.light',
-//     borderRadius: 1,
-//     display: 'flex', // Меняем на flex
-//     alignItems: 'center',
-//     justifyContent: 'center', // Центрируем содержимое
-//     mx: 'auto', // Всегда авто-отступы по бокам
-//     width: 'fit-content', // Ширина по содержимому
-//     maxWidth: '100%',
-//   }}
-// >
+//         >
 //           <Typography
 //             variant="subtitle2"
 //             color="white"
@@ -383,7 +367,7 @@
 //             sx={{ mb: 0.5, lineHeight: 1.35 }}
 //           >
 //             {apartment?.city || t.noCity}, {apartment?.street || t.noStreet}
-//             , {apartment?.houseNumber || t.noHouseNumber}
+//             {apartment?.houseNumber ? `, ${apartment.houseNumber}` : `, ${t.noHouseNumber}`}
 //           </Typography>
 
 //           <Grid container spacing={0.5}>
@@ -437,8 +421,7 @@
 //             textAlign: 'center',
 //             mt: 'auto',
 //             transition: 'all 0.3s ease',
-//             '&:hover': { bgcolor: { sm: 'primary.dark' } },
-            
+//             '&:hover': { bgcolor: 'primary.dark' },
 //           }}
 //         >
 //           <Typography
@@ -477,9 +460,6 @@
 //   return <ApartmentCardComponent {...props} />;
 // }
 
-
-
-// // карточка для отображения объявления об аренде.
 
 'use client';
 
@@ -585,7 +565,7 @@ const ApartmentCardComponent = ({
     onSwipedLeft: () =>
       setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
     onSwipedRight: () =>
-      setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
+      setCurrentIndex((prev) (prev === 0 ? photos.length - 1 : prev - 1)),
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
@@ -647,7 +627,6 @@ const ApartmentCardComponent = ({
         flexDirection: 'column',
         position: 'relative',
         overflow: 'hidden',
-        // мобилка — авто по высоте; планшет/десктоп — как было (500px)
         height: { xs: 'auto', sm: 500 },
         mb: { xs: 2, sm: 0 },
         '&:hover': {

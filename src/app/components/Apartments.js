@@ -340,25 +340,26 @@
 
 
 'use client';
-import React, { useEffect, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
-  CircularProgress,
   Box,
+  CircularProgress,
   IconButton,
   Menu,
   MenuItem,
   Snackbar,
-  Alert
+  Alert,
 } from '@mui/material';
 import { MoreVert, Edit, Delete } from '@mui/icons-material';
 import ApartmentList from './ApartmentList';
-import { SessionProvider } from 'next-auth/react';
 import { useLanguage } from '@/app/LanguageContext';
 
-const APARTMENTS_CONTENT = {
+// --- Переводы ---
+const APARTMENTS_TRANSLATIONS = {
   ua: {
     deleteConfirm: 'Ви впевнені, що хочете видалити це оголошення?',
     loadError: 'Помилка при завантаженні апартаментів',
@@ -366,7 +367,10 @@ const APARTMENTS_CONTENT = {
     deleteError: 'Помилка при видаленні оголошення',
     favoriteError: 'Помилка при оновленні обраного',
     edit: 'Редагувати',
-    delete: 'Видалити'
+    delete: 'Видалити',
+    loginRequired: 'Будь ласка, увійдіть щоб додати в обране',
+    favoriteAdded: 'Додано в обране',
+    favoriteRemoved: 'Видалено з обраного',
   },
   ru: {
     deleteConfirm: 'Вы уверены, что хотите удалить это объявление?',
@@ -375,21 +379,18 @@ const APARTMENTS_CONTENT = {
     deleteError: 'Ошибка при удалении объявления',
     favoriteError: 'Ошибка при обновлении избранного',
     edit: 'Редактировать',
-    delete: 'Удалить'
-  }
+    delete: 'Удалить',
+    loginRequired: 'Пожалуйста, войдите чтобы добавить в избранное',
+    favoriteAdded: 'Добавлено в избранное',
+    favoriteRemoved: 'Удалено из избранного',
+  },
 };
 
-const ApartmentsContent = ({
-   userId,
-   showActions = false,
-    favoriteIds, 
-    forceRefreshKey,
-    onFavoriteRemoved
-   }) => {
+// --- ApartmentsContent ---
+const ApartmentsContent = ({ userId, showActions = false, favoriteIds, forceRefreshKey, onFavoriteRemoved }) => {
   const [apartments, setApartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState({});
-  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -398,79 +399,35 @@ const ApartmentsContent = ({
   const { data: session } = useSession();
   const router = useRouter();
   const { currentLanguage } = useLanguage();
-  const t = APARTMENTS_CONTENT[currentLanguage];
+  const t = APARTMENTS_TRANSLATIONS[currentLanguage] || APARTMENTS_TRANSLATIONS.ua;
 
   useEffect(() => {
-//     (async () => {
-//   try {
-
-//     const response = await axios.get(
-//       'http://localhost:3000/api/v1/auth/me',
-//   {
-//     headers: {
-//       Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmQxYzQzNDc2MGI4NTBjYTRiNzQ5YSIsImlhdCI6MTc1Nzc4ODI2OCwiZXhwIjoxNzYwMzgwMjY4fQ.h4Y0JoUU8V9qYQm1_U60umfrw-4l7EE6xlgHlB-ar7g`, 
-//       'Content-Type': 'application/json'
-//     }
-//   }
-//     );
-//     console.log(response.data);
-//   } catch (error) {
-//     console.error('Request failed:', error.message);
-//   }
-// })();
     const loadData = async () => {
-        
       const userProfile = localStorage.getItem('user_profile');
       if (userProfile) {
         try {
           const profileData = JSON.parse(userProfile);
           setCurrentUser(profileData);
-          
           await loadFavoritesFromServer(profileData._id);
         } catch (error) {
           console.error('Error parsing user profile:', error);
         }
       }
-      
       await fetchApartments();
     };
-    
     loadData();
   }, [userId, favoriteIds, forceRefreshKey]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const userProfile = localStorage.getItem('user_profile');
-      if (userProfile) {
-        try {
-          const profileData = JSON.parse(userProfile);
-          setCurrentUser(profileData);
-          
-          await loadFavoritesFromServer(profileData._id);
-        } catch (error) {
-          console.error('Error parsing user profile:', error);
-        }
-      }
-      
-      await fetchApartments();
-    };
-    
-    loadData();
-  }, [userId, favoriteIds]);
-
   const loadFavoritesFromServer = async (userId) => {
     try {
-      const response = await axios.get(
-        'http://localhost:3000/api/v1/apartments/favorites/user',
-        { headers: { 'user-id': userId } }
-      );
-      
+      const response = await axios.get('http://localhost:3000/api/v1/apartments/favorites/user', {
+        headers: { 'user-id': userId },
+      });
       if (response.data.success) {
         const serverFavorites = response.data.favorites.reduce((acc, apt) => {
           acc[apt._id] = true;
           return acc;
         }, {});
-        
         setFavorites(serverFavorites);
         localStorage.setItem('apartment_favorites', JSON.stringify(serverFavorites));
       }
@@ -479,51 +436,33 @@ const ApartmentsContent = ({
     }
   };
 
-  const showSnackbar = (message, severity = 'info') => {
-    setSnackbar({ open: true, message, severity });
-  };
-
   const fetchApartments = async () => {
     try {
       let endpoint = 'get-all';
-      let params = {};
-      
-      if (userId) {
-        endpoint = `user-apartment/${userId}`;
-      }
-      
-      const response = await axios.get(`http://localhost:3000/api/v1/apartments/${endpoint}`, { params });
-      
-      let filteredApartments = response.data;
-      
+      if (userId) endpoint = `user-apartment/${userId}`;
+      const response = await axios.get(`http://localhost:3000/api/v1/apartments/${endpoint}`);
+      let filtered = response.data;
       if (favoriteIds && favoriteIds.length > 0) {
-        filteredApartments = response.data.filter(apartment => 
-          favoriteIds.includes(apartment._id)
-        );
+        filtered = filtered.filter((apt) => favoriteIds.includes(apt._id));
       }
-      
-      setApartments(filteredApartments);
+      setApartments(filtered);
     } catch (error) {
-      console.error('Ошибка при загрузке апартаментов:', error);
+      console.error(error);
       showSnackbar(t.loadError, 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const isUserApartment = (apartment) => {
-    return currentUser && apartment.user_id === currentUser._id;
-  };
+  const isUserApartment = (apartment) => currentUser && apartment.user_id === currentUser._id;
 
   const handleMenuOpen = (event, apartment) => {
     event.stopPropagation();
-    
     if (showActions && isUserApartment(apartment)) {
       setAnchorEl(event.currentTarget);
       setSelectedApartment(apartment);
     }
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedApartment(null);
@@ -535,71 +474,54 @@ const ApartmentsContent = ({
       handleMenuClose();
     }
   };
-
   const handleDelete = async () => {
     if (!selectedApartment) return;
-    
-    if (!confirm(t.deleteConfirm)) {
+    if (!window.confirm(t.deleteConfirm)) {
       handleMenuClose();
       return;
     }
-
     try {
       await axios.delete(`http://localhost:3000/api/v1/apartments/${selectedApartment._id}`);
-      setApartments(apartments.filter(apt => apt._id !== selectedApartment._id));
+      setApartments(apartments.filter((apt) => apt._id !== selectedApartment._id));
       showSnackbar(t.deleteSuccess, 'success');
     } catch (error) {
-      console.error('Ошибка при удалении:', error);
+      console.error(error);
       showSnackbar(t.deleteError, 'error');
     } finally {
       handleMenuClose();
     }
   };
 
-  const checkIsFavorite = (apartmentId) => {
-    return favorites[apartmentId] === true;
-  };
+  const checkIsFavorite = (apartmentId) => favorites[apartmentId] === true;
 
   const toggleFavorite = async (id) => {
     const userProfile = localStorage.getItem('user_profile');
     if (!userProfile) {
-      setIsCreateUserOpen(true);
+      showSnackbar(t.loginRequired, 'warning');
       return;
     }
-
     try {
       const profileData = JSON.parse(userProfile);
-      
       const response = await axios.post(
-        'http://localhost:3000/api/v1/apartments/favorites/toggle', 
+        'http://localhost:3000/api/v1/apartments/favorites/toggle',
         { apartmentId: id },
-        { 
-          headers: { 
-            'user-id': profileData._id,
-            'Content-Type': 'application/json'
-          }
-        }
+        { headers: { 'user-id': profileData._id, 'Content-Type': 'application/json' } }
       );
-      
       if (response.data.success) {
-        const updatedFavorites = {
-          ...favorites,
-          [id]: response.data.isFavorite
-        };
-        
-        setFavorites(updatedFavorites);
-        localStorage.setItem('apartment_favorites', JSON.stringify(updatedFavorites));
-        
-        showSnackbar(response.data.message, 'success');
-        
-        if (!response.data.isFavorite && typeof onFavoriteRemoved === 'function') {
-          onFavoriteRemoved(id);
-        }
+        const updated = { ...favorites, [id]: response.data.isFavorite };
+        setFavorites(updated);
+        localStorage.setItem('apartment_favorites', JSON.stringify(updated));
+        showSnackbar(response.data.isFavorite ? t.favoriteAdded : t.favoriteRemoved, 'success');
+        if (!response.data.isFavorite && onFavoriteRemoved) onFavoriteRemoved(id);
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      console.error(error);
       showSnackbar(t.favoriteError, 'error');
     }
+  };
+
+  const showSnackbar = (message, severity = 'info') => {
+    setSnackbar({ open: true, message, severity });
   };
 
   if (loading) {
@@ -613,11 +535,7 @@ const ApartmentsContent = ({
   return (
     <Box>
       {showActions && (
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>
             <Edit sx={{ mr: 1 }} /> {t.edit}
           </MenuItem>
@@ -633,57 +551,40 @@ const ApartmentsContent = ({
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          severity={snackbar.severity} 
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-        >
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>
           {snackbar.message}
         </Alert>
       </Snackbar>
 
       <ApartmentList
-        apartments={apartments.map(apartment => ({
+        apartments={apartments.map((apartment) => ({
           ...apartment,
-          actions: showActions && isUserApartment(apartment) ? (
-            <IconButton
-              onClick={(e) => handleMenuOpen(e, apartment)}
-              size="small"
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.9)',
-                '&:hover': {
-                  bgcolor: 'rgba(255,255,255,1)'
-                }
-              }}
-            >
-              <MoreVert />
-            </IconButton>
-          ) : null
+          actions:
+            showActions && isUserApartment(apartment) ? (
+              <IconButton
+                onClick={(e) => handleMenuOpen(e, apartment)}
+                size="small"
+                sx={{ bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'rgba(255,255,255,1)' } }}
+              >
+                <MoreVert />
+              </IconButton>
+            ) : null,
         }))}
         isFavorite={checkIsFavorite}
         toggleFavorite={toggleFavorite}
-        isCreateUserOpen={isCreateUserOpen}
-        onCloseDialog={() => setIsCreateUserOpen(false)}
         showTitle={!favoriteIds}
         isFavoritesPage={!!favoriteIds}
+        isUserListings={!!userId}
       />
     </Box>
   );
 };
 
-const Apartments = ({ 
-  userId, 
-  showActions = false,
-   favoriteIds, 
-   onFavoriteRemoved
-   }) => {
+// --- Главный компонент ---
+const Apartments = (props) => {
   return (
     <SessionProvider>
-      <ApartmentsContent 
-        userId={userId} 
-        showActions={showActions}
-        favoriteIds={favoriteIds}
-        onFavoriteRemoved={onFavoriteRemoved} 
-      />
+      <ApartmentsContent {...props} />
     </SessionProvider>
   );
 };

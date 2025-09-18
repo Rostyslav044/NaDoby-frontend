@@ -479,6 +479,7 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  Avatar,
 } from '@mui/material';
 import {
   Favorite,
@@ -490,41 +491,78 @@ import {
   ArrowForwardIos,
   PhotoCamera,
   MapOutlined,
+  LocationOn,
 } from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/LanguageContext';
-import { useSelector } from 'react-redux';
 
-const APARTMENT_CARD_CONTENT = {
+// Используем те же переводы, что и в рабочем коде
+const APARTMENT_CARD_TRANSLATIONS = {
   ua: {
     noPhotos: 'Немає фото',
     noCity: 'Місто не вказано',
-    noStreet: 'вулиця не вказана',
+    noStreet: 'Вулиця не вказана',
     noHouseNumber: 'без номера',
-    guests: (count) => (count === 1 ? 'гість' : 'гостей'),
-    rooms: (count) => (count === 1 ? 'кімната' : 'кімнати'),
+    guests: (count) => (count === 1 ? 'гість' : count < 5 ? 'гості' : 'гостей'),
+    rooms: (count) => (count === 1 ? 'кімната' : count < 5 ? 'кімнати' : 'кімнат'),
     noPrice: 'Ціна не вказана',
     favoriteAdd: 'Додати в обране',
     favoriteRemove: 'Видалити з обраного',
     apartmentDefault: 'Апартаменти',
     loginRequired: 'Увійдіть, щоб додати в обране',
     favoriteError: 'Помилка при оновленні обраного',
+    district: 'район',
+    metro: 'метро',
   },
   ru: {
     noPhotos: 'Нет фото',
     noCity: 'Город не указан',
-    noStreet: 'улица не указана',
+    noStreet: 'Улица не указана',
     noHouseNumber: 'без номера',
-    guests: (count) => (count === 1 ? 'гость' : 'гостей'),
-    rooms: (count) => (count === 1 ? 'комната' : 'комнаты'),
+    guests: (count) => (count === 1 ? 'гость' : count < 5 ? 'гостя' : 'гостей'),
+    rooms: (count) => (count === 1 ? 'комната' : count < 5 ? 'комнаты' : 'комнат'),
     noPrice: 'Цена не указана',
     favoriteAdd: 'Добавить в избранное',
     favoriteRemove: 'Удалить из избранного',
     apartmentDefault: 'Апартаменты',
     loginRequired: 'Войдите, чтобы добавить в избранное',
     favoriteError: 'Ошибка при обновлении избранного',
+    district: 'район',
+    metro: 'метро',
   },
+};
+
+// Добавляем перевод категорий как в рабочем коде
+const CATEGORY_TRANSLATIONS = {
+  ua: {
+    'Квартира': 'Квартира',
+    'Гостиница': 'Готель',
+    'Хостел': 'Хостел',
+    'Дом': 'Будинок',
+    'База отдыха': 'База відпочинку',
+    'Сауна/Баня': 'Сауна/Лазня',
+    'Готель для тварин': 'Готель для тварин',
+    'Глемпінг': 'Глемпінг',
+    'Пансіонат': 'Пансіонат',
+    'Котедж для компній': 'Котедж для компаній',
+    'Коворкінг': 'Коворкінг',
+    'Автокемпінг': 'Автокемпінг'
+  },
+  ru: {
+    'Квартира': 'Квартира',
+    'Гостиница': 'Гостиница',
+    'Хостел': 'Хостел',
+    'Дом': 'Дом',
+    'База отдыха': 'База отдыха',
+    'Сауна/Баня': 'Сауна/Баня',
+    'Готель для тварин': 'Отель для животных',
+    'Глемпінг': 'Глэмпинг',
+    'Пансіонат': 'Пансионат',
+    'Котедж для компній': 'Коттедж для компаний',
+    'Коворкінг': 'Коворкинг',
+    'Автокемпінг': 'Автокемпинг'
+  }
 };
 
 const ApartmentCardComponent = ({
@@ -534,8 +572,13 @@ const ApartmentCardComponent = ({
   showCreateUserDialog,
 }) => {
   const { currentLanguage } = useLanguage();
-  const t = APARTMENT_CARD_CONTENT[currentLanguage];
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const t = APARTMENT_CARD_TRANSLATIONS[currentLanguage] || APARTMENT_CARD_TRANSLATIONS.ua;
+  const categoryTranslations = CATEGORY_TRANSLATIONS[currentLanguage] || CATEGORY_TRANSLATIONS.ua;
+  
+  const translateCategory = (category) => {
+    if (!category) return t.apartmentDefault;
+    return categoryTranslations[category] || category;
+  };
 
   const photos = Array.isArray(apartment?.photos) ? apartment.photos : [];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -565,7 +608,7 @@ const ApartmentCardComponent = ({
     onSwipedLeft: () =>
       setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1)),
     onSwipedRight: () =>
-      setCurrentIndex((prev) (prev === 0 ? photos.length - 1 : prev - 1)),
+      setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1)),
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
@@ -578,7 +621,8 @@ const ApartmentCardComponent = ({
     e.stopPropagation();
     if (isLoading) return;
 
-    if (!isAuthenticated) {
+    const userProfile = localStorage.getItem('user_profile');
+    if (!userProfile) {
       if (typeof showCreateUserDialog === 'function') {
         showCreateUserDialog();
       } else {
@@ -609,7 +653,7 @@ const ApartmentCardComponent = ({
       maximumFractionDigits: 0,
     })
       .format(price)
-      .replace('₴', '');
+      .replace('₴', ' грн');
   };
 
   return (
@@ -814,7 +858,7 @@ const ApartmentCardComponent = ({
             color="white"
             sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
           >
-            {apartment?.category || t.apartmentDefault}
+            {translateCategory(apartment?.category) || t.apartmentDefault}
           </Typography>
         </Box>
 
@@ -834,7 +878,7 @@ const ApartmentCardComponent = ({
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <MapOutlined fontSize="small" color="primary" sx={{ mr: 0.5 }} />
-                  <Typography variant="caption">{apartment.district}</Typography>
+                  <Typography variant="caption">{t.district} {apartment.district}</Typography>
                 </Box>
               </Grid>
             )}
@@ -842,7 +886,7 @@ const ApartmentCardComponent = ({
               <Grid item xs={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <DirectionsSubway fontSize="small" color="primary" sx={{ mr: 0.5 }} />
-                  <Typography variant="caption">{apartment.metro}</Typography>
+                  <Typography variant="caption">{t.metro} {apartment.metro}</Typography>
                 </Box>
               </Grid>
             )}

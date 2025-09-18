@@ -143,22 +143,22 @@ import {
 import ApartmentCard from './ApartmentCard';
 import CreateUser from './CreateUser';
 import { useLanguage } from "@/app/LanguageContext";
-import { Provider } from "react-redux";
-import { store } from "@/app/store";
-import { LanguageProvider } from "@/app/LanguageContext";
 
-const APARTMENT_LIST_CONTENT = {
+// Переводы
+const APARTMENT_LIST_TRANSLATIONS = {
   ua: {
     title: "Усі апартаменти",
     noApartments: "Немає жодного апартаменту",
     noFavorites: "Немає обраних апартаментів",
-    favoritesTitle: "Обрані апартаменти"
+    favoritesTitle: "Обрані апартаменти",
+    otherListings: "Інші об'єкти користувача",
   },
   ru: {
     title: "Все апартаменты", 
     noApartments: "Нет ни одного апартамента",
     noFavorites: "Нет избранных апартаментов",
-    favoritesTitle: "Избранные апартаменты"
+    favoritesTitle: "Избранные апартаменты",
+    otherListings: "Другие объекты пользователя",
   }
 };
 
@@ -170,18 +170,15 @@ const ApartmentListComponent = ({
   onCloseDialog,
   showCreateUserDialog,
   showTitle = true,
-  isFavoritesPage = false
+  isFavoritesPage = false,
+  isUserListings = false
 }) => {
   const { currentLanguage } = useLanguage();
-  const t = APARTMENT_LIST_CONTENT[currentLanguage];
+  const t = APARTMENT_LIST_TRANSLATIONS[currentLanguage] || APARTMENT_LIST_TRANSLATIONS.ua;
 
   const getIsFavoriteForApartment = (apartment) => {
-    if (typeof isFavorite === 'function') {
-      return isFavorite(apartment._id);
-    }
-    if (typeof isFavorite === 'boolean') {
-      return isFavorite;
-    }
+    if (typeof isFavorite === 'function') return isFavorite(apartment._id);
+    if (typeof isFavorite === 'boolean') return isFavorite;
     return false;
   };
 
@@ -189,7 +186,7 @@ const ApartmentListComponent = ({
     <Container sx={{ py: 4 }}>
       {showTitle && (
         <Typography variant="h4" component="h1" gutterBottom>
-          {isFavoritesPage ? t.favoritesTitle : t.title}
+          {isFavoritesPage ? t.favoritesTitle : isUserListings ? t.otherListings : t.title}
         </Typography>
       )}
 
@@ -226,28 +223,6 @@ const ApartmentListComponent = ({
   );
 };
 
-export default function ApartmentList({ 
-  apartments, 
-  isFavorite, 
-  toggleFavorite, 
-  isCreateUserOpen, 
-  onCloseDialog,
-  showTitle = true,
-  isFavoritesPage = false
-}) {
-  return (
-    <Provider store={store}>
-      <LanguageProvider>
-        <ApartmentListComponent 
-          apartments={apartments}
-          isFavorite={isFavorite}
-          toggleFavorite={toggleFavorite}
-          isCreateUserOpen={isCreateUserOpen}
-          onCloseDialog={onCloseDialog}
-          showTitle={showTitle}
-          isFavoritesPage={isFavoritesPage}
-        />
-      </LanguageProvider>
-    </Provider>
-  );
+export default function ApartmentList(props) {
+  return <ApartmentListComponent {...props} />;
 }

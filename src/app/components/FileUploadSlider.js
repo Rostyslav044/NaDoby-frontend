@@ -909,9 +909,9 @@ import {
   useMediaQuery,
   useTheme,
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions
+  Snackbar,
+  Alert
 } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -924,6 +924,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import { useLanguage } from '@/app/LanguageContext';
 import { useSelector } from 'react-redux';
+import CreateUser from '@/app/components/CreateUser';
 
 const MAX_PHOTOS = 15;
 const MAX_FILE_SIZE_MB = 50;
@@ -956,7 +957,9 @@ const translations = {
     authRequired: 'Для цієї дії необхідно авторизуватися',
     authRequiredTitle: 'Потрібна авторизація',
     close: 'Закрити',
-    login: 'Увійти'
+    login: 'Увійти',
+    loginRequired: 'Будь ласка, увійдіть щоб виконати цю дію',
+    actionSuccess: 'Дякуємо за ваше повідомлення!'
   },
   ru: {
     addPhotos: 'Добавить фото',
@@ -983,7 +986,9 @@ const translations = {
     authRequired: 'Для этого действия необходимо авторизоваться',
     authRequiredTitle: 'Требуется авторизация',
     close: 'Закрыть',
-    login: 'Войти'
+    login: 'Войти',
+    loginRequired: 'Пожалуйста, войдите чтобы выполнить это действие',
+    actionSuccess: 'Спасибо за ваше сообщение!'
   }
 };
 
@@ -1013,24 +1018,49 @@ const FileUploadSlider = ({
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const [pendingAction, setPendingAction] = useState(null);
   const fileInputRef = useRef(null);
   const thumbnailsRef = useRef(null);
+  const autoCloseTimer = useRef(null);
   
   // Получаем состояние авторизации из Redux store
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const user = useSelector(state => state.auth.user);
 
+  // Очищаем таймер при размонтировании компонента
   useEffect(() => {
-    if (thumbnailsRef.current && localPhotos.length > 0 && !isMobile) {
-      const thumbWidth = 273.4;
-      const gap = 10;
-      const scrollPos = currentIndex * (thumbWidth + gap) - (thumbnailsRef.current.offsetWidth / 2) + (thumbWidth / 2);
-      thumbnailsRef.current.scrollTo({
-        left: scrollPos,
-        behavior: 'smooth'
-      });
+    return () => {
+      if (autoCloseTimer.current) {
+        clearTimeout(autoCloseTimer.current);
+      }
+    };
+  }, []);
+
+  const startAutoCloseTimer = () => {
+    // Очищаем предыдущий таймер, если он есть
+    if (autoCloseTimer.current) {
+      clearTimeout(autoCloseTimer.current);
     }
-  }, [currentIndex, localPhotos.length, isMobile]);
+    
+    // Устанавливаем новый таймер на 5 секунд
+    autoCloseTimer.current = setTimeout(() => {
+      setAuthDialogOpen(false);
+      setSnackbar(prev => ({ ...prev, open: false }));
+    }, 5000);
+  };
+
+  const showSnackbar = (message, severity = 'info') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+    // Останавливаем таймер при ручном закрытии
+    if (autoCloseTimer.current) {
+      clearTimeout(autoCloseTimer.current);
+    }
+  };
 
   useEffect(() => {
     if (!Array.isArray(photos)) {
@@ -1190,10 +1220,27 @@ const FileUploadSlider = ({
   // Функция для обработки нажатия на кнопки действия
   const handleActionButtonClick = (actionType) => {
     if (!isAuthenticated) {
+      // Сохраняем тип действия для выполнения после авторизации
+      setPendingAction(actionType);
+      
+      // Показываем модальное окно и алерт
       setAuthDialogOpen(true);
+      setSnackbar({ 
+        open: true, 
+        message: t.loginRequired, 
+        severity: 'info' 
+      });
+      
+      // Запускаем таймер автоматического закрытия
+      startAutoCloseTimer();
       return;
     }
 
+    // Если пользователь авторизован, выполняем действие
+    performAction(actionType);
+  };
+
+  const performAction = (actionType) => {
     const actionSubjects = {
       report: 'Неактуальная информация',
       feedback: 'Отзыв о жилье',
@@ -1216,15 +1263,17 @@ ID объявления: ${apartmentId}
 
     // Открываем почтовый клиент
     window.location.href = `mailto:support@nadoby.com.ua?subject=${encodedSubject}&body=${encodedBody}`;
+
+    // Показываем сообщение об успехе
+    showSnackbar(t.actionSuccess, 'success');
   };
 
   const handleCloseAuthDialog = () => {
     setAuthDialogOpen(false);
-  };
-
-  const handleLoginRedirect = () => {
-    // Перенаправляем на страницу входа
-    window.location.href = '/login';
+    // Останавливаем таймер при ручном закрытии
+    if (autoCloseTimer.current) {
+      clearTimeout(autoCloseTimer.current);
+    }
   };
 
   return (
@@ -1824,19 +1873,32 @@ ID объявления: ${apartmentId}
         </Box>
       )}
 
-      {/* Диалог авторизации */}
-      <Dialog open={authDialogOpen} onClose={handleCloseAuthDialog}>
-        <DialogTitle>{t.authRequiredTitle}</DialogTitle>
+      {/* Диалог авторизации с компонентом CreateUser */}
+      <Dialog
+        open={authDialogOpen}
+        onClose={handleCloseAuthDialog}
+        fullWidth
+        maxWidth="xs"
+      >
         <DialogContent>
-          <Typography>{t.authRequired}</Typography>
+          <CreateUser onClose={handleCloseAuthDialog} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAuthDialog}>{t.close}</Button>
-          <Button onClick={handleLoginRedirect} variant="contained">
-            {t.login}
-          </Button>
-        </DialogActions>
       </Dialog>
+
+      {/* Snackbar для уведомлений */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          severity={snackbar.severity} 
+          onClose={handleCloseSnackbar}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

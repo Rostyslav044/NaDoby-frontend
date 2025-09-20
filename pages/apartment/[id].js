@@ -1935,6 +1935,8 @@ import Footer from '@/app/components/Footer';
 import Link from 'next/link';
 import axios from 'axios';
 import CreateUser from '@/app/components/CreateUser';
+import AuthLogic from '@/app/components/AuthLogic';
+import { SessionProvider } from 'next-auth/react';
 
 const translations = {
   ua: {
@@ -2955,9 +2957,12 @@ export default function ApartmentDetailPage() {
   return (
     <Provider store={store}>
       <LanguageProvider>
+         <SessionProvider >
+        <AuthLogic/>
         <Header />
         <ApartmentDetailContent />
         <Footer/>
+        </SessionProvider >
       </LanguageProvider>
     </Provider>
   );

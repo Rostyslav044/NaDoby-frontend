@@ -43,7 +43,7 @@ const translations = {
     switchToLogin: "Увійти",
     loginSuccess: "Успішний вхід!",
     registerSuccess: "Успішна реєстрація!",
-    error: "Сталася помилка",
+    error: "Сталася помилка. Користувач с таким email вже існує",
     recoverNotImplemented: "Функція відновлення поки не реалізована.",
   },
   ru: {
@@ -61,7 +61,7 @@ const translations = {
     switchToLogin: "Войти",
     loginSuccess: "Вход выполнен успешно!",
     registerSuccess: "Регистрация прошла успешно!",
-    error: "Произошла ошибка",
+    error: "Произошла ошибка. Пользователь с таким email уже существует",
     recoverNotImplemented: "Функция восстановления пароля пока не реализована.",
   }
 };
@@ -79,7 +79,7 @@ const CreateUser = ({ onClose }) => {
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
   const token = "your_token_here";
 
-  useEffect(() => {
+  // useEffect(() => {
     // if (message) {
     //   setAlertVisible(true);
     //   const timer = setTimeout(() => {
@@ -90,8 +90,7 @@ const CreateUser = ({ onClose }) => {
     //   return () => clearTimeout(timer);
     // }
 
-
-  },[] );
+  // },[] );
 
   const onSubmit = async (data) => {
     try {
@@ -128,13 +127,18 @@ const CreateUser = ({ onClose }) => {
       }
 
     } catch (error) {
+      console.log(error)
       if (error.response) {
         setMessage(error.response.data.message || t.error);
+setAlertVisible(true)
+
       } else if (error.request) {
         setMessage("Сервер не отвечает. Проверьте подключение к сети.");
       } else {
         setMessage(t.error);
       }
+
+
     } 
   };
 

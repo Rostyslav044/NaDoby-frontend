@@ -1,14 +1,8 @@
 
 
-
-
-
-
-
 // 'use client'
 
 // import React, { useEffect } from 'react';
-// import { Provider, useSelector } from 'react-redux';
 // import { LanguageProvider } from '@/app/LanguageContext';
 // import { Roboto, Lato } from 'next/font/google';
 // import Providers from './providers'; // Подключаем новый компонент Providers
@@ -18,7 +12,9 @@
 
 
 // import Apartments from './components/Apartments';
-
+// import { Provider, useSelector } from 'react-redux';
+// import Footer from './components/Footer';
+// import Blog from '../../pages/blog';
 
 
 
@@ -40,47 +36,45 @@
 //     <html lang="ua">
 //       <head />
 //       <body className={lato.className}>
-      
-     
+
 //         <SessionProvider>
-        
-//         <Providers>
+//         <Provider store={store}> 
 //          <LanguageProvider>
-              
+//               {/* <Providers> */}
 //             <main>
 //                <AuthLogic />
 //             {children}
 //               </main>
 //                  <Apartments/>
-             
+//                  <Blog/>
+//                  <Footer/>
+//              {/* </Providers> */}
 //           </LanguageProvider>
-//           </Providers>
-          
+//            </Provider>
 //         </SessionProvider>
-        
-        
 //       </body>
 //     </html>
 //   );
 // }
+
+
 
 'use client'
 
 import React, { useEffect } from 'react';
 import { LanguageProvider } from '@/app/LanguageContext';
 import { Roboto, Lato } from 'next/font/google';
-import Providers from './providers'; // Подключаем новый компонент Providers
+import Providers from './providers';
 import AuthLogic from './components/AuthLogic';
 import { SessionProvider } from "next-auth/react";
-import { store } from './store'; // Подключаем store
-
-
+import { store } from './store';
 import Apartments from './components/Apartments';
 import { Provider, useSelector } from 'react-redux';
 import Footer from './components/Footer';
 import Blog from '../../pages/blog';
 
-
+// Импортируем глобальную конфигурацию axios
+import '@/app/utils/axiosConfig';
 
 // Применение шрифтов:
 const roboto = Roboto({
@@ -94,27 +88,22 @@ const lato = Lato({
 });
 
 export default function Layout({ children }) {
-
-  
   return (
     <html lang="ua">
       <head />
       <body className={lato.className}>
-
         <SessionProvider>
-        <Provider store={store}> 
-         <LanguageProvider>
-              {/* <Providers> */}
-            <main>
-               <AuthLogic />
-            {children}
+          <Provider store={store}> 
+            <LanguageProvider>
+              <main>
+                <AuthLogic />
+                {children}
               </main>
-                 <Apartments/>
-                 <Blog/>
-                 <Footer/>
-             {/* </Providers> */}
-          </LanguageProvider>
-           </Provider>
+              <Apartments/>
+              <Blog/>
+              <Footer/>
+            </LanguageProvider>
+          </Provider>
         </SessionProvider>
       </body>
     </html>

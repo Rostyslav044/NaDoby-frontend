@@ -68,7 +68,7 @@ const translations = {
 
 const CreateUser = ({ onClose }) => {
   const dispatch = useDispatch();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, formState: { errors },watch } = useForm();
   const [message, setMessage] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -142,13 +142,38 @@ setAlertVisible(true)
     } 
   };
 
+const handleForgotPassword = async () => {
+  const email = watch("email"); 
+  if (!email) {
+    alert("Будь ласка, введіть email");
+    return;
+  }
+  
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/auth/forgotpassword", 
+      {
+        email: email.toLowerCase(),
+      }
+    );
+    console.log(response.data);
+    alert("Лист для відновлення паролю надіслано на вашу пошту!");
+  } catch (error) {
+    if (error.response) {
+      console.error("Error:", error.response.data);
+      alert("Помилка: " + (error.response.data.message || "Спробуйте пізніше"));
+    } else {
+      console.error("Network error:", error.message);
+      alert("Помилка з'єднання з сервером");
+    }
+  }
+};
 
 
 
-
-  const handleForgotPassword = () => {
-    setMessage(t.recoverNotImplemented);
-  };
+  // const handleForgotPassword = () => {
+  //   setMessage(t.recoverNotImplemented);
+  // };
 
   return (
     // <Box
@@ -275,14 +300,20 @@ setAlertVisible(true)
           </Box>
         </form>
 
-        {isLogin && (
+        {/* {isLogin && (
           <Typography textAlign="center" sx={{ mt: 2 }}>
             <Link component="button" variant="body2" onClick={handleForgotPassword}>
               {t.forgotPassword}
             </Link>
           </Typography>
-        )}
-
+        )} */}
+{isLogin && (
+  <Typography textAlign="center" sx={{ mt: 2 }}>
+   <Link component="button" variant="body2" onClick={handleForgotPassword}>
+  {t.forgotPassword}
+</Link>
+  </Typography>
+)}
         <Typography textAlign="center" sx={{ mt: 2 }}>
           {isLogin ? t.noAccount : t.haveAccount}{" "}
           <Link component="button" variant="body2" onClick={() => setIsLogin(!isLogin)}>

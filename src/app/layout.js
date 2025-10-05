@@ -72,7 +72,7 @@ import Apartments from './components/Apartments';
 import { Provider, useSelector } from 'react-redux';
 import Footer from './components/Footer';
 import Blog from '../../pages/blog';
-
+import axios from "axios";
 // Импортируем глобальную конфигурацию axios
 import '@/app/utils/axiosConfig';
 
@@ -88,6 +88,44 @@ const lato = Lato({
 });
 
 export default function Layout({ children }) {
+  useEffect(() => {
+    const forgotPassword = async (email) => {
+      try {
+        const response = await axios.post("http://localhost:3000/api/v1/auth/forgotpassword", {
+          email: email.toLowerCase(),
+        });
+        console.log(response.data);
+      } catch (error) {
+        if (error.response) {
+          console.error("Error:", error.response.data);
+        } else {
+          console.error("Network error:", error.message);
+        }
+      }
+    };
+  
+    // forgotPassword("0988560505r@gmail.com");
+ const resetPassword =   async function resetPassword(token, newPassword) {
+  try {
+    const response = await axios.put(`http://localhost:3000/api/v1/auth/resetpassword/${token}`, {
+      password: newPassword,
+    });
+
+    console.log("Password reset success:", response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error:", error.response.data);
+      throw new Error(error.response.data.error || "Password reset failed");
+    } else {
+      console.error("Network error:", error.message);
+      throw new Error("Network error");
+    }
+  }
+}
+// resetPassword('b83a2743649f1f26d9961ea0bdf3e6c9254e8a61', "0988560506")
+  }, []);
+
   return (
     <html lang="ua">
       <head />

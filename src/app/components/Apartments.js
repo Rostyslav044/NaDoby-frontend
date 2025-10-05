@@ -289,7 +289,7 @@ import {
 } from '@mui/material';
 import { MoreVert, Edit, Delete } from '@mui/icons-material';
 import ApartmentList from './ApartmentList';
-import { useLanguage } from '@/app/LanguageContext';
+import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
 import { useFavorites } from '@/app/hooks/useFavorites';
 
 const APARTMENTS_TRANSLATIONS = {
@@ -498,10 +498,22 @@ const ApartmentsContent = ({ userId, showActions = false, favoriteIds, forceRefr
   );
 };
 
+// const Apartments = (props) => {
+//   return (
+//     <SessionProvider>
+//       <ApartmentsContent {...props} />
+//     </SessionProvider>
+//   );
+// };
+
+// export default Apartments;
+
 const Apartments = (props) => {
   return (
     <SessionProvider>
-      <ApartmentsContent {...props} />
+      <LanguageProvider>
+        <ApartmentsContent {...props} />
+      </LanguageProvider>
     </SessionProvider>
   );
 };

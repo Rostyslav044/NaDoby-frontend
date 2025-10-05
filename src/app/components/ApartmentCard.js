@@ -3,7 +3,6 @@
 
 
 
-
 // 'use client';
 
 // import React, { useState, useEffect, useRef } from 'react';
@@ -25,6 +24,7 @@
 //   Avatar,
 //   Dialog,
 //   DialogContent,
+//   CircularProgress,
 // } from '@mui/material';
 // import {
 //   Favorite,
@@ -42,6 +42,7 @@
 // import { useRouter } from 'next/navigation';
 // import { useLanguage } from '@/app/LanguageContext';
 // import CreateUser from './CreateUser';
+// import { useFavorites } from '@/app/hooks/useFavorites';
 
 // const APARTMENT_CARD_TRANSLATIONS = {
 //   ua: {
@@ -111,8 +112,8 @@
 
 // const ApartmentCardComponent = ({
 //   apartment,
-//   isFavorite,
-//   toggleFavorite,
+//   isFavorite: propIsFavorite,
+//   toggleFavorite: propToggleFavorite,
 //   showCreateUserDialog,
 // }) => {
 //   const { currentLanguage } = useLanguage();
@@ -132,7 +133,6 @@
 //     message: '',
 //     severity: 'info',
 //   });
-//   const [isLoading, setIsLoading] = useState(false);
 //   const [loginModalOpen, setLoginModalOpen] = useState(false);
 //   const autoCloseTimer = useRef(null);
 
@@ -140,7 +140,13 @@
 //   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 //   const router = useRouter();
 
-//   // Очищаем таймер при размонтировании компонента
+//   // Используем хук избранного
+//   const { isFavorite, toggleFavorite, loading: favoriteLoading } = useFavorites();
+
+//   // Определяем, использовать ли переданные пропсы или хук
+//   const actualIsFavorite = propIsFavorite !== undefined ? propIsFavorite : isFavorite(apartment?._id);
+//   const actualToggleFavorite = propToggleFavorite || toggleFavorite;
+
 //   useEffect(() => {
 //     return () => {
 //       if (autoCloseTimer.current) {
@@ -150,12 +156,10 @@
 //   }, []);
 
 //   const startAutoCloseTimer = () => {
-//     // Очищаем предыдущий таймер, если он есть
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
     
-//     // Устанавливаем новый таймер на 5 секунд
 //     autoCloseTimer.current = setTimeout(() => {
 //       setLoginModalOpen(false);
 //       setSnackbar(prev => ({ ...prev, open: false }));
@@ -182,7 +186,6 @@
 //   });
 
 //   const handleCardClick = () => {
-//     // Не переходим на детальную страницу, если открыто модальное окно
 //     if (!loginModalOpen) {
 //       router.push(`/apartment/${apartment._id}`);
 //     }
@@ -190,11 +193,10 @@
 
 //   const handleFavoriteClick = async (e) => {
 //     e.stopPropagation();
-//     if (isLoading) return;
+//     if (favoriteLoading) return;
 
 //     const userProfile = localStorage.getItem('user_profile');
 //     if (!userProfile) {
-//       // Показываем модальное окно и алерт
 //       setLoginModalOpen(true);
 //       setSnackbar({ 
 //         open: true, 
@@ -202,28 +204,29 @@
 //         severity: 'info' 
 //       });
       
-//       // Запускаем таймер автоматического закрытия
 //       startAutoCloseTimer();
 //       return;
 //     }
 
-//     setIsLoading(true);
 //     try {
-//       if (typeof toggleFavorite === 'function') {
-//         await toggleFavorite(apartment._id);
+//       await actualToggleFavorite(apartment._id);
+//     } catch (error) {
+//       if (error.message === 'USER_NOT_LOGGED_IN') {
+//         setLoginModalOpen(true);
+//         setSnackbar({ 
+//           open: true, 
+//           message: t.loginRequired, 
+//           severity: 'info' 
+//         });
+//         startAutoCloseTimer();
 //       } else {
 //         setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
 //       }
-//     } catch {
-//       setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
-//     } finally {
-//       setIsLoading(false);
 //     }
 //   };
 
 //   const handleCloseModal = () => {
 //     setLoginModalOpen(false);
-//     // Останавливаем таймер при ручном закрытии
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
@@ -231,7 +234,6 @@
 
 //   const handleCloseSnackbar = () => {
 //     setSnackbar(prev => ({ ...prev, open: false }));
-//     // Останавливаем таймер при ручном закрытии
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
@@ -271,11 +273,10 @@
 //         },
 //       }}
 //     >
-//       {/* Favorite */}
-//       <Tooltip title={isFavorite ? t.favoriteRemove : t.favoriteAdd} arrow>
+//       <Tooltip title={actualIsFavorite ? t.favoriteRemove : t.favoriteAdd} arrow>
 //         <IconButton
 //           onClick={handleFavoriteClick}
-//           disabled={isLoading}
+//           disabled={favoriteLoading}
 //           sx={{
 //             position: 'absolute',
 //             top: 10,
@@ -286,23 +287,9 @@
 //             '&:disabled': { opacity: 0.7 },
 //           }}
 //         >
-//           {isLoading ? (
-//             <Box
-//               sx={{
-//                 width: 24,
-//                 height: 24,
-//                 border: '2px solid',
-//                 borderColor: 'primary.main',
-//                 borderTopColor: 'transparent',
-//                 borderRadius: '50%',
-//                 animation: 'spin 1s linear infinite',
-//                 '@keyframes spin': {
-//                   '0%': { transform: 'rotate(0deg)' },
-//                   '100%': { transform: 'rotate(360deg)' },
-//                 },
-//               }}
-//             />
-//           ) : isFavorite ? (
+//           {favoriteLoading ? (
+//             <CircularProgress size={24} />
+//           ) : actualIsFavorite ? (
 //             <Favorite color="error" />
 //           ) : (
 //             <FavoriteBorder color="action" />
@@ -310,14 +297,12 @@
 //         </IconButton>
 //       </Tooltip>
 
-//       {/* Кнопка действий (если передана сверху) */}
 //       {apartment?.actions && (
 //         <Box sx={{ position: 'absolute', top: 10, left: 10, zIndex: 2 }}>
 //           {apartment.actions}
 //         </Box>
 //       )}
 
-//       {/* Photos */}
 //       <Box
 //         position="relative"
 //         {...swipeHandlers}
@@ -343,7 +328,6 @@
 //               }}
 //             />
 
-//             {/* Счётчик фото */}
 //             {photos.length > 1 && (
 //               <Badge
 //                 badgeContent={`${currentIndex + 1}/${photos.length}`}
@@ -362,7 +346,6 @@
 //               />
 //             )}
 
-//             {/* Навигация по фото */}
 //             {photos.length > 1 && (
 //               <>
 //                 <IconButton
@@ -419,7 +402,6 @@
 //         )}
 //       </Box>
 
-//       {/* Content */}
 //       <CardContent
 //         sx={{
 //           p: { xs: 1.5, sm: 2 },
@@ -429,7 +411,6 @@
 //           overflow: 'hidden',
 //         }}
 //       >
-//         {/* Категория */}
 //         <Box
 //           sx={{
 //             mb: { xs: 1.25, sm: 2 },
@@ -454,7 +435,6 @@
 //           </Typography>
 //         </Box>
 
-//         {/* Адрес */}
 //         <Box sx={{ mb: 1.25 }}>
 //           <Typography
 //             variant="body2"
@@ -487,7 +467,6 @@
 
 //         <Divider sx={{ my: 1 }} />
 
-//         {/* Параметры */}
 //         <Grid container spacing={1} sx={{ mb: 1.25 }}>
 //           <Grid item xs={6}>
 //             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -507,7 +486,6 @@
 //           </Grid>
 //         </Grid>
 
-//         {/* Цена */}
 //         <Box
 //           sx={{
 //             bgcolor: 'primary.main',
@@ -533,7 +511,6 @@
 //         </Box>
 //       </CardContent>
 
-//       {/* Snackbar */}
 //       <Snackbar
 //         open={snackbar.open}
 //         autoHideDuration={5000}
@@ -548,7 +525,6 @@
 //         </Alert>
 //       </Snackbar>
 
-//       {/* Модальное окно авторизации */}
 //       <Dialog
 //         open={loginModalOpen}
 //         onClose={handleCloseModal}
@@ -564,6 +540,7 @@
 // };
 
 // export default function ApartmentCard(props) {
+  
 //   return <ApartmentCardComponent {...props} />;
 // }
 
@@ -571,7 +548,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import {
   Box,
   Typography,
@@ -606,9 +583,45 @@ import {
 } from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/app/LanguageContext';
 import CreateUser from './CreateUser';
 import { useFavorites } from '@/app/hooks/useFavorites';
+// import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
+
+// Создаем контекст для языка
+const LanguageContext = createContext();
+
+// Провайдер языка
+export const LanguageProvider = ({ children }) => {
+  const [currentLanguage, setCurrentLanguage] = useState('ua');
+
+  useEffect(() => {
+    // Пытаемся получить язык из localStorage при загрузке
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    if (savedLanguage) {
+      setCurrentLanguage(savedLanguage);
+    }
+  }, []);
+
+  const changeLanguage = (language) => {
+    setCurrentLanguage(language);
+    localStorage.setItem('selectedLanguage', language);
+  };
+
+  return (
+    <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+// Хук для использования языка
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
+};
 
 const APARTMENT_CARD_TRANSLATIONS = {
   ua: {
@@ -1106,5 +1119,9 @@ const ApartmentCardComponent = ({
 };
 
 export default function ApartmentCard(props) {
-  return <ApartmentCardComponent {...props} />;
+  return (
+    <LanguageProvider>
+      <ApartmentCardComponent {...props} />
+    </LanguageProvider>
+  );
 }

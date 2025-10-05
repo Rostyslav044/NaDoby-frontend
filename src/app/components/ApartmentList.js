@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import ApartmentCard from './ApartmentCard';
 import CreateUser from './CreateUser';
-import { useLanguage } from "@/app/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 
 // Переводы
 const APARTMENT_LIST_TRANSLATIONS = {
@@ -99,6 +99,14 @@ const ApartmentListComponent = ({
   );
 };
 
+// export default function ApartmentList(props) {
+//   return <ApartmentListComponent {...props} />;
+// }
+
 export default function ApartmentList(props) {
-  return <ApartmentListComponent {...props} />;
+  return (
+    <LanguageProvider>
+      <ApartmentListComponent {...props} />
+    </LanguageProvider>
+  );
 }

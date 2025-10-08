@@ -1,6 +1,8 @@
 
 
 
+
+
 'use client'
 
 import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
@@ -36,7 +38,6 @@ const BLOG_CONTENT = {
         content: "На що звертати увагу при виборі готельного номеру",
         image: "/hotel.png",
         category: "Готелі",
-        // link: "/apartmentGuide" ,
         link: "/blog/hotelGuide"
         
       },
@@ -242,122 +243,78 @@ function BlogPosts() {
         mb: 8
       }}>
         {content.posts.map((post, index) => (
-          <Card key={index} elevation={2} sx={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            height: '100%',
-            transition: 'all 0.3s ease',
-            borderRadius: 2,
-            '&:hover': {
-              transform: 'translateY(-8px)',
-              boxShadow: 6,
-              '& .MuiButton-contained': {
-                backgroundColor: 'primary.dark'
+          <Link 
+            key={index} 
+            href={post.link || '#'} 
+            passHref 
+            legacyBehavior
+            style={{ textDecoration: 'none' }}
+          >
+            <Card elevation={2} sx={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              height: '100%',
+              transition: 'all 0.3s ease',
+              borderRadius: 2,
+              cursor: 'pointer',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: 6,
               }
-            }
-          }}>
-            <Box sx={{ 
-              position: 'relative', 
-              height: 220,
-              overflow: 'hidden',
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8
             }}>
-              <Image
-                src={post.image}
-                alt={post.title}
-                fill
-                style={{ 
-                  objectFit: 'cover',
-                  objectPosition: 'center'
-                }}
-                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
-              />
-            </Box>
-            <CardContent sx={{ 
-              flexGrow: 1,
-              p: 3,
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-              <Chip 
-                label={post.category} 
-                size="small" 
-                sx={{ 
+              <Box sx={{ 
+                position: 'relative', 
+                height: 220,
+                overflow: 'hidden',
+                borderTopLeftRadius: 8,
+                borderTopRightRadius: 8
+              }}>
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  style={{ 
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
+                  sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+                />
+              </Box>
+              <CardContent sx={{ 
+                flexGrow: 1,
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <Chip 
+                  label={post.category} 
+                  size="small" 
+                  sx={{ 
+                    mb: 2,
+                    alignSelf: 'flex-start',
+                    bgcolor: 'primary.light',
+                    color: 'primary.contrastText',
+                    fontWeight: 600
+                  }}
+                />
+                <Typography variant="h5" component="h2" sx={{ 
                   mb: 2,
-                  alignSelf: 'flex-start',
-                  bgcolor: 'primary.light',
-                  color: 'primary.contrastText',
-                  fontWeight: 600
-                }}
-              />
-              <Typography variant="h5" component="h2" sx={{ 
-                mb: 2,
-                fontWeight: 600,
-                lineHeight: 1.3,
-                minHeight: '3.5em'
-              }}>
-                {post.title}
-              </Typography>
-              <Typography variant="body1" sx={{ 
-                mb: 3,
-                color: 'text.secondary',
-                flexGrow: 1
-              }}>
-                {post.content}
-              </Typography>
-              {/* <Button 
-                variant="contained" 
-                size="medium"
-                sx={{ 
-                  mt: 'auto',
-                  alignSelf: 'flex-start',
-                  px: 3,
-                  py: 1,
                   fontWeight: 600,
-                  transition: 'background-color 0.3s ease'
-                }}
-              >
-                {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
-              </Button> */}
-
-{post.link ? (
-  <Link href={post.link} passHref legacyBehavior>
-    <Button 
-      component="a"
-      variant="contained" 
-      size="medium"
-      sx={{ 
-        mt: 'auto',
-        alignSelf: 'flex-start',
-        px: 3,
-        py: 1,
-        fontWeight: 600,
-        transition: 'background-color 0.3s ease'
-      }}
-    >
-      {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
-    </Button>
-  </Link>
-) : (
-  <Button 
-    variant="contained" 
-    size="medium"
-    sx={{ 
-      mt: 'auto',
-      alignSelf: 'flex-start',
-      px: 3,
-      py: 1,
-      fontWeight: 600,
-      transition: 'background-color 0.3s ease'
-    }}
-  >
-    {currentLanguage === 'ua' ? 'Детальніше' : 'Подробнее'}
-  </Button>
-)}
-
-            </CardContent>
-          </Card>
+                  lineHeight: 1.3,
+                  minHeight: '3.5em'
+                }}>
+                  {post.title}
+                </Typography>
+                <Typography variant="body1" sx={{ 
+                  mb: 3,
+                  color: 'text.secondary',
+                  flexGrow: 1
+                }}>
+                  {post.content}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </Box>
     </Container>

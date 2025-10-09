@@ -1180,7 +1180,7 @@ import { useFavorites } from '@/app/hooks/useFavorites';
 
 const translations = {
   ua: {
-    otherListings: "Інші об'єкти користувача",
+    otherListings: " Об'єкти користувача",
     district: "район",
     metro: "метро",
     backButton: "Назад",
@@ -1313,7 +1313,7 @@ const translations = {
     }
   },
   ru: {
-    otherListings: "Другие объекты пользователя",
+    otherListings: " Объекты пользователя",
     district: "район",
     metro: "метро",
     backButton: "Назад",

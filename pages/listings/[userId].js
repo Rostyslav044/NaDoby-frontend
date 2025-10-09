@@ -58,7 +58,7 @@ export default function MyListings() {
       <Provider store={store}>
         <LanguageProvider>
           <Header />
-          <h1>Объявления юзера</h1>
+          {/* <h1>Объявления юзера</h1> */}
           {userId && (
             <Apartments 
               userId={userId} 

@@ -1,25 +1,455 @@
+
+
+
 // 'use client';
 
 // import { LanguageProvider } from "@/app/LanguageContext";
-
 // import Header from "@/app/components/Header";
 // import { store } from "@/app/store";
-// import { Provider } from "react-redux";
+// import { Provider, useDispatch, useSelector } from "react-redux";
+// import {
+//   Container,
+//   Typography,
+//   Avatar,
+//   Box,
+//   Paper,
+//   Grid,
+//   Button,
+//   TextField,
+//   Divider,
+//   Alert,
+//   CircularProgress
+// } from "@mui/material";
+// import { useState, useEffect } from "react";
+// import {
+//   Edit,
+//   Save,
+//   Phone,
+//   Email,
+//   Lock,
+//   Person,
+//   LocationOn
+// } from "@mui/icons-material";
+// import { updateProfile } from "@/app/store/authSlice";
+// import ChangePasswordDialog from "@/app/components/ChangePasswordDialog";
+// import { getSafeProfileData, isRenderable } from "@/app/utils/profileUtils";
 
+// // Безопасный компонент для отображения текста
+// const SafeText = ({ children, component = 'span', ...props }) => {
+//   if (!isRenderable(children)) {
+//     console.warn('Attempting to render non-renderable content:', children);
+//     return null;
+//   }
+  
+//   return (
+//     <Typography component={component} {...props}>
+//       {children}
+//     </Typography>
+//   );
+// };
 
-// export default function MyProfile() {
+// function ProfileSection({ title, icon, children }) {
+//   return (
+//     <Box sx={{ mb: 4 }}>
+//       <Typography 
+//         variant="h6" 
+//         gutterBottom 
+//         sx={{ display: 'flex', alignItems: 'center', mb: 2 }}
+//       >
+//         {icon}
+//         <Box component="span" sx={{ ml: 1 }}>{title}</Box>
+//       </Typography>
+//       {children}
+//     </Box>
+//   );
+// }
+
+// function LandlordProfileContent() {
+//   const dispatch = useDispatch();
+//   const authState = useSelector(state => state.auth);
+  
+//   // Безопасное извлечение данных из Redux store
+//   const isAuthenticated = Boolean(authState?.isAuthenticated);
+//   const rawProfile = authState?.profile;
+  
+//   const [userData, setUserData] = useState(getSafeProfileData());
+//   const [editMode, setEditMode] = useState(false);
+//   const [initialData, setInitialData] = useState(getSafeProfileData());
+//   const [isClient, setIsClient] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [saveError, setSaveError] = useState("");
+//   const [saveSuccess, setSaveSuccess] = useState("");
+//   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
+//   // Инициализация клиентского рендеринга
+//   useEffect(() => {
+//     setIsClient(true);
+//   }, []);
+
+//   // Загрузка данных пользователя из Redux store
+//   useEffect(() => {
+//     if (isClient && rawProfile) {
+//       const safeProfileData = getSafeProfileData(rawProfile);
+//       setUserData(safeProfileData);
+//       setInitialData(safeProfileData);
+//     }
+//   }, [rawProfile, isClient]);
+
+//   const handleInputChange = (field) => (event) => {
+//     const value = event.target.value;
+//     setUserData(prev => ({ 
+//       ...prev, 
+//       [field]: value 
+//     }));
+//     setSaveError("");
+//     setSaveSuccess("");
+//   };
+
+//   const handlePhoneChange = (index) => (event) => {
+//     const value = event.target.value;
+//     setUserData(prev => {
+//       const newPhones = [...prev.phones];
+//       newPhones[index] = value;
+//       return { ...prev, phones: newPhones };
+//     });
+//     setSaveError("");
+//     setSaveSuccess("");
+//   };
+
+//   const handleSave = async () => {
+//     setLoading(true);
+//     setSaveError("");
+//     setSaveSuccess("");
+
+//     try {
+//       // В реальном приложении здесь будет API вызов
+//       const token = localStorage.getItem('auth_token');
+//       const response = await fetch('/api/profile/update', {
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': `Bearer ${token}`
+//         },
+//         body: JSON.stringify(userData)
+//       });
+
+//       if (response.ok) {
+//         const updatedProfile = await response.json();
+        
+//         // Обновляем данные в Redux store
+//         dispatch(updateProfile(updatedProfile));
+//         localStorage.setItem('user_profile', JSON.stringify(updatedProfile));
+        
+//         const safeUpdatedData = getSafeProfileData(updatedProfile);
+//         setInitialData(safeUpdatedData);
+//         setEditMode(false);
+//         setSaveSuccess("Данные успешно сохранены!");
+//       } else {
+//         const errorData = await response.json();
+//         throw new Error(errorData.message || 'Ошибка сохранения данных');
+//       }
+//     } catch (error) {
+//       console.error('Ошибка сохранения:', error);
+//       setSaveError(error.message || 'Не удалось сохранить данные');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleCancel = () => {
+//     setUserData(initialData);
+//     setEditMode(false);
+//     setSaveError("");
+//     setSaveSuccess("");
+//   };
+
+//   const openChangePassword = () => {
+//     setChangePasswordOpen(true);
+//   };
+
+//   // Состояние загрузки
+//   if (!isClient) {
 //     return (
-//       <div>
-//         <Provider store={store}>
-//         <LanguageProvider>
-//            <Header />
-         
-//         <h1>my-profile</h1>
-//         </LanguageProvider>
-//          </Provider>
-//       </div>
+//       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+//         <Paper elevation={3} sx={{ p: 4, borderRadius: 2, textAlign: 'center' }}>
+//           <CircularProgress />
+//           <Typography variant="h6" sx={{ mt: 2 }}>
+//             Загрузка профиля...
+//           </Typography>
+//         </Paper>
+//       </Container>
 //     );
 //   }
+
+//   // Проверка аутентификации
+//   if (!isAuthenticated) {
+//     return (
+//       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+//         <Paper elevation={3} sx={{ p: 4, borderRadius: 2, textAlign: 'center' }}>
+//           <Typography variant="h5" color="error" gutterBottom>
+//             Доступ запрещен
+//           </Typography>
+//           <Typography variant="body1" color="text.secondary">
+//             Пожалуйста, войдите в систему чтобы просмотреть профиль
+//           </Typography>
+//         </Paper>
+//       </Container>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+//         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+//           {/* Заголовок и аватар */}
+//           <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+//             <Avatar 
+//               src={userData.avatar} 
+//               sx={{ width: 100, height: 100, mr: 3 }}
+//               alt={userData.name}
+//             />
+//             <Box sx={{ flexGrow: 1 }}>
+//               <SafeText variant="h4" component="h1" gutterBottom>
+//                 {userData.name || "Профиль арендодателя"}
+//               </SafeText>
+//               <Box sx={{ display: 'flex', alignItems: 'center' }}>
+//                 <LocationOn fontSize="small" sx={{ mr: 0.5 }} />
+//                 <SafeText variant="body1" color="text.secondary">
+//                   {userData.city || "Город не указан"}
+//                 </SafeText>
+//               </Box>
+//             </Box>
+//             {!editMode ? (
+//               <Button 
+//                 variant="outlined" 
+//                 startIcon={<Edit />}
+//                 onClick={() => setEditMode(true)}
+//               >
+//                 Редактировать
+//               </Button>
+//             ) : (
+//               <Button 
+//                 variant="contained" 
+//                 startIcon={<Save />}
+//                 onClick={handleSave}
+//                 disabled={loading}
+//               >
+//                 {loading ? "Сохранение..." : "Сохранить"}
+//               </Button>
+//             )}
+//           </Box>
+
+//           {/* Сообщения об ошибках/успехе */}
+//           {saveError && (
+//             <Alert severity="error" sx={{ mb: 2 }}>
+//               {saveError}
+//             </Alert>
+//           )}
+          
+//           {saveSuccess && (
+//             <Alert severity="success" sx={{ mb: 2 }}>
+//               {saveSuccess}
+//             </Alert>
+//           )}
+
+//           <Divider sx={{ my: 3 }} />
+
+//           {/* Основная информация */}
+//           <Grid container spacing={4}>
+//             {/* Личная информация */}
+//             <Grid item xs={12} md={6}>
+//               <ProfileSection title="Личная информация" icon={<Person />}>
+//                 {editMode ? (
+//                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+//                     <TextField
+//                       fullWidth
+//                       label="Имя"
+//                       value={userData.name}
+//                       onChange={handleInputChange('name')}
+//                     />
+//                     <TextField
+//                       fullWidth
+//                       label="Город"
+//                       value={userData.city}
+//                       onChange={handleInputChange('city')}
+//                     />
+//                     <TextField
+//                       fullWidth
+//                       label="О себе"
+//                       value={userData.about}
+//                       onChange={handleInputChange('about')}
+//                       multiline
+//                       rows={3}
+//                       placeholder="Расскажите о себе как об арендодателе..."
+//                     />
+//                   </Box>
+//                 ) : (
+//                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+//                     <Box>
+//                       <Typography variant="subtitle2" color="text.secondary">
+//                         Имя
+//                       </Typography>
+//                       <SafeText variant="body1">
+//                         {userData.name || "Не указано"}
+//                       </SafeText>
+//                     </Box>
+                    
+//                     <Box>
+//                       <Typography variant="subtitle2" color="text.secondary">
+//                         Город
+//                       </Typography>
+//                       <SafeText variant="body1">
+//                         {userData.city || "Не указан"}
+//                       </SafeText>
+//                     </Box>
+                    
+//                     <Box>
+//                       <Typography variant="subtitle2" color="text.secondary">
+//                         О себе
+//                       </Typography>
+//                       <SafeText variant="body1">
+//                         {userData.about || "Не указано"}
+//                       </SafeText>
+//                     </Box>
+//                   </Box>
+//                 )}
+//               </ProfileSection>
+//             </Grid>
+            
+//             {/* Контакты и безопасность */}
+//             <Grid item xs={12} md={6}>
+//               <ProfileSection title="Контакты" icon={<Phone />}>
+//                 {editMode ? (
+//                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+//                     {userData.phones.map((phone, index) => (
+//                       <TextField
+//                         key={index}
+//                         fullWidth
+//                         label={`Телефон ${index + 1}`}
+//                         value={phone}
+//                         onChange={handlePhoneChange(index)}
+//                         InputProps={{
+//                           startAdornment: <Phone sx={{ color: 'action.active', mr: 1 }} />,
+//                         }}
+//                       />
+//                     ))}
+//                   </Box>
+//                 ) : (
+//                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+//                     {userData.phones
+//                       .filter(phone => phone && phone.trim() !== '')
+//                       .map((phone, index) => (
+//                       <Box key={index}>
+//                         <Typography variant="subtitle2" color="text.secondary">
+//                           Телефон {index + 1}
+//                         </Typography>
+//                         <SafeText variant="body1">
+//                           {phone}
+//                         </SafeText>
+//                       </Box>
+//                     ))}
+//                     {userData.phones.filter(phone => phone && phone.trim() !== '').length === 0 && (
+//                       <Typography variant="body2" color="text.secondary">
+//                         Телефоны не указаны
+//                       </Typography>
+//                     )}
+//                   </Box>
+//                 )}
+//               </ProfileSection>
+
+//               <Divider sx={{ my: 3 }} />
+
+//               <ProfileSection title="Электронная почта" icon={<Email />}>
+//                 {editMode ? (
+//                   <TextField
+//                     fullWidth
+//                     label="Email"
+//                     type="email"
+//                     value={userData.email}
+//                     onChange={handleInputChange('email')}
+//                     InputProps={{
+//                       startAdornment: <Email sx={{ color: 'action.active', mr: 1 }} />,
+//                     }}
+//                   />
+//                 ) : (
+//                   <Box>
+//                     <Typography variant="subtitle2" color="text.secondary">
+//                       Email
+//                     </Typography>
+//                     <SafeText variant="body1">
+//                       {userData.email || "Не указан"}
+//                     </SafeText>
+//                   </Box>
+//                 )}
+//               </ProfileSection>
+
+//               <Divider sx={{ my: 3 }} />
+
+//               <ProfileSection title="Безопасность" icon={<Lock />}>
+//                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+//                   <Box sx={{ flexGrow: 1 }}>
+//                     <Typography variant="subtitle2" color="text.secondary">
+//                       Пароль
+//                     </Typography>
+//                     <Typography variant="body1">
+//                       ••••••••
+//                     </Typography>
+//                   </Box>
+//                   <Button 
+//                     variant="outlined" 
+//                     startIcon={<Lock />}
+//                     onClick={openChangePassword}
+//                   >
+//                     Сменить пароль
+//                   </Button>
+//                 </Box>
+//               </ProfileSection>
+//             </Grid>
+//           </Grid>
+
+//           {/* Кнопки действий в режиме редактирования */}
+//           {editMode && (
+//             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+//               <Button 
+//                 variant="outlined" 
+//                 onClick={handleCancel}
+//                 disabled={loading}
+//               >
+//                 Отменить
+//               </Button>
+//               <Button 
+//                 variant="contained" 
+//                 onClick={handleSave}
+//                 disabled={loading}
+//                 sx={{ minWidth: 120 }}
+//               >
+//                 {loading ? <CircularProgress size={24} /> : "Сохранить"}
+//               </Button>
+//             </Box>
+//           )}
+//         </Paper>
+//       </Container>
+
+//       {/* Диалог смены пароля */}
+//       <ChangePasswordDialog 
+//         open={changePasswordOpen}
+//         onClose={() => setChangePasswordOpen(false)}
+//       />
+//     </>
+//   );
+// }
+
+// // Главный компонент с провайдерами
+// export default function LandlordProfile() {
+//   return (
+//     <Provider store={store}>
+//       <LanguageProvider>
+//         <Header />
+//         <LandlordProfileContent />
+//       </LanguageProvider>
+//     </Provider>
+//   );
+// }
 
 
 
@@ -30,293 +460,502 @@
 import { LanguageProvider } from "@/app/LanguageContext";
 import Header from "@/app/components/Header";
 import { store } from "@/app/store";
-import { Provider } from "react-redux";
-import { Container, Typography, Avatar, Box, Paper, Grid, Button, TextField, Divider, IconButton, InputAdornment } from "@mui/material";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import {
+  Container,
+  Typography,
+  Avatar,
+  Box,
+  Paper,
+  Grid,
+  Button,
+  TextField,
+  Divider,
+  Alert,
+  CircularProgress
+} from "@mui/material";
 import { useState, useEffect } from "react";
-import { Edit, Save, Phone, Email, Lock, Person, LocationOn, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  Edit,
+  Save,
+  Phone,
+  Email,
+  Lock,
+  Person,
+  LocationOn
+} from "@mui/icons-material";
+import { updateProfile } from "@/app/store/authSlice";
+import ChangePasswordDialog from "@/app/components/ChangePasswordDialog";
 
-export default function LandlordProfile() {
-  // Состояние данных пользователя
-  const [userData, setUserData] = useState({
-    name: "",
-    city: "",
-    phones: ["", "", ""],
-    about: "",
-    email: "",
-    password: "",
-    avatar: "/default-avatar.jpg"
-  });
-
-  const [editMode, setEditMode] = useState(false);
-  const [initialData, setInitialData] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Загрузка данных пользователя при монтировании
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem('landlordProfile')) || {
-      name: "Иван Иванов",
-      city: "Киев",
-      phones: ["+380991234567", "", ""],
-      about: "Сдаю уютные апартаменты в центре города",
-      email: "landlord@example.com",
-      password: "secret123", // Теперь храним реальный пароль для демонстрации
+// Безопасные утилиты прямо в файле (если нет отдельного файла)
+const getSafeProfileData = (profile) => {
+  if (!profile || typeof profile !== 'object') {
+    return {
+      name: "",
+      city: "",
+      phones: ["", "", ""],
+      about: "",
+      email: "",
       avatar: "/default-avatar.jpg"
     };
-    
-    setUserData(savedData);
-    setInitialData(savedData);
+  }
+
+  return {
+    name: String(profile.name || ""),
+    city: String(profile.city || ""),
+    phones: Array.isArray(profile.phones) 
+      ? profile.phones.map(phone => String(phone || ""))
+      : ["", "", ""],
+    about: String(profile.about || ""),
+    email: String(profile.email || ""),
+    avatar: String(profile.avatar || "/default-avatar.jpg")
+  };
+};
+
+function ProfileSection({ title, icon, children }) {
+  return (
+    <Box sx={{ mb: 4 }}>
+      <Typography 
+        variant="h6" 
+        gutterBottom 
+        sx={{ display: 'flex', alignItems: 'center', mb: 2 }}
+      >
+        {icon}
+        <Box component="span" sx={{ ml: 1 }}>{title}</Box>
+      </Typography>
+      {children}
+    </Box>
+  );
+}
+
+function LandlordProfileContent() {
+  const dispatch = useDispatch();
+  const authState = useSelector(state => state.auth);
+  
+  const isAuthenticated = Boolean(authState?.isAuthenticated);
+  const rawProfile = authState?.profile;
+  
+  const [userData, setUserData] = useState(getSafeProfileData());
+  const [editMode, setEditMode] = useState(false);
+  const [initialData, setInitialData] = useState(getSafeProfileData());
+  const [isClient, setIsClient] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saveSuccess, setSaveSuccess] = useState("");
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
+  // Инициализация клиентского рендеринга
+  useEffect(() => {
+    setIsClient(true);
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUserData(prev => ({ ...prev, [name]: value }));
+  // Загрузка данных пользователя из Redux store
+  useEffect(() => {
+    if (isClient && rawProfile) {
+      const safeProfileData = getSafeProfileData(rawProfile);
+      setUserData(safeProfileData);
+      setInitialData(safeProfileData);
+    }
+  }, [rawProfile, isClient]);
+
+  // Функция для загрузки реальных данных с сервера
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      const response = await fetch('/api/user/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const userDataFromServer = await response.json();
+        const safeData = getSafeProfileData(userDataFromServer);
+        
+        setUserData(safeData);
+        setInitialData(safeData);
+        
+        // Обновляем Redux store с реальными данными
+        dispatch(updateProfile(userDataFromServer));
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки профиля:', error);
+    }
   };
 
-  const handlePhoneChange = (index, value) => {
-    const newPhones = [...userData.phones];
-    newPhones[index] = value;
-    setUserData(prev => ({ ...prev, phones: newPhones }));
+  // Загружаем данные с сервера при монтировании
+  useEffect(() => {
+    if (isAuthenticated && isClient) {
+      fetchUserProfile();
+    }
+  }, [isAuthenticated, isClient]);
+
+  const handleInputChange = (field) => (event) => {
+    const value = event.target.value;
+    setUserData(prev => ({ 
+      ...prev, 
+      [field]: value 
+    }));
+    setSaveError("");
+    setSaveSuccess("");
   };
 
-  const handleSave = () => {
-    localStorage.setItem('landlordProfile', JSON.stringify(userData));
-    setInitialData(userData);
-    setEditMode(false);
+  const handlePhoneChange = (index) => (event) => {
+    const value = event.target.value;
+    setUserData(prev => {
+      const newPhones = [...prev.phones];
+      newPhones[index] = value;
+      return { ...prev, phones: newPhones };
+    });
+    setSaveError("");
+    setSaveSuccess("");
+  };
+
+  // РЕАЛЬНОЕ СОХРАНЕНИЕ НА СЕРВЕРЕ
+  const handleSave = async () => {
+    setLoading(true);
+    setSaveError("");
+    setSaveSuccess("");
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Необходима авторизация');
+      }
+
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: userData.name,
+          city: userData.city,
+          phones: userData.phones.filter(phone => phone.trim() !== ''),
+          about: userData.about,
+          email: userData.email
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Обновляем данные в Redux store
+        dispatch(updateProfile(result.user));
+        
+        // Обновляем localStorage
+        localStorage.setItem('user_profile', JSON.stringify(result.user));
+        
+        setInitialData(getSafeProfileData(result.user));
+        setEditMode(false);
+        setSaveSuccess("Данные успешно сохранены!");
+      } else {
+        throw new Error(result.message || 'Ошибка сохранения данных');
+      }
+    } catch (error) {
+      console.error('Ошибка сохранения:', error);
+      setSaveError(error.message || 'Не удалось сохранить данные');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setUserData(initialData);
     setEditMode(false);
+    setSaveError("");
+    setSaveSuccess("");
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+  const openChangePassword = () => {
+    setChangePasswordOpen(true);
   };
+
+  // Состояние загрузки
+  if (!isClient) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2, textAlign: 'center' }}>
+          <CircularProgress />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Загрузка профиля...
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
+
+  // Проверка аутентификации
+  if (!isAuthenticated) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2, textAlign: 'center' }}>
+          <Typography variant="h5" color="error" gutterBottom>
+            Доступ запрещен
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Пожалуйста, войдите в систему чтобы просмотреть профиль
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
-    <div>
-      <Provider store={store}>
-        <LanguageProvider>
-          <Header />
-          
-          <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
-            <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-              {/* Заголовок и аватар */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                <Avatar 
-                  src={userData.avatar} 
-                  sx={{ width: 100, height: 100, mr: 3 }} 
-                />
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="h4" component="h1" gutterBottom>
-                    {userData.name || "Профиль арендодателя"}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    <LocationOn fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                    {userData.city || "Город не указан"}
-                  </Typography>
-                </Box>
-                {!editMode ? (
-                  <Button 
-                    variant="outlined" 
-                    startIcon={<Edit />}
-                    onClick={() => setEditMode(true)}
-                  >
-                    Редактировать
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="contained" 
-                    startIcon={<Save />}
-                    onClick={handleSave}
-                    color="primary"
-                  >
-                    Сохранить
-                  </Button>
-                )}
+    <>
+      <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+          {/* Заголовок и аватар */}
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+            <Avatar 
+              src={userData.avatar} 
+              sx={{ width: 100, height: 100, mr: 3 }}
+              alt={userData.name}
+            />
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="h4" component="h1" gutterBottom>
+                {userData.name || "Профиль арендодателя"}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <LocationOn fontSize="small" sx={{ mr: 0.5 }} />
+                <Typography variant="body1" color="text.secondary">
+                  {userData.city || "Город не указан"}
+                </Typography>
               </Box>
+            </Box>
+            {!editMode ? (
+              <Button 
+                variant="outlined" 
+                startIcon={<Edit />}
+                onClick={() => setEditMode(true)}
+              >
+                Редактировать
+              </Button>
+            ) : (
+              <Button 
+                variant="contained" 
+                startIcon={<Save />}
+                onClick={handleSave}
+                disabled={loading}
+              >
+                {loading ? "Сохранение..." : "Сохранить"}
+              </Button>
+            )}
+          </Box>
+
+          {/* Сообщения об ошибках/успехе */}
+          {saveError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {saveError}
+            </Alert>
+          )}
+          
+          {saveSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {saveSuccess}
+            </Alert>
+          )}
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Основная информация */}
+          <Grid container spacing={4}>
+            {/* Личная информация */}
+            <Grid item xs={12} md={6}>
+              <ProfileSection title="Личная информация" icon={<Person />}>
+                {editMode ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                      fullWidth
+                      label="Имя"
+                      value={userData.name}
+                      onChange={handleInputChange('name')}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Город"
+                      value={userData.city}
+                      onChange={handleInputChange('city')}
+                    />
+                    <TextField
+                      fullWidth
+                      label="О себе"
+                      value={userData.about}
+                      onChange={handleInputChange('about')}
+                      multiline
+                      rows={3}
+                      placeholder="Расскажите о себе как об арендодателе..."
+                    />
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Имя
+                      </Typography>
+                      <Typography variant="body1">
+                        {userData.name || "Не указано"}
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Город
+                      </Typography>
+                      <Typography variant="body1">
+                        {userData.city || "Не указан"}
+                      </Typography>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        О себе
+                      </Typography>
+                      <Typography variant="body1">
+                        {userData.about || "Не указано"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+              </ProfileSection>
+            </Grid>
+            
+            {/* Контакты и безопасность */}
+            <Grid item xs={12} md={6}>
+              <ProfileSection title="Контакты" icon={<Phone />}>
+                {editMode ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {userData.phones.map((phone, index) => (
+                      <TextField
+                        key={index}
+                        fullWidth
+                        label={`Телефон ${index + 1}`}
+                        value={phone}
+                        onChange={handlePhoneChange(index)}
+                        InputProps={{
+                          startAdornment: <Phone sx={{ color: 'action.active', mr: 1 }} />,
+                        }}
+                      />
+                    ))}
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {userData.phones
+                      .filter(phone => phone && phone.trim() !== '')
+                      .map((phone, index) => (
+                      <Box key={index}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Телефон {index + 1}
+                        </Typography>
+                        <Typography variant="body1">
+                          {phone}
+                        </Typography>
+                      </Box>
+                    ))}
+                    {userData.phones.filter(phone => phone && phone.trim() !== '').length === 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        Телефоны не указаны
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </ProfileSection>
 
               <Divider sx={{ my: 3 }} />
 
-              {/* Основная информация */}
-              <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                    <Person sx={{ mr: 1 }} /> Личная информация
-                  </Typography>
-                  
-                  {editMode ? (
-                    <>
-                      <TextField
-                        fullWidth
-                        label="Имя"
-                        name="name"
-                        value={userData.name}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Город"
-                        name="city"
-                        value={userData.city}
-                        onChange={handleInputChange}
-                        sx={{ mb: 2 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="О себе"
-                        name="about"
-                        value={userData.about}
-                        onChange={handleInputChange}
-                        multiline
-                        rows={3}
-                        sx={{ mb: 2 }}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="body1" sx={{ mb: 2 }}>
-                        <strong>Имя:</strong> {userData.name || "Не указано"}
-                      </Typography>
-                      <Typography variant="body1" sx={{ mb: 2 }}>
-                        <strong>Город:</strong> {userData.city || "Не указан"}
-                      </Typography>
-                      <Typography variant="body1" sx={{ mb: 2 }}>
-                        <strong>О себе:</strong> {userData.about || "Не указано"}
-                      </Typography>
-                    </>
-                  )}
-                </Grid>
-                
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                    <Phone sx={{ mr: 1 }} /> Контакты
-                  </Typography>
-                  
-                  {editMode ? (
-                    <>
-                      {userData.phones.map((phone, index) => (
-                        <TextField
-                          key={index}
-                          fullWidth
-                          label={`Телефон ${index + 1}`}
-                          value={phone}
-                          onChange={(e) => handlePhoneChange(index, e.target.value)}
-                          sx={{ mb: 2 }}
-                          InputProps={{
-                            startAdornment: <Phone sx={{ mr: 1, color: 'action.active' }} />,
-                          }}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      {userData.phones.filter(phone => phone).map((phone, index) => (
-                        <Typography key={index} variant="body1" sx={{ mb: 2 }}>
-                          <strong>Телефон {index + 1}:</strong> {phone}
-                        </Typography>
-                      ))}
-                      {userData.phones.filter(phone => phone).length === 0 && (
-                        <Typography variant="body1" color="text.secondary">
-                          Телефоны не указаны
-                        </Typography>
-                      )}
-                    </>
-                  )}
-
-                  <Divider sx={{ my: 3 }} />
-
-                  <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                    <Email sx={{ mr: 1 }} /> Электронная почта
-                  </Typography>
-                  
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={userData.email}
-                      onChange={handleInputChange}
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        startAdornment: <Email sx={{ mr: 1, color: 'action.active' }} />,
-                      }}
-                    />
-                  ) : (
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      <strong>Email:</strong> {userData.email || "Не указан"}
+              <ProfileSection title="Электронная почта" icon={<Email />}>
+                {editMode ? (
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    value={userData.email}
+                    onChange={handleInputChange('email')}
+                    InputProps={{
+                      startAdornment: <Email sx={{ color: 'action.active', mr: 1 }} />,
+                    }}
+                  />
+                ) : (
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Email
                     </Typography>
-                  )}
+                    <Typography variant="body1">
+                      {userData.email || "Не указан"}
+                    </Typography>
+                  </Box>
+                )}
+              </ProfileSection>
 
-                  <Divider sx={{ my: 3 }} />
+              <Divider sx={{ my: 3 }} />
 
-                  <Typography variant="h6" gutterBottom sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                    <Lock sx={{ mr: 1 }} /> Пароль
-                  </Typography>
-                  
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      label="Новый пароль"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      value={userData.password}
-                      onChange={handleInputChange}
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        startAdornment: <Lock sx={{ mr: 1, color: 'action.active' }} />,
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={toggleShowPassword}
-                              edge="end"
-                            >
-                              {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Typography variant="body1" sx={{ mb: 2, mr: 2 }}>
-                        <strong>Пароль:</strong> {showPassword ? userData.password : "••••••••"}
-                      </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={toggleShowPassword}
-                        sx={{ ml: 1 }}
-                      >
-                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                      </IconButton>
-                    </Box>
-                  )}
-                </Grid>
-              </Grid>
-
-              {editMode && (
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <ProfileSection title="Безопасность" icon={<Lock />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Пароль
+                    </Typography>
+                    <Typography variant="body1">
+                      ••••••••
+                    </Typography>
+                  </Box>
                   <Button 
                     variant="outlined" 
-                    onClick={handleCancel}
+                    startIcon={<Lock />}
+                    onClick={openChangePassword}
                   >
-                    Отменить
-                  </Button>
-                  <Button 
-                    variant="contained" 
-                    onClick={handleSave}
-                    color="primary"
-                  >
-                    Сохранить изменения
+                    Сменить пароль
                   </Button>
                 </Box>
-              )}
-            </Paper>
-          </Container>
-        </LanguageProvider>
-      </Provider>
-    </div>
+              </ProfileSection>
+            </Grid>
+          </Grid>
+
+          {/* Кнопки действий в режиме редактирования */}
+          {editMode && (
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button 
+                variant="outlined" 
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Отменить
+              </Button>
+              <Button 
+                variant="contained" 
+                onClick={handleSave}
+                disabled={loading}
+                sx={{ minWidth: 120 }}
+              >
+                {loading ? <CircularProgress size={24} /> : "Сохранить"}
+              </Button>
+            </Box>
+          )}
+        </Paper>
+      </Container>
+
+      {/* Диалог смены пароля */}
+      <ChangePasswordDialog 
+        open={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
+    </>
+  );
+}
+
+// Главный компонент с провайдерами
+export default function LandlordProfile() {
+  return (
+    <Provider store={store}>
+      <LanguageProvider>
+        <Header />
+        <LandlordProfileContent />
+      </LanguageProvider>
+    </Provider>
   );
 }

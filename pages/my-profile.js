@@ -1,6 +1,3 @@
-
-
-
 // 'use client';
 
 // import { LanguageProvider } from "@/app/LanguageContext";
@@ -31,21 +28,31 @@
 //   LocationOn
 // } from "@mui/icons-material";
 // import { updateProfile } from "@/app/store/authSlice";
-// import ChangePasswordDialog from "@/app/components/ChangePasswordDialog";
-// import { getSafeProfileData, isRenderable } from "@/app/utils/profileUtils";
+// import ChangePasswordDialog from "@/app/components/ChangePasswordDialog"; // Импортируем ваш компонент
 
-// // Безопасный компонент для отображения текста
-// const SafeText = ({ children, component = 'span', ...props }) => {
-//   if (!isRenderable(children)) {
-//     console.warn('Attempting to render non-renderable content:', children);
-//     return null;
+// // Безопасные утилиты прямо в файле
+// const getSafeProfileData = (profile) => {
+//   if (!profile || typeof profile !== 'object') {
+//     return {
+//       name: "",
+//       city: "",
+//       phones: ["", "", ""],
+//       about: "",
+//       email: "",
+//       avatar: "/default-avatar.jpg"
+//     };
 //   }
-  
-//   return (
-//     <Typography component={component} {...props}>
-//       {children}
-//     </Typography>
-//   );
+
+//   return {
+//     name: String(profile.name || ""),
+//     city: String(profile.city || ""),
+//     phones: Array.isArray(profile.phones) 
+//       ? profile.phones.map(phone => String(phone || ""))
+//       : ["", "", ""],
+//     about: String(profile.about || ""),
+//     email: String(profile.email || ""),
+//     avatar: String(profile.avatar || "/default-avatar.jpg")
+//   };
 // };
 
 // function ProfileSection({ title, icon, children }) {
@@ -68,7 +75,6 @@
 //   const dispatch = useDispatch();
 //   const authState = useSelector(state => state.auth);
   
-//   // Безопасное извлечение данных из Redux store
 //   const isAuthenticated = Boolean(authState?.isAuthenticated);
 //   const rawProfile = authState?.profile;
   
@@ -81,7 +87,6 @@
 //   const [saveSuccess, setSaveSuccess] = useState("");
 //   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
-//   // Инициализация клиентского рендеринга
 //   useEffect(() => {
 //     setIsClient(true);
 //   }, []);
@@ -94,6 +99,48 @@
 //       setInitialData(safeProfileData);
 //     }
 //   }, [rawProfile, isClient]);
+
+//   // Функция для загрузки реальных данных с сервера - ИСПРАВЛЕННЫЙ ЭНДПОИНТ
+//   const fetchUserProfile = async () => {
+//     try {
+//       const token = localStorage.getItem('auth_token');
+//       if (!token) return;
+
+//       const response = await fetch('http://localhost:3000/api/v1/auth/me', {
+//         method: 'POST',
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       if (response.ok) {
+//         const result = await response.json();
+//         const userDataFromServer = result.data; // данные находятся в result.data
+//         const safeData = getSafeProfileData(userDataFromServer);
+        
+//         setUserData(safeData);
+//         setInitialData(safeData);
+        
+//         // Обновляем Redux store с реальными данными
+//         dispatch(updateProfile(userDataFromServer));
+//       } else {
+//         // Если сервер возвращает HTML вместо JSON
+//         const text = await response.text();
+//         console.error('Server returned HTML instead of JSON:', text.substring(0, 200));
+//         throw new Error('Сервер вернул неверный формат данных');
+//       }
+//     } catch (error) {
+//       console.error('Ошибка загрузки профиля:', error);
+//     }
+//   };
+
+//   // Загружаем данные с сервера при монтировании
+//   useEffect(() => {
+//     if (isAuthenticated && isClient) {
+//       fetchUserProfile();
+//     }
+//   }, [isAuthenticated, isClient]);
 
 //   const handleInputChange = (field) => (event) => {
 //     const value = event.target.value;
@@ -116,37 +163,55 @@
 //     setSaveSuccess("");
 //   };
 
+//   // РЕАЛЬНОЕ СОХРАНЕНИЕ НА СЕРВЕРЕ - ИСПРАВЛЕННЫЙ ЭНДПОИНТ
 //   const handleSave = async () => {
 //     setLoading(true);
 //     setSaveError("");
 //     setSaveSuccess("");
 
 //     try {
-//       // В реальном приложении здесь будет API вызов
 //       const token = localStorage.getItem('auth_token');
-//       const response = await fetch('/api/profile/update', {
-//         method: 'PUT',
+//       if (!token) {
+//         throw new Error('Необходима авторизация');
+//       }
+
+//       // Подготавливаем данные для отправки согласно бэкенду
+//       const updateData = {
+//         name: userData.name,
+//         email: userData.email.toLowerCase(),
+//         city: userData.city,
+//         phones: userData.phones.filter(phone => phone.trim() !== ''),
+//         about: userData.about
+//       };
+
+//       const response = await fetch('http://localhost:3000/api/v1/auth/updatedetails', {
+//         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
 //           'Authorization': `Bearer ${token}`
 //         },
-//         body: JSON.stringify(userData)
+//         body: JSON.stringify(updateData)
 //       });
 
+//       // Проверяем Content-Type перед парсингом
+//       const contentType = response.headers.get('content-type');
+//       if (!contentType || !contentType.includes('application/json')) {
+//         const text = await response.text();
+//         console.error('Server returned non-JSON response:', text.substring(0, 200));
+//         throw new Error('Сервер вернул неверный формат данных. Проверьте эндпоинт.');
+//       }
+
+//       const result = await response.json();
+
 //       if (response.ok) {
-//         const updatedProfile = await response.json();
-        
 //         // Обновляем данные в Redux store
-//         dispatch(updateProfile(updatedProfile));
-//         localStorage.setItem('user_profile', JSON.stringify(updatedProfile));
+//         dispatch(updateProfile(result.data));
         
-//         const safeUpdatedData = getSafeProfileData(updatedProfile);
-//         setInitialData(safeUpdatedData);
+//         setInitialData(getSafeProfileData(result.data));
 //         setEditMode(false);
 //         setSaveSuccess("Данные успешно сохранены!");
 //       } else {
-//         const errorData = await response.json();
-//         throw new Error(errorData.message || 'Ошибка сохранения данных');
+//         throw new Error(result.message || 'Ошибка сохранения данных');
 //       }
 //     } catch (error) {
 //       console.error('Ошибка сохранения:', error);
@@ -209,14 +274,14 @@
 //               alt={userData.name}
 //             />
 //             <Box sx={{ flexGrow: 1 }}>
-//               <SafeText variant="h4" component="h1" gutterBottom>
+//               <Typography variant="h4" component="h1" gutterBottom>
 //                 {userData.name || "Профиль арендодателя"}
-//               </SafeText>
+//               </Typography>
 //               <Box sx={{ display: 'flex', alignItems: 'center' }}>
 //                 <LocationOn fontSize="small" sx={{ mr: 0.5 }} />
-//                 <SafeText variant="body1" color="text.secondary">
+//                 <Typography variant="body1" color="text.secondary">
 //                   {userData.city || "Город не указан"}
-//                 </SafeText>
+//                 </Typography>
 //               </Box>
 //             </Box>
 //             {!editMode ? (
@@ -289,27 +354,27 @@
 //                       <Typography variant="subtitle2" color="text.secondary">
 //                         Имя
 //                       </Typography>
-//                       <SafeText variant="body1">
+//                       <Typography variant="body1">
 //                         {userData.name || "Не указано"}
-//                       </SafeText>
+//                       </Typography>
 //                     </Box>
                     
 //                     <Box>
 //                       <Typography variant="subtitle2" color="text.secondary">
 //                         Город
 //                       </Typography>
-//                       <SafeText variant="body1">
+//                       <Typography variant="body1">
 //                         {userData.city || "Не указан"}
-//                       </SafeText>
+//                       </Typography>
 //                     </Box>
                     
 //                     <Box>
 //                       <Typography variant="subtitle2" color="text.secondary">
 //                         О себе
 //                       </Typography>
-//                       <SafeText variant="body1">
+//                       <Typography variant="body1">
 //                         {userData.about || "Не указано"}
-//                       </SafeText>
+//                       </Typography>
 //                     </Box>
 //                   </Box>
 //                 )}
@@ -343,9 +408,9 @@
 //                         <Typography variant="subtitle2" color="text.secondary">
 //                           Телефон {index + 1}
 //                         </Typography>
-//                         <SafeText variant="body1">
+//                         <Typography variant="body1">
 //                           {phone}
-//                         </SafeText>
+//                         </Typography>
 //                       </Box>
 //                     ))}
 //                     {userData.phones.filter(phone => phone && phone.trim() !== '').length === 0 && (
@@ -376,9 +441,9 @@
 //                     <Typography variant="subtitle2" color="text.secondary">
 //                       Email
 //                     </Typography>
-//                     <SafeText variant="body1">
+//                     <Typography variant="body1">
 //                       {userData.email || "Не указан"}
-//                     </SafeText>
+//                     </Typography>
 //                   </Box>
 //                 )}
 //               </ProfileSection>
@@ -430,7 +495,7 @@
 //         </Paper>
 //       </Container>
 
-//       {/* Диалог смены пароля */}
+//       {/* Диалог смены пароля - используем ваш компонент */}
 //       <ChangePasswordDialog 
 //         open={changePasswordOpen}
 //         onClose={() => setChangePasswordOpen(false)}
@@ -452,9 +517,6 @@
 // }
 
 
-
-
-
 'use client';
 
 import { LanguageProvider } from "@/app/LanguageContext";
@@ -472,7 +534,9 @@ import {
   TextField,
   Divider,
   Alert,
-  CircularProgress
+  CircularProgress,
+  InputAdornment,
+  IconButton
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
@@ -482,12 +546,14 @@ import {
   Email,
   Lock,
   Person,
-  LocationOn
+  LocationOn,
+  Visibility,
+  VisibilityOff
 } from "@mui/icons-material";
 import { updateProfile } from "@/app/store/authSlice";
 import ChangePasswordDialog from "@/app/components/ChangePasswordDialog";
 
-// Безопасные утилиты прямо в файле (если нет отдельного файла)
+// Безопасные утилиты прямо в файле
 const getSafeProfileData = (profile) => {
   if (!profile || typeof profile !== 'object') {
     return {
@@ -543,8 +609,8 @@ function LandlordProfileContent() {
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Инициализация клиентского рендеринга
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -564,8 +630,8 @@ function LandlordProfileContent() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
 
-      const response = await fetch('/api/user/profile', {
-        method: 'GET',
+      const response = await fetch('http://localhost:3000/api/v1/auth/me', {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -573,21 +639,22 @@ function LandlordProfileContent() {
       });
 
       if (response.ok) {
-        const userDataFromServer = await response.json();
+        const result = await response.json();
+        const userDataFromServer = result.data;
         const safeData = getSafeProfileData(userDataFromServer);
         
         setUserData(safeData);
         setInitialData(safeData);
         
-        // Обновляем Redux store с реальными данными
         dispatch(updateProfile(userDataFromServer));
+      } else {
+        console.error('Failed to fetch profile:', response.status);
       }
     } catch (error) {
       console.error('Ошибка загрузки профиля:', error);
     }
   };
 
-  // Загружаем данные с сервера при монтировании
   useEffect(() => {
     if (isAuthenticated && isClient) {
       fetchUserProfile();
@@ -615,7 +682,7 @@ function LandlordProfileContent() {
     setSaveSuccess("");
   };
 
-  // РЕАЛЬНОЕ СОХРАНЕНИЕ НА СЕРВЕРЕ
+  // УЛУЧШЕННОЕ СОХРАНЕНИЕ С ПРОВЕРКОЙ URL
   const handleSave = async () => {
     setLoading(true);
     setSaveError("");
@@ -627,33 +694,81 @@ function LandlordProfileContent() {
         throw new Error('Необходима авторизация');
       }
 
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: userData.name,
-          city: userData.city,
-          phones: userData.phones.filter(phone => phone.trim() !== ''),
-          about: userData.about,
-          email: userData.email
-        })
-      });
+      // Подготавливаем данные для отправки
+      const updateData = {
+        name: userData.name,
+        email: userData.email.toLowerCase(),
+        city: userData.city,
+        phones: userData.phones.filter(phone => phone.trim() !== ''),
+        about: userData.about
+      };
 
-      const result = await response.json();
+      console.log('Отправка данных на сервер:', updateData);
 
-      if (response.ok) {
+      // Пробуем разные варианты URL
+      const baseURL = 'http://localhost:3000';
+      const endpoints = [
+        '/api/v1/auth/updatedetails',
+        '/api/auth/updatedetails',
+        '/auth/updatedetails'
+      ];
+
+      let response;
+      let lastError;
+
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`Пробуем эндпоинт: ${baseURL}${endpoint}`);
+          response = await fetch(`${baseURL}${endpoint}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateData)
+          });
+
+          if (response.ok) {
+            break;
+          }
+        } catch (error) {
+          lastError = error;
+          console.log(`Эндпоинт ${endpoint} не сработал:`, error.message);
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw new Error(lastError?.message || 'Все эндпоинты вернули ошибку');
+      }
+
+      // Получаем ответ как текст сначала
+      const responseText = await response.text();
+      console.log('Ответ сервера (текст):', responseText);
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Ошибка парсинга JSON:', e);
+        // Если это HTML, ищем в нем информацию об ошибке
+        if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+          throw new Error('Сервер вернул HTML страницу вместо JSON. Возможно, неверный URL или ошибка на сервере.');
+        }
+        throw new Error(`Сервер вернул невалидный JSON: ${responseText.substring(0, 100)}`);
+      }
+
+      if (result.success) {
         // Обновляем данные в Redux store
-        dispatch(updateProfile(result.user));
+        dispatch(updateProfile(result.data));
         
-        // Обновляем localStorage
-        localStorage.setItem('user_profile', JSON.stringify(result.user));
-        
-        setInitialData(getSafeProfileData(result.user));
+        setInitialData(getSafeProfileData(result.data));
         setEditMode(false);
         setSaveSuccess("Данные успешно сохранены!");
+        
+        // Обновляем данные
+        setTimeout(() => {
+          fetchUserProfile();
+        }, 500);
       } else {
         throw new Error(result.message || 'Ошибка сохранения данных');
       }
@@ -674,6 +789,10 @@ function LandlordProfileContent() {
 
   const openChangePassword = () => {
     setChangePasswordOpen(true);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   // Состояние загрузки
@@ -900,8 +1019,20 @@ function LandlordProfileContent() {
                     <Typography variant="subtitle2" color="text.secondary">
                       Пароль
                     </Typography>
-                    <Typography variant="body1">
-                      ••••••••
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="body1">
+                        {showPassword ? "ваш_пароль" : "••••••••"}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={togglePasswordVisibility}
+                        sx={{ ml: 1 }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {showPassword ? "Пароль скрыт" : "Нажмите на глаз чтобы показать пароль"}
                     </Typography>
                   </Box>
                   <Button 

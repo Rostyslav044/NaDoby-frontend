@@ -1178,6 +1178,7 @@ import { useLanguage } from "@/app/LanguageContext";
 import { logout } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import LandlordProfile from "./LandlordProfile";
 
 const translations = {
   ua: {

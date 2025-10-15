@@ -6,7 +6,7 @@
 import React, { useEffect } from 'react';
 import { LanguageProvider } from '@/app/LanguageContext';
 import { Roboto, Lato } from 'next/font/google';
-import Providers from './providers';
+// import Providers from './providers';
 import AuthLogic from './components/AuthLogic';
 import { SessionProvider } from "next-auth/react";
 import { store } from './store';
@@ -17,6 +17,7 @@ import Blog from '../../pages/blog';
 import axios from "axios";
 // Импортируем глобальную конфигурацию axios
 import '@/app/utils/axiosConfig';
+// import Search from './components/Search';
 
 // Применение шрифтов:
 const roboto = Roboto({
@@ -61,6 +62,7 @@ export default function Layout({ children }) {
                 <AuthLogic />
                 {children}
               </main>
+              {/* <Search/> */}
               <Apartments/>
               <Blog/>
               <Footer/>

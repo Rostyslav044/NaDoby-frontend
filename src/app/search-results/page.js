@@ -1,6 +1,7 @@
 
 
 
+
 // 'use client';
 
 // import React, { useState, useEffect } from 'react';
@@ -13,10 +14,6 @@
 //   Button,
 //   Divider,
 //   CircularProgress,
-//   FormControl,
-//   InputLabel,
-//   Select,
-//   MenuItem,
 //   Dialog,
 //   DialogContent,
 //   DialogTitle,
@@ -25,20 +22,24 @@
 //   ToggleButton,
 //   Alert,
 // } from '@mui/material';
-// import { 
-//   LocationOn, 
-//   People, 
-//   Category, 
-//   ArrowBack,
-//   Warning,
-//   Sort,
-//   Map as MapIcon,
-//   Close
-// } from '@mui/icons-material';
 // import { useRouter } from 'next/navigation';
-// import { useLanguage } from '@/app/LanguageContext';
+// import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
 // import ApartmentCard from '@/app/components/ApartmentCard';
 // import dynamic from 'next/dynamic';
+// import Providers from '../providers';
+// import { store } from '../store';
+// import { SessionProvider } from 'next-auth/react';
+// import Header from '../components/Header';
+// import Footer from '../components/Footer';
+
+// // Импортируем иконки по отдельности
+// import LocationOn from '@mui/icons-material/LocationOn';
+// import People from '@mui/icons-material/People';
+// import Category from '@mui/icons-material/Category';
+// import ArrowBack from '@mui/icons-material/ArrowBack';
+// import Warning from '@mui/icons-material/Warning';
+// import MapIcon from '@mui/icons-material/Map';
+// import Close from '@mui/icons-material/Close';
 
 // // Динамически загружаем карту
 // const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
@@ -46,18 +47,69 @@
 //   loading: () => <div>Загрузка карты...</div>
 // });
 
-// const SearchResults = () => {
+// // Цвета категорий для отображения в основном компоненте
+// const CATEGORY_COLORS = {
+//   'apart': '#EA4335',
+//   'hostel': '#34A853', 
+//   'glamping': '#FBBC05',
+//   'hotel': '#4285F4',
+//   'pet-hotel': '#9C27B0',
+//   'house': '#795548',
+//   'sauna': '#F44336',
+//   'pansionat': '#607D8B',
+//   'cottage': '#FF9800',
+//   'coworking': '#E91E63',
+//   'autocamping': '#4CAF50',
+//   'rest-base': '#00BCD4',
+//   'default': '#EA4335'
+// };
+
+// // Функция для получения цвета категории
+// const getCategoryColor = (category) => {
+//   if (!category) return CATEGORY_COLORS.default;
+  
+//   const categoryLower = category.toLowerCase();
+  
+//   if (categoryLower.includes('apart') || categoryLower.includes('квартир')) 
+//     return CATEGORY_COLORS.apart;
+//   if (categoryLower.includes('hostel') || categoryLower.includes('хостел')) 
+//     return CATEGORY_COLORS.hostel;
+//   if (categoryLower.includes('glamping') || categoryLower.includes('глемпінг') || categoryLower.includes('глэмпинг')) 
+//     return CATEGORY_COLORS.glamping;
+//   if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) 
+//     return CATEGORY_COLORS.hotel;
+//   if (categoryLower.includes('pet') || categoryLower.includes('тварин') || categoryLower.includes('animals')) 
+//     return CATEGORY_COLORS['pet-hotel'];
+//   if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) 
+//     return CATEGORY_COLORS.house;
+//   if (categoryLower.includes('sauna') || categoryLower.includes('саун') || categoryLower.includes('бан')) 
+//     return CATEGORY_COLORS.sauna;
+//   if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) 
+//     return CATEGORY_COLORS.pansionat;
+//   if (categoryLower.includes('cottage') || categoryLower.includes('котедж') || categoryLower.includes('kotedzi')) 
+//     return CATEGORY_COLORS.cottage;
+//   if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг') || categoryLower.includes('kavorking')) 
+//     return CATEGORY_COLORS.coworking;
+//   if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг') || categoryLower.includes('avtokemping')) 
+//     return CATEGORY_COLORS.autocamping;
+//   if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха') || categoryLower.includes('recreationcenter')) 
+//     return CATEGORY_COLORS['rest-base'];
+  
+//   return CATEGORY_COLORS.default;
+// };
+
+// // Переименовываем основной компонент
+// const SearchResultsContent = () => {
 //   const [searchResults, setSearchResults] = useState([]);
-//   const [sortedResults, setSortedResults] = useState([]);
 //   const [searchParams, setSearchParams] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-//   const [sortBy, setSortBy] = useState('default');
 //   const [mapOpen, setMapOpen] = useState(false);
 //   const [selectedApartment, setSelectedApartment] = useState(null);
 //   const [viewMode, setViewMode] = useState('grid');
 //   const [userLocation, setUserLocation] = useState(null);
 //   const [missingCategories, setMissingCategories] = useState([]);
+//   const [foundCategories, setFoundCategories] = useState([]);
 
 //   const router = useRouter();
 //   const { currentLanguage } = useLanguage();
@@ -66,6 +118,7 @@
 //     ua: {
 //       title: 'Результати пошуку',
 //       found: 'Знайдено варіантів',
+//       foundCategories: 'Знайдені категорії',
 //       noResults: 'За вашим запитом нічого не знайдено',
 //       changeSearch: 'Змінити параметри пошуку',
 //       back: 'Назад',
@@ -74,13 +127,6 @@
 //       types: 'Типи',
 //       loading: 'Завантаження...',
 //       error: 'Помилка при завантаженні результатів',
-//       sortBy: 'Сортувати за',
-//       sortDefault: 'За замовчуванням',
-//       sortPrice: 'Ціною',
-//       sortPriceAsc: 'Від дешевших',
-//       sortPriceDesc: 'Від дорожчих',
-//       sortDistrict: 'Районом',
-//       sortMetro: 'Метро',
 //       viewMap: 'Дивитись на карті',
 //       viewGrid: 'Список',
 //       map: 'Карта',
@@ -88,6 +134,7 @@
 //       showOnMap: 'Показати на карті',
 //       missingCategories: 'Не знайдено оголошень у категоріях',
 //       noResultsInCategory: 'У категорії "{category}" не знайдено результатів',
+//       categoriesOnMap: 'Категорії на карті',
 //       categories: {
 //         'apart': 'Квартира',
 //         'hostel': 'Хостел', 
@@ -100,12 +147,18 @@
 //         'cottage': 'Котедж',
 //         'coworking': 'Коворкінг',
 //         'autocamping': 'Автокемпінг',
-//         'rest-base': 'База відпочинку'
+//         'rest-base': 'База відпочинку',
+//         'petHotel': 'Готель для тварин',
+//         'recreationCenter': 'База відпочинку',
+//         'kotedzi': 'Котедж',
+//         'kavorking': 'Коворкінг',
+//         'avtokemping': 'Автокемпінг'
 //       }
 //     },
 //     ru: {
 //       title: 'Результаты поиска',
 //       found: 'Найдено вариантов',
+//       foundCategories: 'Найденные категории',
 //       noResults: 'По вашему запросу ничего не найдено',
 //       changeSearch: 'Изменить параметры поиска',
 //       back: 'Назад',
@@ -114,13 +167,6 @@
 //       types: 'Типы',
 //       loading: 'Загрузка...',
 //       error: 'Ошибка при загрузке результатов',
-//       sortBy: 'Сортировать по',
-//       sortDefault: 'По умолчанию',
-//       sortPrice: 'Ценой',
-//       sortPriceAsc: 'От дешевых',
-//       sortPriceDesc: 'От дорогих',
-//       sortDistrict: 'Району',
-//       sortMetro: 'Метро',
 //       viewMap: 'Смотреть на карте',
 //       viewGrid: 'Список',
 //       map: 'Карта',
@@ -128,6 +174,7 @@
 //       showOnMap: 'Показать на карте',
 //       missingCategories: 'Не найдено объявлений в категориях',
 //       noResultsInCategory: 'В категории "{category}" не найдено результатов',
+//       categoriesOnMap: 'Категории на карте',
 //       categories: {
 //         'apart': 'Квартира',
 //         'hostel': 'Хостел',
@@ -140,7 +187,12 @@
 //         'cottage': 'Коттедж',
 //         'coworking': 'Коворкинг',
 //         'autocamping': 'Автокемпинг',
-//         'rest-base': 'База отдыха'
+//         'rest-base': 'База отдыха',
+//         'petHotel': 'Отель для животных',
+//         'recreationCenter': 'База отдыха',
+//         'kotedzi': 'Коттедж',
+//         'kavorking': 'Коворкинг',
+//         'avtokemping': 'Автокемпинг'
 //       }
 //     },
 //   };
@@ -149,11 +201,11 @@
 
 //   const translateCategory = (category) => {
 //     if (!category) return category;
-//     return t.categories[category] || category;
+//     const normalizedCategory = category.toLowerCase().trim();
+//     return t.categories[category] || t.categories[normalizedCategory] || category;
 //   };
 
 //   useEffect(() => {
-//     // Исправленная функция геолокации
 //     const getUserLocation = () => {
 //       if (navigator.geolocation) {
 //         navigator.geolocation.getCurrentPosition(
@@ -164,7 +216,6 @@
 //             });
 //           },
 //           (error) => {
-//             // Тихая обработка ошибки геолокации
 //             console.log('Geolocation not available or denied');
 //           },
 //           {
@@ -189,16 +240,21 @@
 //           if (parsedResults.success) {
 //             const foundResults = parsedResults.data || [];
 //             setSearchResults(foundResults);
-//             setSortedResults(foundResults);
 //             setSearchParams(parsedParams);
+
+//             // Находим уникальные категории из результатов
+//             const uniqueCategories = [...new Set(foundResults.map(item => item.category))];
+//             setFoundCategories(uniqueCategories);
 
 //             if (parsedParams.types && Array.isArray(parsedParams.types)) {
 //               const foundCategories = [...new Set(foundResults.map(item => item.category))];
 //               const missing = parsedParams.types.filter(type => 
-//                 !foundCategories.some(found => 
-//                   found.toLowerCase().includes(type.toLowerCase()) || 
-//                   type.toLowerCase().includes(found.toLowerCase())
-//                 )
+//                 !foundCategories.some(found => {
+//                   const foundNormalized = found ? found.toLowerCase().trim() : '';
+//                   const typeNormalized = type ? type.toLowerCase().trim() : '';
+//                   return foundNormalized.includes(typeNormalized) || 
+//                          typeNormalized.includes(foundNormalized);
+//                 })
 //               );
 //               setMissingCategories(missing);
 //             }
@@ -207,7 +263,6 @@
 //           }
 //         } else {
 //           setSearchResults([]);
-//           setSortedResults([]);
 //         }
 //       } catch (err) {
 //         console.error('Error loading search results:', err);
@@ -219,30 +274,6 @@
 
 //     loadSearchResults();
 //   }, [t.error]);
-
-//   // Сортировка результатов
-//   useEffect(() => {
-//     let sorted = [...searchResults];
-    
-//     switch (sortBy) {
-//       case 'price_asc':
-//         sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-//         break;
-//       case 'price_desc':
-//         sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-//         break;
-//       case 'district':
-//         sorted.sort((a, b) => (a.district || '').localeCompare(b.district || ''));
-//         break;
-//       case 'metro':
-//         sorted.sort((a, b) => (a.metro || '').localeCompare(b.metro || ''));
-//         break;
-//       default:
-//         break;
-//     }
-    
-//     setSortedResults(sorted);
-//   }, [sortBy, searchResults]);
 
 //   const handleBackToSearch = () => {
 //     router.push('/');
@@ -257,9 +288,7 @@
 //     setMapOpen(true);
 //   };
 
-//   // Функция для перехода к детальной странице объявления - ИСПРАВЛЕННЫЙ ПУТЬ
 //   const handleApartmentSelect = (apartment) => {
-//     // Используем правильный путь к детальной странице
 //     router.push(`/apartment/${apartment._id}`);
 //   };
 
@@ -353,9 +382,43 @@
 //           </Box>
           
 //           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-//             <Typography variant="body1" color="text.secondary">
-//               {t.found}: <strong>{searchResults.length}</strong>
-//             </Typography>
+//             <Box>
+//               <Typography variant="body1" color="text.secondary">
+//                 {t.found}: <strong>{searchResults.length}</strong>
+//               </Typography>
+              
+//               {/* Отображение найденных категорий с РАЗНЫМИ ЦВЕТАМИ */}
+//               {foundCategories.length > 0 && (
+//                 <Box sx={{ mt: 1 }}>
+//                   <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+//                     {t.foundCategories}:
+//                   </Typography>
+//                   <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+//                     {foundCategories.map(category => {
+//                       const categoryColor = getCategoryColor(category);
+//                       return (
+//                         <Chip
+//                           key={category}
+//                           label={translateCategory(category)}
+//                           size="small"
+//                           sx={{
+//                             backgroundColor: categoryColor,
+//                             color: 'white',
+//                             fontSize: '0.7rem',
+//                             height: '24px',
+//                             border: `1px solid ${categoryColor}`,
+//                             '& .MuiChip-label': {
+//                               px: 1,
+//                               py: 0.25
+//                             }
+//                           }}
+//                         />
+//                       );
+//                     })}
+//                   </Box>
+//                 </Box>
+//               )}
+//             </Box>
 
 //             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
 //               <ToggleButtonGroup
@@ -372,23 +435,9 @@
 //                   <MapIcon sx={{ mr: 1 }} />
 //                   {t.viewMap}
 //                 </ToggleButton>
-//               </ToggleButtonGroup>
 
-//               <FormControl size="small" sx={{ minWidth: 120 }}>
-//                 <InputLabel>{t.sortBy}</InputLabel>
-//                 <Select
-//                   value={sortBy}
-//                   label={t.sortBy}
-//                   onChange={(e) => setSortBy(e.target.value)}
-//                   startAdornment={<Sort sx={{ mr: 1, color: 'text.secondary' }} />}
-//                 >
-//                   <MenuItem value="default">{t.sortDefault}</MenuItem>
-//                   <MenuItem value="price_asc">{t.sortPriceAsc}</MenuItem>
-//                   <MenuItem value="price_desc">{t.sortPriceDesc}</MenuItem>
-//                   <MenuItem value="district">{t.sortDistrict}</MenuItem>
-//                   <MenuItem value="metro">{t.sortMetro}</MenuItem>
-//                 </Select>
-//               </FormControl>
+
+//               </ToggleButtonGroup>
 //             </Box>
 //           </Box>
 //         </Box>
@@ -397,15 +446,14 @@
 //       <Divider sx={{ mb: 4 }} />
 
 //       {viewMode === 'grid' ? (
-//         sortedResults.length > 0 ? (
+//         searchResults.length > 0 ? (
 //           <Grid container spacing={3}>
-//             {sortedResults.map((apartment) => (
+//             {searchResults.map((apartment) => (
 //               <Grid item xs={12} sm={6} md={4} key={apartment._id}>
 //                 <ApartmentCard
 //                   apartment={apartment}
 //                   showCreateUserDialog={() => {}}
 //                   onShowOnMap={() => handleShowOnMap(apartment)}
-//                   // Добавляем обработчик клика на всю карточку
 //                   onClick={() => handleApartmentSelect(apartment)}
 //                 />
 //               </Grid>
@@ -427,523 +475,1360 @@
 //           </Box>
 //         )
 //       ) : (
-//         <Box sx={{ height: '600px', borderRadius: 2, overflow: 'hidden' }}>
-//           <MapComponent 
-//             apartments={sortedResults}
-//             onApartmentSelect={handleApartmentSelect}
-//             userLocation={userLocation}
-//           />
+//         <Box>
+//           {/* Маленькая карта */}
+//           <Box sx={{ 
+//             height: { xs: '400px', sm: '500px', md: '600px' }, 
+//             borderRadius: 2, 
+//             overflow: 'hidden',
+//             border: '1px solid #e0e0e0',
+//             mb: 2
+//           }}>
+//             <MapComponent 
+//               apartments={searchResults}
+//               onApartmentSelect={handleApartmentSelect}
+//               userLocation={userLocation}
+//               compactMode={true}
+//             />
+//           </Box>
+
+//           {/* Кнопка для открытия большой карты */}
+//            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+       
+// <Button
+//   variant="outlined"
+//   startIcon={<MapIcon />}
+//   onClick={() => setMapOpen(true)}
+//   size="large"
+//   sx={{
+//     '& .MuiButton-startIcon': {
+//       marginRight: 0.5, // Уменьшаем отступ иконки
+//     },
+//     fontSize: { xs: '0.8rem', sm: '0.9rem' }, // Уменьшаем шрифт
+//     px: 2, // Уменьшаем горизонтальные отступы
+//     whiteSpace: 'nowrap', // Запрещаем перенос текста
+//   }}
+// >
+//   {t.viewMap}
+// </Button>
+
+//           </Box>
 //         </Box>
 //       )}
 
+//       {/* Диалог с большой картой */}
 //       <Dialog
 //         open={mapOpen}
 //         onClose={() => setMapOpen(false)}
-//         maxWidth="lg"
+//         maxWidth="xl"
 //         fullWidth
+//         sx={{
+//           '& .MuiDialog-paper': {
+//             height: { xs: '90vh', sm: '80vh' },
+//             maxHeight: '90vh',
+//             margin: { xs: 1, sm: 2 },
+//             width: '100%'
+//           }
+//         }}
 //       >
-//         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-//           {t.map}
-//           <IconButton onClick={() => setMapOpen(false)}>
+//         <DialogTitle sx={{ 
+//           display: 'flex', 
+//           justifyContent: 'space-between', 
+//           alignItems: 'center',
+//           py: 2,
+//           px: 3
+//         }}>
+//           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+//             <Typography variant="h6">
+//               {t.found}: <strong>{searchResults.length}</strong>
+//             </Typography>
+//             {selectedApartment && (
+//               <Chip
+//                 label={translateCategory(selectedApartment.category)}
+//                 size="small"
+//                 sx={{
+//                   backgroundColor: getCategoryColor(selectedApartment.category),
+//                   color: 'white',
+//                   fontSize: '0.75rem',
+//                 }}
+//               />
+//             )}
+//           </Box>
+//           <IconButton 
+//             onClick={() => setMapOpen(false)}
+//             size="small"
+//           >
 //             <Close />
 //           </IconButton>
 //         </DialogTitle>
-//         <DialogContent sx={{ height: '500px', p: 0 }}>
-//           {selectedApartment && (
+        
+//         {/* Категории на карте в диалоге с РАЗНЫМИ ЦВЕТАМИ */}
+//         {foundCategories.length > 0 && (
+//           <Box sx={{ px: 3, pb: 1 }}>
+//             <Typography variant="body2" color="text.secondary" gutterBottom>
+//               {t.categoriesOnMap}:
+//             </Typography>
+//             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+//               {foundCategories.map(category => {
+//                 const categoryColor = getCategoryColor(category);
+//                 return (
+//                   <Chip
+//                     key={category}
+//                     label={translateCategory(category)}
+//                     size="small"
+//                     sx={{
+//                       backgroundColor: categoryColor,
+//                       color: 'white',
+//                       fontSize: '0.75rem',
+//                       border: `2px solid ${categoryColor}`,
+//                       '& .MuiChip-label': {
+//                         px: 1,
+//                         py: 0.5
+//                       }
+//                     }}
+//                   />
+//                 );
+//               })}
+//             </Box>
+//           </Box>
+//         )}
+        
+//         <DialogContent sx={{ 
+//           height: 'calc(100% - 120px)', 
+//           p: 0, 
+//           display: 'flex',
+//           flexDirection: 'column'
+//         }}>
+//           <Box sx={{ flexGrow: 1 }}>
 //             <MapComponent 
-//               apartments={[selectedApartment]}
-//               centerMode={true}
+//               apartments={selectedApartment ? [selectedApartment] : searchResults}
+//               centerMode={!!selectedApartment}
 //               userLocation={userLocation}
 //               onApartmentSelect={handleApartmentSelect}
+//               compactMode={false}
 //             />
-//           )}
+//           </Box>
 //         </DialogContent>
 //       </Dialog>
 //     </Container>
 //   );
 // };
 
-// export default SearchResults;
+// // Главный компонент страницы с провайдерами
+// export default function SearchResults() {
+//   return (
+//     <Providers store={store}>
+//       <LanguageProvider>
+//         <SessionProvider>
+//           <Header />
+//           <SearchResultsContent />
+//           <Footer />
+//         </SessionProvider>
+//       </LanguageProvider>
+//     </Providers>
+//   );
+// }
 
 
 
-'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Typography,
-  Box,
-  Chip,
-  Grid,
-  Button,
-  Divider,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  ToggleButtonGroup,
-  ToggleButton,
-  Alert,
-} from '@mui/material';
-import { 
-  LocationOn, 
-  People, 
-  Category, 
-  ArrowBack,
-  Warning,
-  Sort,
-  Map as MapIcon,
-  Close
-} from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
-import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
-import ApartmentCard from '@/app/components/ApartmentCard';
-import dynamic from 'next/dynamic';
-import Providers from '../providers';
-import { store } from '../store';
-import { SessionProvider } from 'next-auth/react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 
-// Динамически загружаем карту
-const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
-  ssr: false,
-  loading: () => <div>Загрузка карты...</div>
-});
+// 'use client';
 
-// Переименовываем основной компонент
-const SearchResultsContent = () => {
-  const [searchResults, setSearchResults] = useState([]);
-  const [sortedResults, setSortedResults] = useState([]);
-  const [searchParams, setSearchParams] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState('default');
-  const [mapOpen, setMapOpen] = useState(false);
-  const [selectedApartment, setSelectedApartment] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
-  const [userLocation, setUserLocation] = useState(null);
-  const [missingCategories, setMissingCategories] = useState([]);
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Container,
+//   Typography,
+//   Box,
+//   Chip,
+//   Grid,
+//   Button,
+//   Divider,
+//   CircularProgress,
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   IconButton,
+//   ToggleButtonGroup,
+//   ToggleButton,
+//   Alert,
+// } from '@mui/material';
+// import { useRouter } from 'next/navigation';
+// import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
+// import ApartmentCard from '@/app/components/ApartmentCard';
+// import dynamic from 'next/dynamic';
+// import Providers from '../providers';
+// import { store } from '../store';
+// import { SessionProvider } from 'next-auth/react';
+// import Header from '../components/Header';
+// import Footer from '../components/Footer';
 
-  const router = useRouter();
-  const { currentLanguage } = useLanguage();
+// // Импортируем иконки по отдельности
+// import LocationOn from '@mui/icons-material/LocationOn';
+// import People from '@mui/icons-material/People';
+// import Category from '@mui/icons-material/Category';
+// import ArrowBack from '@mui/icons-material/ArrowBack';
+// import Warning from '@mui/icons-material/Warning';
+// import MapIcon from '@mui/icons-material/Map';
+// import Close from '@mui/icons-material/Close';
 
-  const translations = {
-    ua: {
-      title: 'Результати пошуку',
-      found: 'Знайдено варіантів',
-      noResults: 'За вашим запитом нічого не знайдено',
-      changeSearch: 'Змінити параметри пошуку',
-      back: 'Назад',
-      location: 'Місце',
-      guestsLabel: 'Гості',
-      types: 'Типи',
-      loading: 'Завантаження...',
-      error: 'Помилка при завантаженні результатів',
-      sortBy: 'Сортувати за',
-      sortDefault: 'За замовчуванням',
-      sortPrice: 'Ціною',
-      sortPriceAsc: 'Від дешевших',
-      sortPriceDesc: 'Від дорожчих',
-      sortDistrict: 'Районом',
-      sortMetro: 'Метро',
-      viewMap: 'Дивитись на карті',
-      viewGrid: 'Список',
-      map: 'Карта',
-      close: 'Закрити',
-      showOnMap: 'Показати на карті',
-      missingCategories: 'Не знайдено оголошень у категоріях',
-      noResultsInCategory: 'У категорії "{category}" не знайдено результатів',
-      categories: {
-        'apart': 'Квартира',
-        'hostel': 'Хостел', 
-        'glamping': 'Глемпінг',
-        'hotel': 'Готель',
-        'pet-hotel': 'Готель для тварин',
-        'house': 'Будинок',
-        'sauna': 'Сауна/Баня',
-        'pansionat': 'Пансіонат',
-        'cottage': 'Котедж',
-        'coworking': 'Коворкінг',
-        'autocamping': 'Автокемпінг',
-        'rest-base': 'База відпочинку'
-      }
-    },
-    ru: {
-      title: 'Результаты поиска',
-      found: 'Найдено вариантов',
-      noResults: 'По вашему запросу ничего не найдено',
-      changeSearch: 'Изменить параметры поиска',
-      back: 'Назад',
-      location: 'Место',
-      guestsLabel: 'Гости',
-      types: 'Типы',
-      loading: 'Загрузка...',
-      error: 'Ошибка при загрузке результатов',
-      sortBy: 'Сортировать по',
-      sortDefault: 'По умолчанию',
-      sortPrice: 'Ценой',
-      sortPriceAsc: 'От дешевых',
-      sortPriceDesc: 'От дорогих',
-      sortDistrict: 'Району',
-      sortMetro: 'Метро',
-      viewMap: 'Смотреть на карте',
-      viewGrid: 'Список',
-      map: 'Карта',
-      close: 'Закрыть',
-      showOnMap: 'Показать на карте',
-      missingCategories: 'Не найдено объявлений в категориях',
-      noResultsInCategory: 'В категории "{category}" не найдено результатов',
-      categories: {
-        'apart': 'Квартира',
-        'hostel': 'Хостел',
-        'glamping': 'Глэмпинг', 
-        'hotel': 'Гостиница',
-        'pet-hotel': 'Отель для животных',
-        'house': 'Дом',
-        'sauna': 'Сауна/Баня',
-        'pansionat': 'Пансионат',
-        'cottage': 'Коттедж',
-        'coworking': 'Коворкинг',
-        'autocamping': 'Автокемпинг',
-        'rest-base': 'База отдыха'
-      }
-    },
-  };
+// // Динамически загружаем карту
+// const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
+//   ssr: false,
+//   loading: () => <div>Загрузка карты...</div>
+// });
 
-  const t = translations[currentLanguage];
+// // Цвета категорий для отображения в основном компоненте
+// const CATEGORY_COLORS = {
+//   'apart': '#EA4335',
+//   'hostel': '#34A853', 
+//   'glamping': '#FBBC05',
+//   'hotel': '#4285F4',
+//   'pet-hotel': '#9C27B0',
+//   'house': '#795548',
+//   'sauna': '#F44336',
+//   'pansionat': '#607D8B',
+//   'cottage': '#FF9800',
+//   'coworking': '#E91E63',
+//   'autocamping': '#4CAF50',
+//   'rest-base': '#00BCD4',
+//   'default': '#EA4335'
+// };
 
-  const translateCategory = (category) => {
-    if (!category) return category;
-    return t.categories[category] || category;
-  };
+// // Функция для получения цвета категории
+// const getCategoryColor = (category) => {
+//   if (!category) return CATEGORY_COLORS.default;
+  
+//   const categoryLower = category.toLowerCase();
+  
+//   if (categoryLower.includes('apart') || categoryLower.includes('квартир')) 
+//     return CATEGORY_COLORS.apart;
+//   if (categoryLower.includes('hostel') || categoryLower.includes('хостел')) 
+//     return CATEGORY_COLORS.hostel;
+//   if (categoryLower.includes('glamping') || categoryLower.includes('глемпінг') || categoryLower.includes('глэмпинг')) 
+//     return CATEGORY_COLORS.glamping;
+//   if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) 
+//     return CATEGORY_COLORS.hotel;
+//   if (categoryLower.includes('pet') || categoryLower.includes('тварин') || categoryLower.includes('animals')) 
+//     return CATEGORY_COLORS['pet-hotel'];
+//   if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) 
+//     return CATEGORY_COLORS.house;
+//   if (categoryLower.includes('sauna') || categoryLower.includes('саун') || categoryLower.includes('бан')) 
+//     return CATEGORY_COLORS.sauna;
+//   if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) 
+//     return CATEGORY_COLORS.pansionat;
+//   if (categoryLower.includes('cottage') || categoryLower.includes('котедж') || categoryLower.includes('kotedzi')) 
+//     return CATEGORY_COLORS.cottage;
+//   if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг') || categoryLower.includes('kavorking')) 
+//     return CATEGORY_COLORS.coworking;
+//   if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг') || categoryLower.includes('avtokemping')) 
+//     return CATEGORY_COLORS.autocamping;
+//   if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха') || categoryLower.includes('recreationcenter')) 
+//     return CATEGORY_COLORS['rest-base'];
+  
+//   return CATEGORY_COLORS.default;
+// };
 
-  useEffect(() => {
-    // Исправленная функция геолокации
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          },
-          (error) => {
-            // Тихая обработка ошибки геолокации
-            console.log('Geolocation not available or denied');
-          },
-          {
-            timeout: 10000,
-            enableHighAccuracy: false
-          }
-        );
-      }
-    };
+// // Переименовываем основной компонент
+// const SearchResultsContent = () => {
+//   const [searchResults, setSearchResults] = useState([]);
+//   const [searchParams, setSearchParams] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [mapOpen, setMapOpen] = useState(false);
+//   const [selectedApartment, setSelectedApartment] = useState(null);
+//   const [viewMode, setViewMode] = useState('grid');
+//   const [userLocation, setUserLocation] = useState(null);
+//   const [foundCategories, setFoundCategories] = useState([]);
 
-    getUserLocation();
+//   const router = useRouter();
+//   const { currentLanguage } = useLanguage();
 
-    const loadSearchResults = () => {
-      try {
-        const results = localStorage.getItem('searchResults');
-        const params = localStorage.getItem('searchParams');
+//   const translations = {
+//     ua: {
+//       title: 'Результати пошуку',
+//       found: 'Знайдено варіантів',
+//       foundCategories: 'Знайдені категорії',
+//       noResults: 'За вашим запитом нічого не знайдено',
+//       changeSearch: 'Змінити параметри пошуку',
+//       back: 'Назад',
+//       location: 'Місце',
+//       guestsLabel: 'Гості',
+//       types: 'Типи',
+//       loading: 'Завантаження...',
+//       error: 'Помилка при завантаженні результатів',
+//       viewMap: 'Дивитись на карті',
+//       viewGrid: 'Список',
+//       map: 'Карта',
+//       close: 'Закрити',
+//       showOnMap: 'Показати на карті',
+//       categoriesOnMap: 'Категорії на карті',
+//       categories: {
+//         'apart': 'Квартира',
+//         'hostel': 'Хостел', 
+//         'glamping': 'Глемпінг',
+//         'hotel': 'Готель',
+//         'pet-hotel': 'Готель для тварин',
+//         'house': 'Будинок',
+//         'sauna': 'Сауна/Баня',
+//         'pansionat': 'Пансіонат',
+//         'cottage': 'Котедж',
+//         'coworking': 'Коворкінг',
+//         'autocamping': 'Автокемпінг',
+//         'rest-base': 'База відпочинку',
+//         'petHotel': 'Готель для тварин',
+//         'recreationCenter': 'База відпочинку',
+//         'kotedzi': 'Котедж',
+//         'kavorking': 'Коворкінг',
+//         'avtokemping': 'Автокемпінг'
+//       }
+//     },
+//     ru: {
+//       title: 'Результаты поиска',
+//       found: 'Найдено вариантов',
+//       foundCategories: 'Найденные категории',
+//       noResults: 'По вашему запросу ничего не найдено',
+//       changeSearch: 'Изменить параметры поиска',
+//       back: 'Назад',
+//       location: 'Место',
+//       guestsLabel: 'Гости',
+//       types: 'Типы',
+//       loading: 'Загрузка...',
+//       error: 'Ошибка при загрузке результатов',
+//       viewMap: 'Смотреть на карте',
+//       viewGrid: 'Список',
+//       map: 'Карта',
+//       close: 'Закрыть',
+//       showOnMap: 'Показать на карте',
+//       categoriesOnMap: 'Категории на карте',
+//       categories: {
+//         'apart': 'Квартира',
+//         'hostel': 'Хостел',
+//         'glamping': 'Глэмпинг', 
+//         'hotel': 'Гостиница',
+//         'pet-hotel': 'Отель для животных',
+//         'house': 'Дом',
+//         'sauna': 'Сауна/Баня',
+//         'pansionat': 'Пансионат',
+//         'cottage': 'Коттедж',
+//         'coworking': 'Коворкинг',
+//         'autocamping': 'Автокемпинг',
+//         'rest-base': 'База отдыха',
+//         'petHotel': 'Отель для животных',
+//         'recreationCenter': 'База отдыха',
+//         'kotedzi': 'Коттедж',
+//         'kavorking': 'Коворкинг',
+//         'avtokemping': 'Автокемпинг'
+//       }
+//     },
+//   };
+
+//   const t = translations[currentLanguage];
+
+//   const translateCategory = (category) => {
+//     if (!category) return category;
+//     const normalizedCategory = category.toLowerCase().trim();
+//     return t.categories[category] || t.categories[normalizedCategory] || category;
+//   };
+
+//   useEffect(() => {
+//     const getUserLocation = () => {
+//       if (navigator.geolocation) {
+//         navigator.geolocation.getCurrentPosition(
+//           (position) => {
+//             setUserLocation({
+//               lat: position.coords.latitude,
+//               lng: position.coords.longitude,
+//             });
+//           },
+//           (error) => {
+//             console.log('Geolocation not available or denied');
+//           },
+//           {
+//             timeout: 10000,
+//             enableHighAccuracy: false
+//           }
+//         );
+//       }
+//     };
+
+//     getUserLocation();
+
+//     const loadSearchResults = () => {
+//       try {
+//         const results = localStorage.getItem('searchResults');
+//         const params = localStorage.getItem('searchParams');
         
-        if (results && params) {
-          const parsedResults = JSON.parse(results);
-          const parsedParams = JSON.parse(params);
+//         if (results && params) {
+//           const parsedResults = JSON.parse(results);
+//           const parsedParams = JSON.parse(params);
           
-          if (parsedResults.success) {
-            const foundResults = parsedResults.data || [];
-            setSearchResults(foundResults);
-            setSortedResults(foundResults);
-            setSearchParams(parsedParams);
+//           if (parsedResults.success) {
+//             const foundResults = parsedResults.data || [];
+//             setSearchResults(foundResults);
+//             setSearchParams(parsedParams);
 
-            if (parsedParams.types && Array.isArray(parsedParams.types)) {
-              const foundCategories = [...new Set(foundResults.map(item => item.category))];
-              const missing = parsedParams.types.filter(type => 
-                !foundCategories.some(found => 
-                  found.toLowerCase().includes(type.toLowerCase()) || 
-                  type.toLowerCase().includes(found.toLowerCase())
-                )
-              );
-              setMissingCategories(missing);
-            }
-          } else {
-            setError(parsedResults.message || t.error);
-          }
-        } else {
-          setSearchResults([]);
-          setSortedResults([]);
-        }
-      } catch (err) {
-        console.error('Error loading search results:', err);
-        setError(t.error);
-      } finally {
-        setLoading(false);
-      }
-    };
+//             // Находим уникальные категории из результатов
+//             const uniqueCategories = [...new Set(foundResults.map(item => item.category))];
+//             setFoundCategories(uniqueCategories);
+//           } else {
+//             setError(parsedResults.message || t.error);
+//           }
+//         } else {
+//           setSearchResults([]);
+//         }
+//       } catch (err) {
+//         console.error('Error loading search results:', err);
+//         setError(t.error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-    loadSearchResults();
-  }, [t.error]);
+//     loadSearchResults();
+//   }, [t.error]);
 
-  // Сортировка результатов
-  useEffect(() => {
-    let sorted = [...searchResults];
-    
-    switch (sortBy) {
-      case 'price_asc':
-        sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-        break;
-      case 'price_desc':
-        sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-        break;
-      case 'district':
-        sorted.sort((a, b) => (a.district || '').localeCompare(b.district || ''));
-        break;
-      case 'metro':
-        sorted.sort((a, b) => (a.metro || '').localeCompare(b.metro || ''));
-        break;
-      default:
-        break;
-    }
-    
-    setSortedResults(sorted);
-  }, [sortBy, searchResults]);
+//   const handleBackToSearch = () => {
+//     router.push('/');
+//   };
 
-  const handleBackToSearch = () => {
-    router.push('/');
-  };
+//   const handleNewSearch = () => {
+//     router.push('/');
+//   };
 
-  const handleNewSearch = () => {
-    router.push('/');
-  };
+//   const handleShowOnMap = (apartment) => {
+//     setSelectedApartment(apartment);
+//     setMapOpen(true);
+//   };
 
-  const handleShowOnMap = (apartment) => {
-    setSelectedApartment(apartment);
-    setMapOpen(true);
-  };
+//   const handleApartmentSelect = (apartment) => {
+//     router.push(`/apartment/${apartment._id}`);
+//   };
 
-  // Функция для перехода к детальной странице объявления
-  const handleApartmentSelect = (apartment) => {
-    router.push(`/apartment/${apartment._id}`);
-  };
+//   const handleViewModeChange = (event, newViewMode) => {
+//     if (newViewMode !== null) {
+//       setViewMode(newViewMode);
+//     }
+//   };
 
-  const handleViewModeChange = (event, newViewMode) => {
-    if (newViewMode !== null) {
-      setViewMode(newViewMode);
-    }
-  };
+//   if (loading) {
+//     return (
+//       <Container sx={{ py: 4, textAlign: 'center' }}>
+//         <CircularProgress sx={{ mb: 2 }} />
+//         <Typography>{t.loading}</Typography>
+//       </Container>
+//     );
+//   }
 
-  if (loading) {
-    return (
-      <Container sx={{ py: 4, textAlign: 'center' }}>
-        <CircularProgress sx={{ mb: 2 }} />
-        <Typography>{t.loading}</Typography>
-      </Container>
-    );
-  }
+//   if (error) {
+//     return (
+//       <Container sx={{ py: 4, textAlign: 'center' }}>
+//         <Warning sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
+//         <Typography variant="h6" color="error" gutterBottom>
+//           {error}
+//         </Typography>
+//         <Button 
+//           variant="contained" 
+//           onClick={handleNewSearch}
+//           sx={{ mt: 2 }}
+//         >
+//           {t.changeSearch}
+//         </Button>
+//       </Container>
+//     );
+//   }
 
-  if (error) {
-    return (
-      <Container sx={{ py: 4, textAlign: 'center' }}>
-        <Warning sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
-        <Typography variant="h6" color="error" gutterBottom>
-          {error}
-        </Typography>
-        <Button 
-          variant="contained" 
-          onClick={handleNewSearch}
-          sx={{ mt: 2 }}
-        >
-          {t.changeSearch}
-        </Button>
-      </Container>
-    );
-  }
+//   return (
+//     <Container sx={{ py: 4 }}>
+//       <Button
+//         startIcon={<ArrowBack />}
+//         onClick={handleBackToSearch}
+//         sx={{ mb: 3 }}
+//       >
+//         {t.back}
+//       </Button>
 
-  return (
-    <Container sx={{ py: 4 }}>
-      <Button
-        startIcon={<ArrowBack />}
-        onClick={handleBackToSearch}
-        sx={{ mb: 3 }}
-      >
-        {t.back}
-      </Button>
-
-      {searchParams && (
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {t.title}
-          </Typography>
+//       {searchParams && (
+//         <Box sx={{ mb: 4 }}>
+//           <Typography variant="h4" component="h1" gutterBottom>
+//             {t.title}
+//           </Typography>
           
-          {missingCategories.length > 0 && (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              <Typography variant="body2">
-                {t.missingCategories}: <strong>{missingCategories.map(cat => translateCategory(cat)).join(', ')}</strong>
-              </Typography>
-              {missingCategories.map(category => (
-                <Typography key={category} variant="body2" sx={{ mt: 0.5 }}>
-                  • {t.noResultsInCategory.replace('{category}', translateCategory(category))}
-                </Typography>
-              ))}
-            </Alert>
-          )}
+//           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+//             {searchParams.location && (
+//               <Chip 
+//                 icon={<LocationOn />} 
+//                 label={`${t.location}: ${searchParams.location}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//             {searchParams.guests && (
+//               <Chip 
+//                 icon={<People />} 
+//                 label={`${t.guestsLabel}: ${searchParams.guests}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//             {searchParams.types && searchParams.types.length > 0 && (
+//               <Chip 
+//                 icon={<Category />} 
+//                 label={`${t.types}: ${searchParams.types.map(type => translateCategory(type)).join(', ')}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//           </Box>
           
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-            {searchParams.location && (
-              <Chip 
-                icon={<LocationOn />} 
-                label={`${t.location}: ${searchParams.location}`}
-                variant="outlined"
-                color="primary"
-              />
-            )}
-            {searchParams.guests && (
-              <Chip 
-                icon={<People />} 
-                label={`${t.guestsLabel}: ${searchParams.guests}`}
-                variant="outlined"
-                color="primary"
-              />
-            )}
-            {searchParams.types && searchParams.types.length > 0 && (
-              <Chip 
-                icon={<Category />} 
-                label={`${t.types}: ${searchParams.types.map(type => translateCategory(type)).join(', ')}`}
-                variant="outlined"
-                color="primary"
-              />
-            )}
-          </Box>
+//           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+//             <Box>
+//               <Typography variant="body1" color="text.secondary">
+//                 {t.found}: <strong>{searchResults.length}</strong>
+//               </Typography>
+              
+//               {/* Отображение найденных категорий с РАЗНЫМИ ЦВЕТАМИ */}
+//               {foundCategories.length > 0 && (
+//                 <Box sx={{ mt: 1 }}>
+//                   <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+//                     {t.foundCategories}:
+//                   </Typography>
+//                   <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+//                     {foundCategories.map(category => {
+//                       const categoryColor = getCategoryColor(category);
+//                       return (
+//                         <Chip
+//                           key={category}
+//                           label={translateCategory(category)}
+//                           size="small"
+//                           sx={{
+//                             backgroundColor: categoryColor,
+//                             color: 'white',
+//                             fontSize: '0.7rem',
+//                             height: '24px',
+//                             border: `1px solid ${categoryColor}`,
+//                             '& .MuiChip-label': {
+//                               px: 1,
+//                               py: 0.25
+//                             }
+//                           }}
+//                         />
+//                       );
+//                     })}
+//                   </Box>
+//                 </Box>
+//               )}
+//             </Box>
+
+//             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+//               <ToggleButtonGroup
+//                 value={viewMode}
+//                 exclusive
+//                 onChange={handleViewModeChange}
+//                 aria-label="режим просмотра"
+//                 size="small"
+//               >
+//                 <ToggleButton value="grid" aria-label="сетка">
+//                   {t.viewGrid}
+//                 </ToggleButton>
+//                 <ToggleButton value="map" aria-label="карта">
+//                   <MapIcon sx={{ mr: 1 }} />
+//                   {t.viewMap}
+//                 </ToggleButton>
+//               </ToggleButtonGroup>
+//             </Box>
+//           </Box>
+//         </Box>
+//       )}
+
+//       <Divider sx={{ mb: 4 }} />
+
+//       {/* Карта объектов сверху над карточками */}
+//       {viewMode === 'grid' && searchResults.length > 0 && (
+//         <Box sx={{ 
+//           height: { xs: '250px', sm: '300px', md: '350px' }, 
+//           borderRadius: 2, 
+//           overflow: 'hidden',
+//           border: '1px solid #e0e0e0',
+//           mb: 4,
+//           position: 'relative'
+//         }}>
+//           <MapComponent 
+//             apartments={searchResults}
+//             onApartmentSelect={handleApartmentSelect}
+//             userLocation={userLocation}
+//             compactMode={true}
+//           />
           
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="body1" color="text.secondary">
-              {t.found}: <strong>{searchResults.length}</strong>
-            </Typography>
+//           {/* Кнопка для открытия большой карты */}
+//           <Box sx={{ 
+//             position: 'absolute', 
+//             top: 16, 
+//             right: 16, 
+//             zIndex: 1000 
+//           }}>
+//             <Button
+//               variant="contained"
+//               startIcon={<MapIcon />}
+//               onClick={() => setMapOpen(true)}
+//               size="small"
+//               sx={{
+//                 backgroundColor: 'white',
+//                 color: 'primary.main',
+//                 '&:hover': {
+//                   backgroundColor: 'grey.50',
+//                 },
+//                 boxShadow: 2,
+//               }}
+//             >
+//               {t.viewMap}
+//             </Button>
+//           </Box>
+//         </Box>
+//       )}
 
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <ToggleButtonGroup
-                value={viewMode}
-                exclusive
-                onChange={handleViewModeChange}
-                aria-label="режим просмотра"
-                size="small"
-              >
-                <ToggleButton value="grid" aria-label="сетка">
-                  {t.viewGrid}
-                </ToggleButton>
-                <ToggleButton value="map" aria-label="карта">
-                  <MapIcon sx={{ mr: 1 }} />
-                  {t.viewMap}
-                </ToggleButton>
-              </ToggleButtonGroup>
+//       {viewMode === 'grid' ? (
+//         searchResults.length > 0 ? (
+//           <Grid container spacing={3}>
+//             {searchResults.map((apartment) => (
+//               <Grid item xs={12} sm={6} md={4} key={apartment._id}>
+//                 <ApartmentCard
+//                   apartment={apartment}
+//                   showCreateUserDialog={() => {}}
+//                   onShowOnMap={() => handleShowOnMap(apartment)}
+//                   onClick={() => handleApartmentSelect(apartment)}
+//                 />
+//               </Grid>
+//             ))}
+//           </Grid>
+//         ) : (
+//           <Box sx={{ textAlign: 'center', py: 8 }}>
+//             <Warning sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+//             <Typography variant="h6" color="text.secondary" gutterBottom>
+//               {t.noResults}
+//             </Typography>
+//             <Button 
+//               variant="contained" 
+//               onClick={handleNewSearch}
+//               sx={{ mt: 2 }}
+//             >
+//               {t.changeSearch}
+//             </Button>
+//           </Box>
+//         )
+//       ) : (
+//         <Box>
+//           {/* Большая карта в режиме просмотра карты */}
+//           <Box sx={{ 
+//             height: { xs: '400px', sm: '500px', md: '600px' }, 
+//             borderRadius: 2, 
+//             overflow: 'hidden',
+//             border: '1px solid #e0e0e0',
+//             mb: 2
+//           }}>
+//             <MapComponent 
+//               apartments={searchResults}
+//               onApartmentSelect={handleApartmentSelect}
+//               userLocation={userLocation}
+//               compactMode={true}
+//             />
+//           </Box>
 
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <InputLabel>{t.sortBy}</InputLabel>
-                <Select
-                  value={sortBy}
-                  label={t.sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  startAdornment={<Sort sx={{ mr: 1, color: 'text.secondary' }} />}
-                >
-                  <MenuItem value="default">{t.sortDefault}</MenuItem>
-                  <MenuItem value="price_asc">{t.sortPriceAsc}</MenuItem>
-                  <MenuItem value="price_desc">{t.sortPriceDesc}</MenuItem>
-                  <MenuItem value="district">{t.sortDistrict}</MenuItem>
-                  <MenuItem value="metro">{t.sortMetro}</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-          </Box>
-        </Box>
-      )}
+//           {/* Кнопка для открытия большой карты в диалоге */}
+//           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+//             <Button
+//               variant="outlined"
+//               startIcon={<MapIcon />}
+//               onClick={() => setMapOpen(true)}
+//               size="large"
+//               sx={{
+//                 '& .MuiButton-startIcon': {
+//                   marginRight: 0.5,
+//                 },
+//                 fontSize: { xs: '0.8rem', sm: '0.9rem' },
+//                 px: 2,
+//                 whiteSpace: 'nowrap',
+//               }}
+//             >
+//               {t.viewMap}
+//             </Button>
+//           </Box>
+//         </Box>
+//       )}
 
-      <Divider sx={{ mb: 4 }} />
+//       {/* Диалог с большой картой */}
+//       <Dialog
+//         open={mapOpen}
+//         onClose={() => setMapOpen(false)}
+//         maxWidth="xl"
+//         fullWidth
+//         sx={{
+//           '& .MuiDialog-paper': {
+//             height: { xs: '90vh', sm: '80vh' },
+//             maxHeight: '90vh',
+//             margin: { xs: 1, sm: 2 },
+//             width: '100%'
+//           }
+//         }}
+//       >
+//         <DialogTitle sx={{ 
+//           display: 'flex', 
+//           justifyContent: 'space-between', 
+//           alignItems: 'center',
+//           py: 2,
+//           px: 3
+//         }}>
+//           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+//             <Typography variant="h6">
+//               {t.found}: <strong>{searchResults.length}</strong>
+//             </Typography>
+//             {selectedApartment && (
+//               <Chip
+//                 label={translateCategory(selectedApartment.category)}
+//                 size="small"
+//                 sx={{
+//                   backgroundColor: getCategoryColor(selectedApartment.category),
+//                   color: 'white',
+//                   fontSize: '0.75rem',
+//                 }}
+//               />
+//             )}
+//           </Box>
+//           <IconButton 
+//             onClick={() => setMapOpen(false)}
+//             size="small"
+//           >
+//             <Close />
+//           </IconButton>
+//         </DialogTitle>
+        
+//         {/* Категории на карте в диалоге с РАЗНЫМИ ЦВЕТАМИ */}
+//         {foundCategories.length > 0 && (
+//           <Box sx={{ px: 3, pb: 1 }}>
+//             <Typography variant="body2" color="text.secondary" gutterBottom>
+//               {t.categoriesOnMap}:
+//             </Typography>
+//             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+//               {foundCategories.map(category => {
+//                 const categoryColor = getCategoryColor(category);
+//                 return (
+//                   <Chip
+//                     key={category}
+//                     label={translateCategory(category)}
+//                     size="small"
+//                     sx={{
+//                       backgroundColor: categoryColor,
+//                       color: 'white',
+//                       fontSize: '0.75rem',
+//                       border: `2px solid ${categoryColor}`,
+//                       '& .MuiChip-label': {
+//                         px: 1,
+//                         py: 0.5
+//                       }
+//                     }}
+//                   />
+//                 );
+//               })}
+//             </Box>
+//           </Box>
+//         )}
+        
+//         <DialogContent sx={{ 
+//           height: 'calc(100% - 120px)', 
+//           p: 0, 
+//           display: 'flex',
+//           flexDirection: 'column'
+//         }}>
+//           <Box sx={{ flexGrow: 1 }}>
+//             <MapComponent 
+//               apartments={selectedApartment ? [selectedApartment] : searchResults}
+//               centerMode={!!selectedApartment}
+//               userLocation={userLocation}
+//               onApartmentSelect={handleApartmentSelect}
+//               compactMode={false}
+//             />
+//           </Box>
+//         </DialogContent>
+//       </Dialog>
+//     </Container>
+//   );
+// };
 
-      {viewMode === 'grid' ? (
-        sortedResults.length > 0 ? (
-          <Grid container spacing={3}>
-            {sortedResults.map((apartment) => (
-              <Grid item xs={12} sm={6} md={4} key={apartment._id}>
-                <ApartmentCard
-                  apartment={apartment}
-                  showCreateUserDialog={() => {}}
-                  onShowOnMap={() => handleShowOnMap(apartment)}
-                  onClick={() => handleApartmentSelect(apartment)}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Warning sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              {t.noResults}
-            </Typography>
-            <Button 
-              variant="contained" 
-              onClick={handleNewSearch}
-              sx={{ mt: 2 }}
-            >
-              {t.changeSearch}
-            </Button>
-          </Box>
-        )
-      ) : (
-        <Box sx={{ height: '600px', borderRadius: 2, overflow: 'hidden' }}>
-          <MapComponent 
-            apartments={sortedResults}
-            onApartmentSelect={handleApartmentSelect}
-            userLocation={userLocation}
-          />
-        </Box>
-      )}
+// // Главный компонент страницы с провайдерами
+// export default function SearchResults() {
+//   return (
+//     <Providers store={store}>
+//       <LanguageProvider>
+//         <SessionProvider>
+//           <Header />
+//           <SearchResultsContent />
+//           <Footer />
+//         </SessionProvider>
+//       </LanguageProvider>
+//     </Providers>
+//   );
+// }
 
-      <Dialog
-        open={mapOpen}
-        onClose={() => setMapOpen(false)}
-        maxWidth="lg"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {t.map}
-          <IconButton onClick={() => setMapOpen(false)}>
-            <Close />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ height: '500px', p: 0 }}>
-          {selectedApartment && (
-            <MapComponent 
-              apartments={[selectedApartment]}
-              centerMode={true}
-              userLocation={userLocation}
-              onApartmentSelect={handleApartmentSelect}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-    </Container>
-  );
-};
 
-// Главный компонент страницы с провайдерами
-export default function SearchResults() {
-  return (
-    <Providers store={store}>
-      <LanguageProvider>
-        <SessionProvider>
-          <Header />
-          <SearchResultsContent />
-          <Footer />
-        </SessionProvider>
-      </LanguageProvider>
-    </Providers>
-  );
-}
+
+
+// 'use client';
+
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Container,
+//   Typography,
+//   Box,
+//   Chip,
+//   Grid,
+//   Button,
+//   Divider,
+//   CircularProgress,
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   IconButton,
+//   Alert,
+// } from '@mui/material';
+// import { useRouter } from 'next/navigation';
+// import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
+// import ApartmentCard from '@/app/components/ApartmentCard';
+// import dynamic from 'next/dynamic';
+// import Providers from '../providers';
+// import { store } from '../store';
+// import { SessionProvider } from 'next-auth/react';
+// import Header from '../components/Header';
+// import Footer from '../components/Footer';
+
+// // Импортируем иконки по отдельности
+// import LocationOn from '@mui/icons-material/LocationOn';
+// import People from '@mui/icons-material/People';
+// import Category from '@mui/icons-material/Category';
+// import ArrowBack from '@mui/icons-material/ArrowBack';
+// import Warning from '@mui/icons-material/Warning';
+// import MapIcon from '@mui/icons-material/Map';
+// import Close from '@mui/icons-material/Close';
+
+// // Динамически загружаем карту
+// const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
+//   ssr: false,
+//   loading: () => <div>Загрузка карты...</div>
+// });
+
+// // Цвета категорий для отображения в основном компоненте
+// const CATEGORY_COLORS = {
+//   'apart': '#EA4335',
+//   'hostel': '#34A853', 
+//   'glamping': '#FBBC05',
+//   'hotel': '#4285F4',
+//   'pet-hotel': '#9C27B0',
+//   'house': '#795548',
+//   'sauna': '#F44336',
+//   'pansionat': '#607D8B',
+//   'cottage': '#FF9800',
+//   'coworking': '#E91E63',
+//   'autocamping': '#4CAF50',
+//   'rest-base': '#00BCD4',
+//   'default': '#EA4335'
+// };
+
+// // Функция для получения цвета категории
+// const getCategoryColor = (category) => {
+//   if (!category) return CATEGORY_COLORS.default;
+  
+//   const categoryLower = category.toLowerCase();
+  
+//   if (categoryLower.includes('apart') || categoryLower.includes('квартир')) 
+//     return CATEGORY_COLORS.apart;
+//   if (categoryLower.includes('hostel') || categoryLower.includes('хостел')) 
+//     return CATEGORY_COLORS.hostel;
+//   if (categoryLower.includes('glamping') || categoryLower.includes('глемпінг') || categoryLower.includes('глэмпинг')) 
+//     return CATEGORY_COLORS.glamping;
+//   if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) 
+//     return CATEGORY_COLORS.hotel;
+//   if (categoryLower.includes('pet') || categoryLower.includes('тварин') || categoryLower.includes('animals')) 
+//     return CATEGORY_COLORS['pet-hotel'];
+//   if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) 
+//     return CATEGORY_COLORS.house;
+//   if (categoryLower.includes('sauna') || categoryLower.includes('саун') || categoryLower.includes('бан')) 
+//     return CATEGORY_COLORS.sauna;
+//   if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) 
+//     return CATEGORY_COLORS.pansionat;
+//   if (categoryLower.includes('cottage') || categoryLower.includes('котедж') || categoryLower.includes('kotedzi')) 
+//     return CATEGORY_COLORS.cottage;
+//   if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг') || categoryLower.includes('kavorking')) 
+//     return CATEGORY_COLORS.coworking;
+//   if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг') || categoryLower.includes('avtokemping')) 
+//     return CATEGORY_COLORS.autocamping;
+//   if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха') || categoryLower.includes('recreationcenter')) 
+//     return CATEGORY_COLORS['rest-base'];
+  
+//   return CATEGORY_COLORS.default;
+// };
+
+// // Переименовываем основной компонент
+// const SearchResultsContent = () => {
+//   const [searchResults, setSearchResults] = useState([]);
+//   const [searchParams, setSearchParams] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [mapOpen, setMapOpen] = useState(false);
+//   const [selectedApartment, setSelectedApartment] = useState(null);
+//   const [userLocation, setUserLocation] = useState(null);
+//   const [foundCategories, setFoundCategories] = useState([]);
+
+//   const router = useRouter();
+//   const { currentLanguage } = useLanguage();
+
+//   const translations = {
+//     ua: {
+//       title: 'Результати пошуку',
+//       found: 'Знайдено варіантів',
+//       foundCategories: 'Знайдені категорії',
+//       noResults: 'За вашим запитом нічого не знайдено',
+//       changeSearch: 'Змінити параметри пошуку',
+//       back: 'Назад',
+//       location: 'Місце',
+//       guestsLabel: 'Гості',
+//       types: 'Типи',
+//       loading: 'Завантаження...',
+//       error: 'Помилка при завантаженні результатів',
+//       viewMap: 'Дивитись на карті',
+//       close: 'Закрити',
+//       showOnMap: 'Показати на карті',
+//       categoriesOnMap: 'Категорії на карті',
+//       categories: {
+//         'apart': 'Квартира',
+//         'hostel': 'Хостел', 
+//         'glamping': 'Глемпінг',
+//         'hotel': 'Готель',
+//         'pet-hotel': 'Готель для тварин',
+//         'house': 'Будинок',
+//         'sauna': 'Сауна/Баня',
+//         'pansionat': 'Пансіонат',
+//         'cottage': 'Котедж',
+//         'coworking': 'Коворкінг',
+//         'autocamping': 'Автокемпінг',
+//         'rest-base': 'База відпочинку',
+//         'petHotel': 'Готель для тварин',
+//         'recreationCenter': 'База відпочинку',
+//         'kotedzi': 'Котедж',
+//         'kavorking': 'Коворкінг',
+//         'avtokemping': 'Автокемпінг'
+//       }
+//     },
+//     ru: {
+//       title: 'Результаты поиска',
+//       found: 'Найдено вариантов',
+//       foundCategories: 'Найденные категории',
+//       noResults: 'По вашему запросу ничего не найдено',
+//       changeSearch: 'Изменить параметры поиска',
+//       back: 'Назад',
+//       location: 'Место',
+//       guestsLabel: 'Гости',
+//       types: 'Типы',
+//       loading: 'Загрузка...',
+//       error: 'Ошибка при загрузке результатов',
+//       viewMap: 'Смотреть на карте',
+//       close: 'Закрыть',
+//       showOnMap: 'Показать на карте',
+//       categoriesOnMap: 'Категории на карте',
+//       categories: {
+//         'apart': 'Квартира',
+//         'hostel': 'Хостел',
+//         'glamping': 'Глэмпинг', 
+//         'hotel': 'Гостиница',
+//         'pet-hotel': 'Отель для животных',
+//         'house': 'Дом',
+//         'sauna': 'Сауна/Баня',
+//         'pansionat': 'Пансионат',
+//         'cottage': 'Коттедж',
+//         'coworking': 'Коворкинг',
+//         'autocamping': 'Автокемпинг',
+//         'rest-base': 'База отдыха',
+//         'petHotel': 'Отель для животных',
+//         'recreationCenter': 'База отдыха',
+//         'kotedzi': 'Коттедж',
+//         'kavorking': 'Коворкинг',
+//         'avtokemping': 'Автокемпинг'
+//       }
+//     },
+//   };
+
+//   const t = translations[currentLanguage];
+
+//   const translateCategory = (category) => {
+//     if (!category) return category;
+//     const normalizedCategory = category.toLowerCase().trim();
+//     return t.categories[category] || t.categories[normalizedCategory] || category;
+//   };
+
+//   useEffect(() => {
+//     const getUserLocation = () => {
+//       if (navigator.geolocation) {
+//         navigator.geolocation.getCurrentPosition(
+//           (position) => {
+//             setUserLocation({
+//               lat: position.coords.latitude,
+//               lng: position.coords.longitude,
+//             });
+//           },
+//           (error) => {
+//             console.log('Geolocation not available or denied');
+//           },
+//           {
+//             timeout: 10000,
+//             enableHighAccuracy: false
+//           }
+//         );
+//       }
+//     };
+
+//     getUserLocation();
+
+//     const loadSearchResults = () => {
+//       try {
+//         const results = localStorage.getItem('searchResults');
+//         const params = localStorage.getItem('searchParams');
+        
+//         if (results && params) {
+//           const parsedResults = JSON.parse(results);
+//           const parsedParams = JSON.parse(params);
+          
+//           if (parsedResults.success) {
+//             const foundResults = parsedResults.data || [];
+//             setSearchResults(foundResults);
+//             setSearchParams(parsedParams);
+
+//             // Находим уникальные категории из результатов
+//             const uniqueCategories = [...new Set(foundResults.map(item => item.category))];
+//             setFoundCategories(uniqueCategories);
+//           } else {
+//             setError(parsedResults.message || t.error);
+//           }
+//         } else {
+//           setSearchResults([]);
+//         }
+//       } catch (err) {
+//         console.error('Error loading search results:', err);
+//         setError(t.error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     loadSearchResults();
+//   }, [t.error]);
+
+//   const handleBackToSearch = () => {
+//     router.push('/');
+//   };
+
+//   const handleNewSearch = () => {
+//     router.push('/');
+//   };
+
+//   const handleApartmentSelect = (apartment) => {
+//     router.push(`/apartment/${apartment._id}`);
+//   };
+
+//   if (loading) {
+//     return (
+//       <Container sx={{ py: 4, textAlign: 'center' }}>
+//         <CircularProgress sx={{ mb: 2 }} />
+//         <Typography>{t.loading}</Typography>
+//       </Container>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <Container sx={{ py: 4, textAlign: 'center' }}>
+//         <Warning sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
+//         <Typography variant="h6" color="error" gutterBottom>
+//           {error}
+//         </Typography>
+//         <Button 
+//           variant="contained" 
+//           onClick={handleNewSearch}
+//           sx={{ mt: 2 }}
+//         >
+//           {t.changeSearch}
+//         </Button>
+//       </Container>
+//     );
+//   }
+
+//   return (
+//     <Container sx={{ py: 4 }}>
+//       <Button
+//         startIcon={<ArrowBack />}
+//         onClick={handleBackToSearch}
+//         sx={{ mb: 3 }}
+//       >
+//         {t.back}
+//       </Button>
+
+//       {searchParams && (
+//         <Box sx={{ mb: 4 }}>
+//           <Typography variant="h4" component="h1" gutterBottom>
+//             {t.title}
+//           </Typography>
+          
+//           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+//             {searchParams.location && (
+//               <Chip 
+//                 icon={<LocationOn />} 
+//                 label={`${t.location}: ${searchParams.location}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//             {searchParams.guests && (
+//               <Chip 
+//                 icon={<People />} 
+//                 label={`${t.guestsLabel}: ${searchParams.guests}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//             {searchParams.types && searchParams.types.length > 0 && (
+//               <Chip 
+//                 icon={<Category />} 
+//                 label={`${t.types}: ${searchParams.types.map(type => translateCategory(type)).join(', ')}`}
+//                 variant="outlined"
+//                 color="primary"
+//               />
+//             )}
+//           </Box>
+          
+//           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+//             <Box>
+//               <Typography variant="body1" color="text.secondary">
+//                 {t.found}: <strong>{searchResults.length}</strong>
+//               </Typography>
+              
+//               {/* Отображение найденных категорий с РАЗНЫМИ ЦВЕТАМИ */}
+//               {foundCategories.length > 0 && (
+//                 <Box sx={{ mt: 1 }}>
+//                   <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+//                     {t.foundCategories}:
+//                   </Typography>
+//                   <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+//                     {foundCategories.map(category => {
+//                       const categoryColor = getCategoryColor(category);
+//                       return (
+//                         <Chip
+//                           key={category}
+//                           label={translateCategory(category)}
+//                           size="small"
+//                           sx={{
+//                             backgroundColor: categoryColor,
+//                             color: 'white',
+//                             fontSize: '0.7rem',
+//                             height: '24px',
+//                             border: `1px solid ${categoryColor}`,
+//                             '& .MuiChip-label': {
+//                               px: 1,
+//                               py: 0.25
+//                             }
+//                           }}
+//                         />
+//                       );
+//                     })}
+//                   </Box>
+//                 </Box>
+//               )}
+//             </Box>
+//           </Box>
+//         </Box>
+//       )}
+
+//       <Divider sx={{ mb: 4 }} />
+
+//       {/* Компактная карта объектов */}
+//       {searchResults.length > 0 && (
+//         <Box sx={{ mb: 4 }}>
+//           <Box sx={{ 
+//             height: '200px', 
+//             borderRadius: 2, 
+//             overflow: 'hidden',
+//             border: '1px solid #e0e0e0',
+//             mb: 2
+//           }}>
+//             <MapComponent 
+//               apartments={searchResults}
+//               onApartmentSelect={handleApartmentSelect}
+//               userLocation={userLocation}
+//               compactMode={true}
+//             />
+//           </Box>
+
+//           {/* Кнопка по центру для открытия большой карты */}
+//           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+//             <Button
+//               variant="contained"
+//               startIcon={<MapIcon />}
+//               onClick={() => setMapOpen(true)}
+//               size="medium"
+//               sx={{
+//                 px: 2,
+//                 py: 1,
+//                 fontSize: '0.8rem',
+//                 borderRadius: 2,
+//                 boxShadow: 3,
+//                 '&:hover': {
+//                   boxShadow: 6,
+//                   transform: 'translateY(-2px)'
+//                 },
+//                 transition: 'all 0.3s ease'
+//               }}
+//             >
+//               {t.viewMap}
+//             </Button>
+//           </Box>
+//         </Box>
+//       )}
+
+//       {/* Список всех карточек */}
+//       {searchResults.length > 0 ? (
+//         <Grid container spacing={3}>
+//           {searchResults.map((apartment) => (
+//             <Grid item xs={12} sm={6} md={4} key={apartment._id}>
+//               <ApartmentCard
+//                 apartment={apartment}
+//                 showCreateUserDialog={() => {}}
+//                 onShowOnMap={() => setSelectedApartment(apartment)}
+//                 onClick={() => handleApartmentSelect(apartment)}
+//               />
+//             </Grid>
+//           ))}
+//         </Grid>
+//       ) : (
+//         <Box sx={{ textAlign: 'center', py: 8 }}>
+//           <Warning sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+//           <Typography variant="h6" color="text.secondary" gutterBottom>
+//             {t.noResults}
+//           </Typography>
+//           <Button 
+//             variant="contained" 
+//             onClick={handleNewSearch}
+//             sx={{ mt: 2 }}
+//           >
+//             {t.changeSearch}
+//           </Button>
+//         </Box>
+//       )}
+
+//       {/* Диалог с большой картой */}
+//       <Dialog
+//         open={mapOpen}
+//         onClose={() => setMapOpen(false)}
+//         maxWidth="xl"
+//         fullWidth
+//         sx={{
+//           '& .MuiDialog-paper': {
+//             height: { xs: '90vh', sm: '80vh' },
+//             maxHeight: '90vh',
+//             margin: { xs: 1, sm: 2 },
+//             width: '100%'
+//           }
+//         }}
+//       >
+//         <DialogTitle sx={{ 
+//           display: 'flex', 
+//           justifyContent: 'space-between', 
+//           alignItems: 'center',
+//           py: 2,
+//           px: 3
+//         }}>
+//           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+//             <Typography variant="h6">
+//               {t.found}: <strong>{searchResults.length}</strong>
+//             </Typography>
+//             {selectedApartment && (
+//               <Chip
+//                 label={translateCategory(selectedApartment.category)}
+//                 size="small"
+//                 sx={{
+//                   backgroundColor: getCategoryColor(selectedApartment.category),
+//                   color: 'white',
+//                   fontSize: '0.75rem',
+//                 }}
+//               />
+//             )}
+//           </Box>
+//           <IconButton 
+//             onClick={() => setMapOpen(false)}
+//             size="small"
+//           >
+//             <Close />
+//           </IconButton>
+//         </DialogTitle>
+        
+//         {/* Категории на карте в диалоге с РАЗНЫМИ ЦВЕТАМИ */}
+//         {foundCategories.length > 0 && (
+//           <Box sx={{ px: 3, pb: 1 }}>
+//             <Typography variant="body2" color="text.secondary" gutterBottom>
+//               {t.categoriesOnMap}:
+//             </Typography>
+//             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+//               {foundCategories.map(category => {
+//                 const categoryColor = getCategoryColor(category);
+//                 return (
+//                   <Chip
+//                     key={category}
+//                     label={translateCategory(category)}
+//                     size="small"
+//                     sx={{
+//                       backgroundColor: categoryColor,
+//                       color: 'white',
+//                       fontSize: '0.75rem',
+//                       border: `2px solid ${categoryColor}`,
+//                       '& .MuiChip-label': {
+//                         px: 1,
+//                         py: 0.5
+//                       }
+//                     }}
+//                   />
+//                 );
+//               })}
+//             </Box>
+//           </Box>
+//         )}
+        
+//         <DialogContent sx={{ 
+//           height: 'calc(100% - 120px)', 
+//           p: 0, 
+//           display: 'flex',
+//           flexDirection: 'column'
+//         }}>
+//           <Box sx={{ flexGrow: 1 }}>
+//             <MapComponent 
+//               apartments={selectedApartment ? [selectedApartment] : searchResults}
+//               centerMode={!!selectedApartment}
+//               userLocation={userLocation}
+//               onApartmentSelect={handleApartmentSelect}
+//               compactMode={false}
+//             />
+//           </Box>
+//         </DialogContent>
+//       </Dialog>
+//     </Container>
+//   );
+// };
+
+// // Главный компонент страницы с провайдерами
+// export default function SearchResults() {
+//   return (
+//     <Providers store={store}>
+//       <LanguageProvider>
+//         <SessionProvider>
+//           <Header />
+//           <SearchResultsContent />
+//           <Footer />
+//         </SessionProvider>
+//       </LanguageProvider>
+//     </Providers>
+//   );
+// }

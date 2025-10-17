@@ -696,7 +696,7 @@ const performSearch = async (searchData) => {
       
       console.log('Redirecting to search results page');
       // Перенаправляем на страницу результатов
-      router.push('/search-results');
+      router.push('/search');
     } else {
       throw new Error(results.message || 'Search failed');
     }

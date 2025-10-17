@@ -23,14 +23,14 @@ import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 // Переводы
 const APARTMENT_LIST_TRANSLATIONS = {
   ua: {
-    title: "Усі апартаменти",
+    // title: "Усі апартаменти",
     noApartments: "Немає жодного апартаменту",
     noFavorites: "Немає обраних апартаментів",
     favoritesTitle: "Обрані апартаменти",
     otherListings: "Інші об'єкти користувача",
   },
   ru: {
-    title: "Все апартаменты", 
+    // title: "Все апартаменты", 
     noApartments: "Нет ни одного апартамента",
     noFavorites: "Нет избранных апартаментов",
     favoritesTitle: "Избранные апартаменты",

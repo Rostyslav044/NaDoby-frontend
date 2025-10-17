@@ -1,8 +1,6 @@
 
 
 
-
-
 // 'use client';
 
 // import React, { useEffect, useRef, useState } from 'react';
@@ -15,22 +13,28 @@
 
 // // Цвета для разных категорий
 // const CATEGORY_COLORS = {
-//   'apart': '#FF5252', // красный для квартир
-//   'hostel': '#4CAF50', // зеленый для хостелов
-//   'glamping': '#FF9800', // оранжевый для глемпинга
-//   'hotel': '#2196F3', // синий для отелей
-//   'pet-hotel': '#9C27B0', // фиолетовый для отелей для животных
-//   'house': '#795548', // коричневый для домов
-//   'sauna': '#F44336', // ярко-красный для саун
-//   'pansionat': '#607D8B', // серо-голубой для пансионатов
-//   'cottage': '#FFEB3B', // желтый для коттеджей
-//   'coworking': '#E91E63', // розовый для коворкингов
-//   'autocamping': '#8BC34A', // светло-зеленый для автокемпингов
-//   'rest-base': '#00BCD4', // бирюзовый для баз отдыха
-//   'default': '#1976d2' // синий по умолчанию
+//   'apart': '#EA4335',
+//   'hostel': '#34A853', 
+//   'glamping': '#FBBC05',
+//   'hotel': '#4285F4',
+//   'pet-hotel': '#9C27B0',
+//   'house': '#795548',
+//   'sauna': '#F44336',
+//   'pansionat': '#607D8B',
+//   'cottage': '#FF9800',
+//   'coworking': '#E91E63',
+//   'autocamping': '#4CAF50',
+//   'rest-base': '#00BCD4',
+//   'default': '#EA4335'
 // };
 
-// const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userLocation = null }) => {
+// const MapComponent = ({ 
+//   apartments, 
+//   onApartmentSelect, 
+//   centerMode = false, 
+//   userLocation = null,
+//   compactMode = false 
+// }) => {
 //   const mapRef = useRef(null);
 //   const googleMapRef = useRef(null);
 //   const markersRef = useRef([]);
@@ -43,7 +47,6 @@
     
 //     const categoryLower = category.toLowerCase();
     
-//     // Проверяем все возможные варианты категорий
 //     if (categoryLower.includes('apart') || categoryLower.includes('квартир')) 
 //       return CATEGORY_COLORS.apart;
 //     if (categoryLower.includes('hostel') || categoryLower.includes('хостел')) 
@@ -52,7 +55,7 @@
 //       return CATEGORY_COLORS.glamping;
 //     if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) 
 //       return CATEGORY_COLORS.hotel;
-//     if (categoryLower.includes('pet') || categoryLower.includes('тварин')) 
+//     if (categoryLower.includes('pet') || categoryLower.includes('тварин') || categoryLower.includes('animals')) 
 //       return CATEGORY_COLORS['pet-hotel'];
 //     if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) 
 //       return CATEGORY_COLORS.house;
@@ -60,36 +63,48 @@
 //       return CATEGORY_COLORS.sauna;
 //     if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) 
 //       return CATEGORY_COLORS.pansionat;
-//     if (categoryLower.includes('cottage') || categoryLower.includes('котедж')) 
+//     if (categoryLower.includes('cottage') || categoryLower.includes('котедж') || categoryLower.includes('kotedzi')) 
 //       return CATEGORY_COLORS.cottage;
-//     if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг')) 
+//     if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг') || categoryLower.includes('kavorking')) 
 //       return CATEGORY_COLORS.coworking;
-//     if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг')) 
+//     if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг') || categoryLower.includes('avtokemping')) 
 //       return CATEGORY_COLORS.autocamping;
-//     if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха')) 
+//     if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха') || categoryLower.includes('recreationcenter')) 
 //       return CATEGORY_COLORS['rest-base'];
     
 //     return CATEGORY_COLORS.default;
 //   };
 
-//   // Функция для получения иконки по категории
-//   const getCategoryIcon = (category) => {
-//     if (!category) return '🏠';
+//   // Функция для получения URL иконки маркера с ценой
+//   const getMarkerIcon = (color, price) => {
+//     // НАСТРОЙКИ СТИЛЯ МАРКЕРА
+//     const markerWidth = 70;
+//     const markerHeight = 80;
+//     const priceRectWidth = 38;
+   
+//     const priceRectHeight = 25;
+//     const priceFontSize = 14;
+//     const priceTextColor = '#D32F2F';
+//     const priceRectX = (markerWidth - priceRectWidth) / 2;
+//     const priceRectY = 12;
+//     const priceTextX = markerWidth / 2;
+//     const priceTextY = priceRectY + priceRectHeight / 2 + 5;
     
-//     const categoryLower = category.toLowerCase();
-//     if (categoryLower.includes('apart') || categoryLower.includes('квартир')) return '🏠';
-//     if (categoryLower.includes('hostel') || categoryLower.includes('хостел')) return '🛏️';
-//     if (categoryLower.includes('glamping') || categoryLower.includes('глемпінг') || categoryLower.includes('глэмпинг')) return '⛺';
-//     if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) return '🏨';
-//     if (categoryLower.includes('pet') || categoryLower.includes('тварин')) return '🐾';
-//     if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) return '🏡';
-//     if (categoryLower.includes('sauna') || categoryLower.includes('саун') || categoryLower.includes('бан')) return '🧖';
-//     if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) return '🏢';
-//     if (categoryLower.includes('cottage') || categoryLower.includes('котедж')) return '🏘️';
-//     if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг')) return '💼';
-//     if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг')) return '🚗';
-//     if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха')) return '🌲';
-//     return '🏠';
+//     const formattedPrice = price ? `${price}` : '';
+    
+//     return {
+//       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+//         <svg width="${markerWidth}" height="${markerHeight}" viewBox="0 0 ${markerWidth} ${markerHeight}" xmlns="http://www.w3.org/2000/svg">
+//           <path fill="${color}" d="M${markerWidth/2} 0C${markerWidth/2 - 12.8} 0 10 11.2 10 ${markerHeight/3.2}c0 18 25 45 25 45s25-27 25-45C60 11.2 48.8 0 35 0z"/>
+//           <rect x="${priceRectX}" y="${priceRectY}" width="${priceRectWidth}" height="${priceRectHeight}" rx="4" fill="white"/>
+//           <text x="${priceTextX}" y="${priceTextY}" text-anchor="middle" fill="${priceTextColor}" font-size="${priceFontSize}" font-weight="bold" font-family="Arial, sans-serif">
+//             ${formattedPrice}
+//           </text>
+//         </svg>
+//       `)}`,
+//       scaledSize: new window.google.maps.Size(markerWidth, markerHeight),
+//       anchor: new window.google.maps.Point(markerWidth/2, markerHeight),
+//     };
 //   };
 
 //   // Функция для загрузки Google Maps API
@@ -151,7 +166,6 @@
 
 //   // Функция для получения координат апартамента
 //   const getApartmentCoordinates = (apartment) => {
-//     // Используем реальные координаты из базы данных
 //     if (apartment.latitude && apartment.longitude) {
 //       const lat = parseFloat(apartment.latitude);
 //       const lng = parseFloat(apartment.longitude);
@@ -160,7 +174,6 @@
 //       }
 //     }
 
-//     // Геокодирование по адресу
 //     if ((apartment.city || apartment.street) && window.google) {
 //       return new Promise((resolve) => {
 //         const address = `${apartment.street || ''} ${apartment.houseNumber || ''}, ${apartment.city || ''}`.trim();
@@ -208,27 +221,17 @@
 //       'херсон': { lat: 46.6354, lng: 32.6169 },
 //       'полтава': { lat: 49.5883, lng: 34.5514 },
 //       'сумы': { lat: 50.9077, lng: 34.7981 },
-//       'чернигов': { lat: 51.4982, lng: 31.2893 }
+//       'чернигов': { lat: 51.4982, lng: 31.2893 },
+//       'крым': { lat: 45.0448, lng: 34.1000 },
+//       'симферополь': { lat: 44.9521, lng: 34.1024 },
+//       'луганск': { lat: 48.5740, lng: 39.3078 },
+//       'донецк': { lat: 48.0159, lng: 37.8028 }
 //     };
 
 //     if (!city) return { lat: 50.4501, lng: 30.5234 };
     
 //     const cityLower = city.toLowerCase().trim();
 //     return cityCoordinates[cityLower] || { lat: 50.4501, lng: 30.5234 };
-//   };
-
-//   // Функция для построения маршрута
-//   const buildRoute = (apartment) => {
-//     getApartmentCoordinates(apartment).then(coords => {
-//       let url = `https://www.google.com/maps/dir/`;
-      
-//       if (userLocation) {
-//         url += `${userLocation.lat},${userLocation.lng}/`;
-//       }
-      
-//       url += `${coords.lat},${coords.lng}`;
-//       window.open(url, '_blank');
-//     });
 //   };
 
 //   // Функция для форматирования адреса
@@ -241,6 +244,14 @@
 //     return parts.join(', ');
 //   };
 
+//   // Функция для получения основного фото
+//   const getMainPhoto = (apartment) => {
+//     if (apartment.photos && apartment.photos.length > 0) {
+//       return apartment.photos[0];
+//     }
+//     return '/placeholder-apartment.jpg';
+//   };
+
 //   const initializeMap = async () => {
 //     if (!mapRef.current || !window.google) return;
 
@@ -249,7 +260,6 @@
 //       let center = defaultCenter;
 //       const coordinates = [];
 
-//       // Получаем координаты для всех апартаментов
 //       for (const apartment of apartments) {
 //         const coords = await getApartmentCoordinates(apartment);
 //         coordinates.push(coords);
@@ -270,10 +280,11 @@
 
 //       const map = new window.google.maps.Map(mapRef.current, {
 //         center: center,
-//         zoom: apartments.length === 1 ? 14 : 6,
-//         mapTypeControl: true,
-//         streetViewControl: true,
-//         fullscreenControl: true,
+//         zoom: apartments.length === 1 ? 14 : (compactMode ? 10 : 6),
+//         mapTypeControl: !compactMode,
+//         streetViewControl: !compactMode,
+//         fullscreenControl: !compactMode,
+//         zoomControl: !compactMode,
 //         styles: [
 //           {
 //             featureType: "poi",
@@ -285,11 +296,9 @@
 
 //       googleMapRef.current = map;
 
-//       // Очищаем старые маркеры
 //       markersRef.current.forEach(marker => marker.setMap(null));
 //       markersRef.current = [];
 
-//       // Добавляем маркеры для каждого апартамента
 //       for (let i = 0; i < apartments.length; i++) {
 //         const apartment = apartments[i];
 //         const position = coordinates[i] || defaultCenter;
@@ -299,16 +308,7 @@
 //         }
 
 //         const categoryColor = getCategoryColor(apartment.category);
-
-//         // Создаем кастомную иконку маркера с цветом категории
-//         const markerIcon = {
-//           path: window.google.maps.SymbolPath.CIRCLE,
-//           fillColor: categoryColor,
-//           fillOpacity: 0.9,
-//           strokeColor: '#ffffff',
-//           strokeWeight: 2,
-//           scale: 10
-//         };
+//         const markerIcon = getMarkerIcon(categoryColor, apartment.price);
 
 //         const marker = new window.google.maps.Marker({
 //           position: position,
@@ -319,46 +319,46 @@
 //         });
 
 //         const address = formatAddress(apartment);
-//         const mainPhoto = apartment.photos && apartment.photos[0] 
-//           ? apartment.photos[0] 
-//           : '/placeholder-apartment.jpg';
+//         const mainPhoto = getMainPhoto(apartment);
+
+//         const photoHeight = compactMode ? '100px' : '140px';
+//         const windowWidth = compactMode ? '260px' : '300px';
+//         const fontSize = compactMode ? '12px' : '14px';
 
 //         const infoWindow = new window.google.maps.InfoWindow({
 //           content: `
-//             <div style="padding: 16px; max-width: 300px; font-family: Arial, sans-serif;">
-//               <div style="display: flex; align-items: center; margin-bottom: 12px;">
-//                 <span style="font-size: 24px; margin-right: 8px;">${getCategoryIcon(apartment.category)}</span>
-//                 <div>
-//                   <h3 style="margin: 0 0 4px 0; font-size: 16px; color: #1976d2; font-weight: bold;">
-//                     ${apartment.objectName || apartment.category || 'Апартаменты'}
-//                   </h3>
-//                   <div style="background: ${categoryColor}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: inline-block;">
-//                     ${apartment.category || 'Жилье'}
-//                   </div>
-//                 </div>
+//             <div style="padding: 0; max-width: ${windowWidth}; font-family: Arial, sans-serif; cursor: pointer; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+//               <div style="background: ${categoryColor}; color: white; padding: 6px 8px; text-align: center; font-weight: bold; font-size: ${fontSize}; margin: 0;">
+//                 ${apartment.category || 'Жилье'}
 //               </div>
               
 //               <img src="${mainPhoto}" 
 //                    alt="${apartment.objectName || 'Фото'}" 
-//                    style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;" />
+//                    style="width: 100%; height: ${photoHeight}; object-fit: cover; display: block;" />
               
-//               <p style="margin: 0 0 8px 0; font-size: 14px; color: #333; display: flex; align-items: center;">
-//                 <span style="color: #666; margin-right: 4px;">📍</span>
-//                 ${address}
-//               </p>
-              
-//               ${apartment.district ? `<p style="margin: 0 0 4px 0; font-size: 12px; color: #666;">Район: ${apartment.district}</p>` : ''}
-//               ${apartment.metro ? `<p style="margin: 0 0 8px 0; font-size: 12px; color: #666;">Метро: ${apartment.metro}</p>` : ''}
-              
-//               <p style="margin: 0 0 12px 0; font-size: 18px; font-weight: bold; color: #2e7d32;">
-//                 ${apartment.price ? apartment.price + ' грн/ночь' : 'Цена не указана'}
-//               </p>
-              
-//               <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${position.lat},${position.lng}', '_blank')"
-//                       style="background: #1976d2; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center;">
-//                 <span style="margin-right: 8px;">🚗</span>
-//                 Проложить маршрут
-//               </button>
+//               <div style="padding: ${compactMode ? '8px' : '12px'};">
+//                 <h3 style="margin: 0 0 6px 0; font-size: ${fontSize}; color: #1976d2; font-weight: bold; line-height: 1.3;">
+//                   ${apartment.objectName || 'Апартаменты'}
+//                 </h3>
+                
+//                 <p style="margin: 0 0 6px 0; font-size: ${parseInt(fontSize) - 2}px; color: #333; display: flex; align-items: flex-start; line-height: 1.3;">
+//                   <span style="color: #666; margin-right: 4px; flex-shrink: 0;">📍</span>
+//                   <span>${address}</span>
+//                 </p>
+                
+//                 ${apartment.district ? `<p style="margin: 0 0 3px 0; font-size: ${parseInt(fontSize) - 2}px; color: #666; line-height: 1.2;">Район: ${apartment.district}</p>` : ''}
+//                 ${apartment.metro ? `<p style="margin: 0 0 6px 0; font-size: ${parseInt(fontSize) - 2}px; color: #666; line-height: 1.2;">Метро: ${apartment.metro}</p>` : ''}
+                
+//                 <p style="margin: 0 0 8px 0; font-size: ${parseInt(fontSize) + 2}px; font-weight: bold; color: #2e7d32; line-height: 1.2;">
+//                   ${apartment.price ? apartment.price + ' грн/ночь' : 'Цена не указана'}
+//                 </p>
+                
+//                 <button onclick="event.stopPropagation(); window.open('https://www.google.com/maps/dir/?api=1&destination=${position.lat},${position.lng}', '_blank')"
+//                         style="background: #1976d2; color: white; border: none; padding: ${compactMode ? '6px 10px' : '8px 12px'}; border-radius: 4px; cursor: pointer; font-size: ${parseInt(fontSize) - 2}px; width: 100%; display: flex; align-items: center; justify-content: center; line-height: 1;">
+//                   <span style="margin-right: 6px;">🚗</span>
+//                   Проложить маршрут
+//                 </button>
+//               </div>
 //             </div>
 //           `
 //         });
@@ -370,17 +370,27 @@
           
 //           infoWindow.open(map, marker);
 //           marker.infoWindow = infoWindow;
-          
+//         });
+
+//         const handleInfoWindowClick = () => {
 //           if (onApartmentSelect) {
 //             onApartmentSelect(apartment);
 //           }
+//         };
+
+//         marker.addListener('click', () => {
+//           setTimeout(() => {
+//             const infoWindowElement = document.querySelector('.gm-style-iw');
+//             if (infoWindowElement) {
+//               infoWindowElement.addEventListener('click', handleInfoWindowClick);
+//             }
+//           }, 100);
 //         });
 
 //         marker.infoWindow = infoWindow;
 //         markersRef.current.push(marker);
 //       }
 
-//       // Подгоняем карту под маркеры
 //       if (markersRef.current.length > 0 && !centerMode) {
 //         const bounds = new window.google.maps.LatLngBounds();
 //         markersRef.current.forEach(marker => {
@@ -436,7 +446,7 @@
 //       });
 //       markersRef.current = [];
 //     };
-//   }, [apartments, centerMode, userLocation]);
+//   }, [apartments, centerMode, userLocation, compactMode]);
 
 //   if (mapError) {
 //     return (
@@ -516,24 +526,30 @@ let googleMapsLoading = false;
 let googleMapsLoaded = false;
 let googleMapsLoadCallbacks = [];
 
-// Цвета для разных категорий (стандартные маркеры Google Maps)
+// Цвета для разных категорий
 const CATEGORY_COLORS = {
-  'apart': '#EA4335', // красный для квартир
-  'hostel': '#34A853', // зеленый для хостелов
-  'glamping': '#FBBC05', // желтый для глемпинга
-  'hotel': '#4285F4', // синий для отелей
-  'pet-hotel': '#9C27B0', // фиолетовый для отелей для животных
-  'house': '#795548', // коричневый для домов
-  'sauna': '#F44336', // ярко-красный для саун
-  'pansionat': '#607D8B', // серо-голубой для пансионатов
-  'cottage': '#FF9800', // оранжевый для коттеджей
-  'coworking': '#E91E63', // розовый для коворкингов
-  'autocamping': '#4CAF50', // зеленый для автокемпингов
-  'rest-base': '#00BCD4', // бирюзовый для баз отдыха
-  'default': '#EA4335' // красный по умолчанию
+  'apart': '#EA4335',
+  'hostel': '#34A853', 
+  'glamping': '#FBBC05',
+  'hotel': '#4285F4',
+  'pet-hotel': '#9C27B0',
+  'house': '#795548',
+  'sauna': '#F44336',
+  'pansionat': '#607D8B',
+  'cottage': '#FF9800',
+  'coworking': '#E91E63',
+  'autocamping': '#4CAF50',
+  'rest-base': '#00BCD4',
+  'default': '#EA4335'
 };
 
-const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userLocation = null }) => {
+const MapComponent = ({ 
+  apartments, 
+  onApartmentSelect, 
+  centerMode = false, 
+  userLocation = null,
+  compactMode = false 
+}) => {
   const mapRef = useRef(null);
   const googleMapRef = useRef(null);
   const markersRef = useRef([]);
@@ -554,7 +570,7 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       return CATEGORY_COLORS.glamping;
     if (categoryLower.includes('hotel') || categoryLower.includes('готел') || categoryLower.includes('гостиниц')) 
       return CATEGORY_COLORS.hotel;
-    if (categoryLower.includes('pet') || categoryLower.includes('тварин')) 
+    if (categoryLower.includes('pet') || categoryLower.includes('тварин') || categoryLower.includes('animals')) 
       return CATEGORY_COLORS['pet-hotel'];
     if (categoryLower.includes('house') || categoryLower.includes('будинок') || categoryLower.includes('дом')) 
       return CATEGORY_COLORS.house;
@@ -562,29 +578,45 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       return CATEGORY_COLORS.sauna;
     if (categoryLower.includes('pansionat') || categoryLower.includes('пансіонат') || categoryLower.includes('пансионат')) 
       return CATEGORY_COLORS.pansionat;
-    if (categoryLower.includes('cottage') || categoryLower.includes('котедж')) 
+    if (categoryLower.includes('cottage') || categoryLower.includes('котедж') || categoryLower.includes('kotedzi')) 
       return CATEGORY_COLORS.cottage;
-    if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг')) 
+    if (categoryLower.includes('coworking') || categoryLower.includes('коворкінг') || categoryLower.includes('коворкинг') || categoryLower.includes('kavorking')) 
       return CATEGORY_COLORS.coworking;
-    if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг')) 
+    if (categoryLower.includes('autocamping') || categoryLower.includes('автокемпінг') || categoryLower.includes('автокемпинг') || categoryLower.includes('avtokemping')) 
       return CATEGORY_COLORS.autocamping;
-    if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха')) 
+    if (categoryLower.includes('rest-base') || categoryLower.includes('база відпочинку') || categoryLower.includes('база отдыха') || categoryLower.includes('recreationcenter')) 
       return CATEGORY_COLORS['rest-base'];
     
     return CATEGORY_COLORS.default;
   };
 
-  // Функция для получения URL иконки маркера
-  const getMarkerIcon = (color) => {
+  // Функция для получения URL иконки маркера с ценой
+  const getMarkerIcon = (color, price) => {
+    const markerWidth = 70;
+    const markerHeight = 80;
+    const priceRectWidth = 38;
+    const priceRectHeight = 25;
+    const priceFontSize = 14;
+    const priceTextColor = '#D32F2F';
+    const priceRectX = (markerWidth - priceRectWidth) / 2;
+    const priceRectY = 12;
+    const priceTextX = markerWidth / 2;
+    const priceTextY = priceRectY + priceRectHeight / 2 + 5;
+    
+    const formattedPrice = price ? `${price}` : '';
+    
     return {
       url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-        <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-          <path fill="${color}" d="M20 0C12.3 0 6 6.3 6 14c0 10.5 14 26 14 26s14-15.5 14-26C34 6.3 27.7 0 20 0z"/>
-          <circle fill="white" cx="20" cy="14" r="6"/>
+        <svg width="${markerWidth}" height="${markerHeight}" viewBox="0 0 ${markerWidth} ${markerHeight}" xmlns="http://www.w3.org/2000/svg">
+          <path fill="${color}" d="M${markerWidth/2} 0C${markerWidth/2 - 12.8} 0 10 11.2 10 ${markerHeight/3.2}c0 18 25 45 25 45s25-27 25-45C60 11.2 48.8 0 35 0z"/>
+          <rect x="${priceRectX}" y="${priceRectY}" width="${priceRectWidth}" height="${priceRectHeight}" rx="4" fill="white"/>
+          <text x="${priceTextX}" y="${priceTextY}" text-anchor="middle" fill="${priceTextColor}" font-size="${priceFontSize}" font-weight="bold" font-family="Arial, sans-serif">
+            ${formattedPrice}
+          </text>
         </svg>
       `)}`,
-      scaledSize: new window.google.maps.Size(40, 40),
-      anchor: new window.google.maps.Point(20, 40),
+      scaledSize: new window.google.maps.Size(markerWidth, markerHeight),
+      anchor: new window.google.maps.Point(markerWidth/2, markerHeight),
     };
   };
 
@@ -647,7 +679,6 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
 
   // Функция для получения координат апартамента
   const getApartmentCoordinates = (apartment) => {
-    // Используем реальные координаты из базы данных
     if (apartment.latitude && apartment.longitude) {
       const lat = parseFloat(apartment.latitude);
       const lng = parseFloat(apartment.longitude);
@@ -656,7 +687,6 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       }
     }
 
-    // Геокодирование по адресу
     if ((apartment.city || apartment.street) && window.google) {
       return new Promise((resolve) => {
         const address = `${apartment.street || ''} ${apartment.houseNumber || ''}, ${apartment.city || ''}`.trim();
@@ -704,7 +734,11 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       'херсон': { lat: 46.6354, lng: 32.6169 },
       'полтава': { lat: 49.5883, lng: 34.5514 },
       'сумы': { lat: 50.9077, lng: 34.7981 },
-      'чернигов': { lat: 51.4982, lng: 31.2893 }
+      'чернигов': { lat: 51.4982, lng: 31.2893 },
+      'крым': { lat: 45.0448, lng: 34.1000 },
+      'симферополь': { lat: 44.9521, lng: 34.1024 },
+      'луганск': { lat: 48.5740, lng: 39.3078 },
+      'донецк': { lat: 48.0159, lng: 37.8028 }
     };
 
     if (!city) return { lat: 50.4501, lng: 30.5234 };
@@ -723,6 +757,14 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
     return parts.join(', ');
   };
 
+  // Функция для получения основного фото
+  const getMainPhoto = (apartment) => {
+    if (apartment.photos && apartment.photos.length > 0) {
+      return apartment.photos[0];
+    }
+    return '/placeholder-apartment.jpg';
+  };
+
   const initializeMap = async () => {
     if (!mapRef.current || !window.google) return;
 
@@ -731,7 +773,6 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       let center = defaultCenter;
       const coordinates = [];
 
-      // Получаем координаты для всех апартаментов
       for (const apartment of apartments) {
         const coords = await getApartmentCoordinates(apartment);
         coordinates.push(coords);
@@ -750,12 +791,14 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
         }
       }
 
+      // УВЕЛИЧИВАЕМ ZOOM ДЛЯ ЛУЧШЕЙ ВИДИМОСТИ
       const map = new window.google.maps.Map(mapRef.current, {
         center: center,
-        zoom: apartments.length === 1 ? 14 : 6,
-        mapTypeControl: true,
-        streetViewControl: true,
-        fullscreenControl: true,
+        zoom: apartments.length === 1 ? 19 : (compactMode ? 14 : 80),
+        mapTypeControl: !compactMode,
+        streetViewControl: !compactMode,
+        fullscreenControl: !compactMode,
+        zoomControl: !compactMode,
         styles: [
           {
             featureType: "poi",
@@ -767,11 +810,9 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
 
       googleMapRef.current = map;
 
-      // Очищаем старые маркеры
       markersRef.current.forEach(marker => marker.setMap(null));
       markersRef.current = [];
 
-      // Добавляем маркеры для каждого апартамента
       for (let i = 0; i < apartments.length; i++) {
         const apartment = apartments[i];
         const position = coordinates[i] || defaultCenter;
@@ -781,7 +822,7 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
         }
 
         const categoryColor = getCategoryColor(apartment.category);
-        const markerIcon = getMarkerIcon(categoryColor);
+        const markerIcon = getMarkerIcon(categoryColor, apartment.price);
 
         const marker = new window.google.maps.Marker({
           position: position,
@@ -792,49 +833,43 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
         });
 
         const address = formatAddress(apartment);
-        const mainPhoto = apartment.photos && apartment.photos[0] 
-          ? apartment.photos[0] 
-          : '/placeholder-apartment.jpg';
+        const mainPhoto = getMainPhoto(apartment);
+
+        const photoHeight = compactMode ? '100px' : '140px';
+        const windowWidth = compactMode ? '260px' : '300px';
+        const fontSize = compactMode ? '12px' : '14px';
 
         const infoWindow = new window.google.maps.InfoWindow({
           content: `
-            <div style="padding: 0; max-width: 280px; font-family: Arial, sans-serif; cursor: pointer; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-              <!-- КАТЕГОРИЯ В ВЕРХУ БЕЗ ОТСТУПОВ -->
-              <div style="background: ${categoryColor}; color: white; padding: 8px 12px; text-align: center; font-weight: bold; font-size: 14px;">
+            <div style="padding: 0; max-width: ${windowWidth}; font-family: Arial, sans-serif; cursor: pointer; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+              <div style="background: ${categoryColor}; color: white; padding: 6px 8px; text-align: center; font-weight: bold; font-size: ${fontSize}; margin: 0;">
                 ${apartment.category || 'Жилье'}
               </div>
               
-              <!-- ФОТО -->
               <img src="${mainPhoto}" 
                    alt="${apartment.objectName || 'Фото'}" 
-                   style="width: 100%; height: 160px; object-fit: cover; display: block;" />
+                   style="width: 100%; height: ${photoHeight}; object-fit: cover; display: block;" />
               
-              <!-- СОДЕРЖИМОЕ -->
-              <div style="padding: 12px;">
-                <!-- ЗАГОЛОВОК -->
-                <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1976d2; font-weight: bold; line-height: 1.3;">
+              <div style="padding: ${compactMode ? '8px' : '12px'};">
+                <h3 style="margin: 0 0 6px 0; font-size: ${fontSize}; color: #1976d2; font-weight: bold; line-height: 1.3;">
                   ${apartment.objectName || 'Апартаменты'}
                 </h3>
                 
-                <!-- АДРЕС -->
-                <p style="margin: 0 0 8px 0; font-size: 14px; color: #333; display: flex; align-items: flex-start; line-height: 1.4;">
-                  <span style="color: #666; margin-right: 6px; flex-shrink: 0;">📍</span>
+                <p style="margin: 0 0 6px 0; font-size: ${parseInt(fontSize) - 2}px; color: #333; display: flex; align-items: flex-start; line-height: 1.3;">
+                  <span style="color: #666; margin-right: 4px; flex-shrink: 0;">📍</span>
                   <span>${address}</span>
                 </p>
                 
-                <!-- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ -->
-                ${apartment.district ? `<p style="margin: 0 0 4px 0; font-size: 13px; color: #666; line-height: 1.3;">Район: ${apartment.district}</p>` : ''}
-                ${apartment.metro ? `<p style="margin: 0 0 8px 0; font-size: 13px; color: #666; line-height: 1.3;">Метро: ${apartment.metro}</p>` : ''}
+                ${apartment.district ? `<p style="margin: 0 0 3px 0; font-size: ${parseInt(fontSize) - 2}px; color: #666; line-height: 1.2;">Район: ${apartment.district}</p>` : ''}
+                ${apartment.metro ? `<p style="margin: 0 0 6px 0; font-size: ${parseInt(fontSize) - 2}px; color: #666; line-height: 1.2;">Метро: ${apartment.metro}</p>` : ''}
                 
-                <!-- ЦЕНА -->
-                <p style="margin: 0 0 12px 0; font-size: 18px; font-weight: bold; color: #2e7d32; line-height: 1.2;">
+                <p style="margin: 0 0 8px 0; font-size: ${parseInt(fontSize) + 2}px; font-weight: bold; color: #2e7d32; line-height: 1.2;">
                   ${apartment.price ? apartment.price + ' грн/ночь' : 'Цена не указана'}
                 </p>
                 
-                <!-- КНОПКА ПРОЛОЖИТЬ МАРШРУТ -->
                 <button onclick="event.stopPropagation(); window.open('https://www.google.com/maps/dir/?api=1&destination=${position.lat},${position.lng}', '_blank')"
-                        style="background: #1976d2; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                  <span style="margin-right: 8px;">🚗</span>
+                        style="background: #1976d2; color: white; border: none; padding: ${compactMode ? '6px 10px' : '8px 12px'}; border-radius: 4px; cursor: pointer; font-size: ${parseInt(fontSize) - 2}px; width: 100%; display: flex; align-items: center; justify-content: center; line-height: 1;">
+                  <span style="margin-right: 6px;">🚗</span>
                   Проложить маршрут
                 </button>
               </div>
@@ -842,9 +877,7 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
           `
         });
 
-        // Обработчик клика на маркер
         marker.addListener('click', () => {
-          // Закрываем все открытые infoWindow
           markersRef.current.forEach(m => {
             if (m.infoWindow) m.infoWindow.close();
           });
@@ -853,14 +886,12 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
           marker.infoWindow = infoWindow;
         });
 
-        // Обработчик клика на информационное окно (переход к детальному описанию)
         const handleInfoWindowClick = () => {
           if (onApartmentSelect) {
             onApartmentSelect(apartment);
           }
         };
 
-        // Добавляем обработчик после открытия infoWindow
         marker.addListener('click', () => {
           setTimeout(() => {
             const infoWindowElement = document.querySelector('.gm-style-iw');
@@ -874,7 +905,6 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
         markersRef.current.push(marker);
       }
 
-      // Подгоняем карту под маркеры
       if (markersRef.current.length > 0 && !centerMode) {
         const bounds = new window.google.maps.LatLngBounds();
         markersRef.current.forEach(marker => {
@@ -886,8 +916,8 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
         });
 
         const zoom = map.getZoom();
-        if (zoom > 16) {
-          map.setZoom(16);
+        if (zoom > 15) {
+          map.setZoom(15);
         }
       }
 
@@ -930,7 +960,7 @@ const MapComponent = ({ apartments, onApartmentSelect, centerMode = false, userL
       });
       markersRef.current = [];
     };
-  }, [apartments, centerMode, userLocation]);
+  }, [apartments, centerMode, userLocation, compactMode]);
 
   if (mapError) {
     return (

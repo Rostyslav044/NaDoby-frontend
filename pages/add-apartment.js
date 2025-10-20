@@ -240,7 +240,8 @@ function AddApartmentForm() {
       const response = await fetch(`http://localhost:3000/api/v1/apartments/${id}`);
       if (!response.ok) throw new Error('Ошибка загрузки данных');
       
-      const apartmentData = await response.json();
+      const resonseData = await response.json();
+       const apartmentData = resonseData?.apartment;
       console.log('Загруженные данные:', apartmentData); // Для отладки
       
       setFormData({

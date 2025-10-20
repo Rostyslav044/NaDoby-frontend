@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Forest, Hiking, Spa, CheckCircle, ArrowBack, Terrain, Cottage, OutdoorGrill, Pets, DirectionsBike } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const RESORT_CONTENT = {
   ua: {
@@ -232,7 +233,7 @@ function ResortGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="campGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

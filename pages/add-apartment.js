@@ -187,52 +187,7 @@ function AddApartmentForm() {
     }
   };
 
-  // const fetchApartmentData = async (id) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/api/v1/apartments/${id}`);
-  //     if (!response.ok) throw new Error('Ошибка загрузки данных');
-      
-  //     const apartmentData = await response.json();
-      
-  //     setFormData({
-  //       city: apartmentData.city || '',
-  //       street: apartmentData.street || '',
-  //       district: apartmentData.district || '',
-  //       metro: apartmentData.metro || '',
-  //       hasMetro: apartmentData.hasMetro || false,
-  //       description: apartmentData.description || '',
-  //       price: apartmentData.price || '',
-  //       houseNumber: apartmentData.houseNumber || '',
-  //       category: apartmentData.category || '',
-  //       objectName: apartmentData.objectName || '',
-  //       latitude: apartmentData.latitude || null,
-  //       longitude: apartmentData.longitude || null,
-  //       originalCity: apartmentData.originalCity || '',
-  //       region: apartmentData.region || '',
-  //     });
 
-  //     setUploadImages(apartmentData.photos || []);
-      
-  //     if (apartmentData.latitude && apartmentData.longitude) {
-  //       setSelectedLocation({
-  //         lat: apartmentData.latitude,
-  //         lng: apartmentData.longitude
-  //       });
-  //       setMapCenter({
-  //         lat: apartmentData.latitude,
-  //         lng: apartmentData.longitude
-  //       });
-  //     }
-
-  //     if (infoRef.current && apartmentData) {
-  //       infoRef.current.setData(apartmentData);
-  //     }
-
-  //   } catch (error) {
-  //     console.error('Ошибка загрузки данных объявления:', error);
-  //     alert('Не удалось загрузить данные для редактирования');
-  //   }
-  // };
 
 
   const fetchApartmentData = async (id) => {
@@ -406,11 +361,24 @@ function AddApartmentForm() {
     }
   };
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   console.log(name);
+  //    console.log(value);
+  //   setFormData(prev => ({ ...prev, [name]: value }));
+  //   setErrors(prev => ({ ...prev, [name]: false }));
+  // };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(name);
-     console.log(value);
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Для поля district делаем первую букву заглавной
+    const processedValue = name === 'district' 
+      ? value.charAt(0).toUpperCase() + value.slice(1)
+      : value;
+    
+    setFormData(prev => ({ ...prev, [name]: processedValue }));
     setErrors(prev => ({ ...prev, [name]: false }));
   };
 

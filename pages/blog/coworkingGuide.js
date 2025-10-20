@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { Workspaces, Wifi, Coffee, MeetingRoom, Event, Pets, LocalCafe, Print, Lock, ArrowBack, CheckCircle  } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const COWORKING_CONTENT = {
   ua: {
@@ -320,7 +321,7 @@ function CoworkingGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="coworkingGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

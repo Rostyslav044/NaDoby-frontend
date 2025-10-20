@@ -7,6 +7,7 @@ import { store } from "@/app/store"
 import { Provider } from "react-redux"
 import { Box, Typography, Container, Button, Chip, List, ListItem, ListItemIcon, Paper, useTheme, useMediaQuery, Grid } from '@mui/material'
 import Link from 'next/link'
+import RelatedPosts from './components/RelatedPosts'
 import { 
   Pets,
   Home,
@@ -395,7 +396,7 @@ function PetHotelGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="petHotelGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

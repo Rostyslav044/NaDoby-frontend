@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Spa, MedicalServices, HotTub, CheckCircle, ArrowBack, Water, HealthAndSafety, Bathtub, Thermostat } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const SAUNA_CONTENT = {
   ua: {
@@ -233,7 +234,7 @@ function SaunaGuide() {
               </Box>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="saunaGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

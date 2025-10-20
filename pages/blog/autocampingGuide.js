@@ -7,6 +7,7 @@ import { store } from "@/app/store"
 import { Provider } from "react-redux"
 import { Box, Typography, Container, Button, Chip, List, ListItem, ListItemIcon, Paper, useTheme, useMediaQuery, Grid } from '@mui/material'
 import Link from 'next/link'
+import RelatedPosts from './components/RelatedPosts'
 import { 
   DirectionsCar,
   Place,
@@ -346,7 +347,7 @@ function AutocampingGuide() {
                 ))}
               </Grid>
             </Box>
-
+          
             <Box sx={{ mb: 4, mt: 10  }}>
               <Typography variant="h5" component="h2" sx={{
                 fontSize: isMobile ? '1.2rem' : '1.5rem',
@@ -400,6 +401,8 @@ function AutocampingGuide() {
               </List>
             </Box>
           </Paper>
+
+          <RelatedPosts currentSlug="autocampingGuide" />
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>

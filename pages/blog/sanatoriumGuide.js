@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { MedicalServices, Spa, Pool, FitnessCenter, Restaurant, Nature, CheckCircle, ArrowBack } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
-
+import RelatedPosts from './components/RelatedPosts'
 
 const SANATORIUM_CONTENT = {
   ua: {
@@ -321,7 +321,7 @@ function SanatoriumGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="sanatoriumGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

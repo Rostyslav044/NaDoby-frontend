@@ -13,6 +13,7 @@ import Link from 'next/link'
 import { Warning, Security, VerifiedUser, Google, ContactMail, Public, Map, ArrowBack } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const BLOG_CONTENT = {
   ua: {
@@ -247,7 +248,7 @@ function ScamGuide() {
               {t.reportText}
             </Typography>
           </Paper>
-
+          <RelatedPosts currentSlug="scams" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

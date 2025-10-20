@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Home, Nature, Groups, FamilyRestroom, Pets, CheckCircle, ArrowBack, LocalFireDepartment, OutdoorGrill, Wifi, AcUnit } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const HOUSE_CONTENT = {
   ua: {
@@ -223,7 +224,7 @@ function HouseGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="houseGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

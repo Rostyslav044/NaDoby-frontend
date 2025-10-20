@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { Home, Groups, Celebration, Restaurant, Pool, Nature, CheckCircle, ArrowBack, OutdoorGrill } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
-
+import RelatedPosts from './components/RelatedPosts'
 const COTTAGE_COMPLEX_CONTENT = {
   ua: {
     title: "Котеджні містечка для великих компаній",
@@ -320,7 +320,7 @@ function CottageComplexGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="cottageComplexGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

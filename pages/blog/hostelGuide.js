@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Home, Hotel, Groups, Savings, CheckCircle, ArrowBack, Wifi, Public, Security, EmojiPeople } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const HOSTEL_CONTENT = {
   ua: {
@@ -213,7 +214,7 @@ function HostelGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="hostelGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

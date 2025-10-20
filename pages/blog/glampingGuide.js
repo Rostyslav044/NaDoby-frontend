@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { Home, Nature, FamilyRestroom, Pets, CheckCircle, ArrowBack, LocalFireDepartment, OutdoorGrill, AcUnit } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 // import Image from 'next/image'
 
 const GLAMPING_CONTENT = {
@@ -327,7 +328,7 @@ function GlampingGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="glampingGuide" />
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>
               <Button 

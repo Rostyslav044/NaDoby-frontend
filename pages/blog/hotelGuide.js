@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Star, AccessTime, Restaurant, CleaningServices, LocalLaundryService, Spa, Warning, VerifiedUser, ArrowBack } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
+import RelatedPosts from './components/RelatedPosts'
 
 const HOTEL_CONTENT = {
   ua: {
@@ -228,7 +229,7 @@ function HotelGuide() {
               </List>
             </Box>
           </Paper>
-
+          <RelatedPosts currentSlug="hotelGuide" />
           {/* Кнопка "Назад в блог" */}
           <Box sx={{ textAlign: 'center', mt: 2 }}>
             <Link href="/blog" passHref legacyBehavior>

@@ -368,21 +368,27 @@ const ApartmentCardComponent = ({
             />
 
             {photos.length > 1 && (
-              <Badge
-                badgeContent={`${currentIndex + 1}/${photos.length}`}
-                color="primary"
-                sx={{
-                  position: 'absolute',
-                  bottom: 10,
-                  right: 12,
-                  '& .MuiBadge-badge': {
-                    bgcolor: 'rgba(0,0,0,0.6)',
-                    color: '#fff',
-                    fontSize: '0.75rem',
-                    px: 1,
-                  },
-                }}
-              />
+           
+<Badge
+  badgeContent={`${currentIndex + 1}/${photos.length}`}
+  color="primary"
+  sx={{
+    position: 'absolute',
+    bottom: { xs: 24, sm: 20 },
+    right: { xs: 30, sm: 20 }, // ЕЩЕ БОЛЬШЕ ОТСТУП СПРАВА
+    '& .MuiBadge-badge': {
+      bgcolor: 'rgba(0,0,0,0.7)',
+      color: '#fff',
+      fontSize: '0.7rem',
+      fontWeight: 'bold',
+      px: 1,
+      py: 0.5,
+      borderRadius: '16px',
+      border: '1px solid rgba(255,255,255,0.3)',
+    },
+  }}
+/>
+
             )}
 
             {photos.length > 1 && (

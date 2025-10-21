@@ -374,7 +374,7 @@ const ApartmentCardComponent = ({
   color="primary"
   sx={{
     position: 'absolute',
-    bottom: { xs: 24, sm: 20 },
+    bottom: { xs: 40, sm: 13 },
     right: { xs: 30, sm: 20 }, // ЕЩЕ БОЛЬШЕ ОТСТУП СПРАВА
     '& .MuiBadge-badge': {
       bgcolor: 'rgba(0,0,0,0.7)',

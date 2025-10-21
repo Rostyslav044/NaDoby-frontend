@@ -1075,13 +1075,17 @@ import {
   Avatar,
   List,
   ListItem,
-  ListItemText,
+  
   ListItemAvatar,
   useMediaQuery,
   Snackbar,
   Alert,
   Dialog,
   DialogContent,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -1110,6 +1114,10 @@ import {
   ReportProblem as ReportIcon,
   Feedback as FeedbackIcon,
   Warning as WarningIcon,
+  WhatsApp,
+  Telegram,
+  Email,
+  ContentCopy,
 } from "@mui/icons-material";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import Header from "@/app/components/Header";
@@ -1179,6 +1187,13 @@ const translations = {
     leaveFeedback: "Залишити відгук про житло",
     reportProblem: "У мене виникли складнощі при проживанні",
     actionSuccess: "Дякуємо за ваше повідомлення!",
+    shareButton: "Поділитися",
+shareViber: "Viber",
+shareTelegram: "Telegram", 
+shareWhatsApp: "WhatsApp",
+shareEmail: "Email",
+copyLink: "Копіювати посилання",
+linkCopied: "Посилання скопійовано!",
     categories: {
       Квартира: "Квартира",
       Гостиница: "Готель",
@@ -1313,6 +1328,13 @@ const translations = {
     leaveFeedback: "Оставить отзыв о жилье",
     reportProblem: "У меня возникли сложности при проживании",
     actionSuccess: "Спасибо за ваше сообщение!",
+    shareButton: "Поделиться",
+shareViber: "Viber",
+shareTelegram: "Telegram",
+shareWhatsApp: "WhatsApp", 
+shareEmail: "Email",
+copyLink: "Копировать ссылку",
+linkCopied: "Ссылка скопирована!",
     categories: {
       Квартира: "Квартира",
       Гостиница: "Гостиница",
@@ -1397,6 +1419,20 @@ const translations = {
     },
   },
 };
+const ViberIcon = () => (
+  <img 
+    src="/viber.png" 
+    alt="Viber" 
+    style={{ 
+      width: 20, 
+      height: 20,
+      objectFit: "contain",
+      display: "block",
+      filter: "grayscale(100%)"
+      
+    }} 
+  />
+);
 
 const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
   const params = useParams();
@@ -1411,6 +1447,7 @@ const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
   });
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const autoCloseTimer = useRef(null);
+  const [shareAnchorEl, setShareAnchorEl] = useState(null);
 
   const { currentLanguage } = useLanguage();
   const t = translations[currentLanguage];
@@ -1560,6 +1597,21 @@ const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
       }
     }
   };
+  // const handleShare = () => {
+  //   if (navigator.share) {
+  //     navigator
+  //       .share({
+  //         title: apartment.name || t.shareTitle,
+  //         text: `${t.shareText} ${apartment.name}`,
+  //         url: window.location.href,
+  //       })
+  //       .catch(console.error);
+  //   } else {
+  //     navigator.clipboard.writeText(window.location.href);
+  //     alert(t.copyLink);
+  //   }
+  // };
+
   const handleShare = () => {
     if (navigator.share) {
       navigator
@@ -1683,7 +1735,7 @@ const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
             </IconButton>
           </Tooltip>
 
-          <Tooltip
+          {/* <Tooltip
             title={currentLanguage === "ua" ? "Поділитися" : "Поделиться"}
             arrow
           >
@@ -1696,7 +1748,87 @@ const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
             >
               <ShareIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
+
+<Tooltip title={t.shareButton} arrow>
+  <IconButton
+    onClick={(e) => setShareAnchorEl(e.currentTarget)}
+    sx={{
+      bgcolor: "rgba(255,255,255,0.9)",
+      "&:hover": { bgcolor: "rgba(255,255,255,1)" },
+    }}
+  >
+    <ShareIcon />
+  </IconButton>
+</Tooltip>
+
+<Menu
+  anchorEl={shareAnchorEl}
+  open={Boolean(shareAnchorEl)}
+  onClose={() => setShareAnchorEl(null)}
+>
+  <MenuItem
+    onClick={() => {
+      window.open(`viber://forward?text=${encodeURIComponent(t.shareText + ' ' + window.location.href)}`, '_blank');
+      setShareAnchorEl(null);
+    }}
+  >
+    <ListItemIcon>
+      <ViberIcon />
+    </ListItemIcon>
+    <ListItemText>{t.shareViber}</ListItemText>
+  </MenuItem>
+
+  <MenuItem
+    onClick={() => {
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(t.shareText)}`, '_blank');
+      setShareAnchorEl(null);
+    }}
+  >
+    <ListItemIcon>
+      <Telegram />
+    </ListItemIcon>
+    <ListItemText>{t.shareTelegram}</ListItemText>
+  </MenuItem>
+
+  <MenuItem
+    onClick={() => {
+      window.open(`https://wa.me/?text=${encodeURIComponent(t.shareText + ' ' + window.location.href)}`, '_blank');
+      setShareAnchorEl(null);
+    }}
+  >
+    <ListItemIcon>
+      <WhatsApp />
+    </ListItemIcon>
+    <ListItemText>{t.shareWhatsApp}</ListItemText>
+  </MenuItem>
+
+  <MenuItem
+    onClick={() => {
+      window.open(`mailto:?subject=${encodeURIComponent(t.shareTitle)}&body=${encodeURIComponent(t.shareText + ' ' + window.location.href)}`, '_blank');
+      setShareAnchorEl(null);
+    }}
+  >
+    <ListItemIcon>
+      <Email />
+    </ListItemIcon>
+    <ListItemText>{t.shareEmail}</ListItemText>
+  </MenuItem>
+
+  <MenuItem
+    onClick={() => {
+      navigator.clipboard.writeText(window.location.href);
+      showSnackbar(t.linkCopied, "success");
+      setShareAnchorEl(null);
+    }}
+  >
+    <ListItemIcon>
+      <ContentCopy />
+    </ListItemIcon>
+    <ListItemText>{t.copyLink}</ListItemText>
+  </MenuItem>
+</Menu>
+
         </Box>
       </Box>
 

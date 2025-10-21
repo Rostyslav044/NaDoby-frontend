@@ -361,11 +361,18 @@ function AddApartmentForm() {
     }
   };
 
+  
+
+
   // const handleInputChange = (e) => {
   //   const { name, value } = e.target;
-  //   console.log(name);
-  //    console.log(value);
-  //   setFormData(prev => ({ ...prev, [name]: value }));
+    
+  //   // Для поля district делаем первую букву заглавной
+  //   const processedValue = name === 'district' 
+  //     ? value.charAt(0).toUpperCase() + value.slice(1)
+  //     : value;
+    
+  //   setFormData(prev => ({ ...prev, [name]: processedValue }));
   //   setErrors(prev => ({ ...prev, [name]: false }));
   // };
 
@@ -373,8 +380,9 @@ function AddApartmentForm() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Для поля district делаем первую букву заглавной
-    const processedValue = name === 'district' 
+    // Для полей objectName, description и district делаем первую букву заглавной
+    const fieldsToCapitalize = ['objectName', 'description', 'district'];
+    const processedValue = fieldsToCapitalize.includes(name) 
       ? value.charAt(0).toUpperCase() + value.slice(1)
       : value;
     

@@ -1,4 +1,6 @@
 
+
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -16,6 +18,7 @@ import {
   DialogTitle,
   IconButton,
   Alert,
+  Snackbar,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { LanguageProvider, useLanguage } from '@/app/LanguageContext';
@@ -26,6 +29,8 @@ import { store } from '@/app/store';
 import { SessionProvider } from 'next-auth/react';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
+import { useFavorites } from '@/app/hooks/useFavorites';
+import { FavoritesProvider } from '@/app/hooks/FavoritesContext'; 
 
 // Импортируем иконки по отдельности
 import LocationOn from '@mui/icons-material/LocationOn';
@@ -103,9 +108,17 @@ const SearchResultsContent = () => {
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [foundCategories, setFoundCategories] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   const router = useRouter();
   const { currentLanguage } = useLanguage();
+  
+  // ДОБАВЛЯЕМ ХУК ИЗБРАННОГО - ВАЖНО: получаем и isFavorite и toggleFavorite
+  const { isFavorite, toggleFavorite, loading: favoritesLoading } = useFavorites();
 
   const translations = {
     ua: {
@@ -124,6 +137,10 @@ const SearchResultsContent = () => {
       close: 'Закрити',
       showOnMap: 'Показати на карті',
       categoriesOnMap: 'Категорії на карті',
+      favoriteAdd: 'Додано в обране',
+      favoriteRemove: 'Видалено з обраного',
+      favoriteError: 'Помилка при оновленні обраного',
+      loginRequired: 'Увійдіть, щоб додати в обране',
       categories: {
         'apart': 'Квартира',
         'hostel': 'Хостел', 
@@ -160,6 +177,10 @@ const SearchResultsContent = () => {
       close: 'Закрыть',
       showOnMap: 'Показать на карте',
       categoriesOnMap: 'Категории на карте',
+      favoriteAdd: 'Добавлено в избранное',
+      favoriteRemove: 'Удалено из избранного',
+      favoriteError: 'Ошибка при обновлении избранного',
+      loginRequired: 'Войдите, чтобы добавить в избранное',
       categories: {
         'apart': 'Квартира',
         'hostel': 'Хостел',
@@ -188,6 +209,43 @@ const SearchResultsContent = () => {
     if (!category) return category;
     const normalizedCategory = category.toLowerCase().trim();
     return t.categories[category] || t.categories[normalizedCategory] || category;
+  };
+
+  // Функция для обработки добавления/удаления из избранного
+  const handleToggleFavorite = async (apartmentId) => {
+    try {
+      const userProfile = localStorage.getItem('user_profile');
+      if (!userProfile) {
+        setSnackbar({
+          open: true,
+          message: t.loginRequired,
+          severity: 'warning',
+        });
+        return;
+      }
+
+      const wasFavorite = isFavorite(apartmentId);
+      await toggleFavorite(apartmentId);
+      
+      // Показываем сообщение в зависимости от действия
+      setSnackbar({
+        open: true,
+        message: wasFavorite ? t.favoriteRemove : t.favoriteAdd,
+        severity: 'success',
+      });
+      
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      setSnackbar({
+        open: true,
+        message: t.favoriteError,
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   useEffect(() => {
@@ -424,6 +482,8 @@ const SearchResultsContent = () => {
             <Grid item xs={12} sm={6} md={4} key={apartment._id}>
               <ApartmentCard
                 apartment={apartment}
+                isFavorite={isFavorite(apartment._id)} // Передаем статус избранного
+                toggleFavorite={() => handleToggleFavorite(apartment._id)} // Передаем функцию с обработкой алертов
                 showCreateUserDialog={() => {}}
                 onShowOnMap={() => setSelectedApartment(apartment)}
                 onClick={() => handleApartmentSelect(apartment)}
@@ -541,20 +601,51 @@ const SearchResultsContent = () => {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* Snackbar для уведомлений об избранном */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
 // Главный компонент страницы с провайдерами
+// export default function Search() {
+//   return (
+//     <Providers store={store}>
+//       <LanguageProvider>
+//         <SessionProvider>
+//           <Header />
+//           <SearchResultsContent />
+//           <Footer />
+//         </SessionProvider>
+//       </LanguageProvider>
+//     </Providers>
+//   );
+// }
+
 export default function Search() {
-  console.log("test")
   return (
     <Providers store={store}>
       <LanguageProvider>
         <SessionProvider>
-          <Header />
-          <SearchResultsContent />
-          <Footer />
+          <FavoritesProvider>   {/* Добавляем здесь */}
+            <Header />
+            <SearchResultsContent />
+            <Footer />
+          </FavoritesProvider>
         </SessionProvider>
       </LanguageProvider>
     </Providers>

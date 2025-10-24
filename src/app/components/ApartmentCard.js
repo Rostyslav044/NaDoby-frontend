@@ -542,7 +542,7 @@ const ApartmentCardComponent = ({
             '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
-          <Typography
+          {/* <Typography
             variant={{ xs: 'body1', sm: 'h6' }}
             fontWeight={700}
             color="white"
@@ -552,7 +552,22 @@ const ApartmentCardComponent = ({
             }}
           >
             {formatPrice(apartment?.price)}
-          </Typography>
+          </Typography> */}
+
+
+<Typography
+  component="div"
+  sx={{ 
+    fontSize: { xs: '1rem', sm: '1.25rem' },
+    fontWeight: 700,
+    color: 'white',
+    lineHeight: 1,
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' 
+  }}
+>
+  {formatPrice(apartment?.price)}
+</Typography>
+
         </Box>
       </CardContent>
 

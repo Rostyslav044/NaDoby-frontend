@@ -255,8 +255,6 @@
 
 
 
-'use client'
-
 import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
 import Header from "@/app/components/Header"
 import { store } from "@/app/store"
@@ -266,7 +264,7 @@ import Link from 'next/link'
 import { Home, Hotel, Pets, Restaurant, Groups, Savings, CheckCircle, ArrowBack } from '@mui/icons-material'
 import Footer from "@/app/components/Footer"
 import Head from 'next/head'
-import RelatedPosts from './components/RelatedPosts' // Добавляем импорт
+import RelatedPosts from './components/RelatedPosts'
 
 const APARTMENT_CONTENT = {
   ua: {
@@ -323,6 +321,7 @@ const APARTMENT_CONTENT = {
   }
 }
 
+// Клиентский компонент
 function ApartmentGuide() {
   const { currentLanguage } = useLanguage()
   const t = APARTMENT_CONTENT[currentLanguage]
@@ -334,6 +333,7 @@ function ApartmentGuide() {
       <Head>
         <title>{t.title}</title>
         <meta name="description" content={t.metaDescription} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <Box sx={{ backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -358,7 +358,7 @@ function ApartmentGuide() {
               {t.title}
             </Typography>
 
-            {/* Изображение */}
+            {/* Изображение с предзагрузкой */}
             <Box sx={{ 
               width: '100%',
               height: isMobile ? 200 : 500,
@@ -377,6 +377,7 @@ function ApartmentGuide() {
                   objectFit: 'cover',
                   objectPosition: 'center'
                 }}
+                loading="eager" // Предзагрузка изображения
               />
             </Box>
 
@@ -504,6 +505,21 @@ function ApartmentGuide() {
       </Box>
     </>
   )
+}
+
+// Функция для статической генерации - выполняется на сервере во время сборки
+export async function getStaticProps() {
+  // Здесь можно добавить запросы к API для получения данных
+  // которые будут встроены в статическую страницу
+  
+  return {
+    props: {
+      // Данные которые будут переданы в компонент как пропсы
+      generatedAt: new Date().toISOString(),
+    },
+    // Регенерация страницы каждые 24 часа (опционально)
+    revalidate: 86400, // 24 часа в секундах
+  }
 }
 
 export default function ApartmentPage() {

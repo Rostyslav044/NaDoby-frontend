@@ -49,7 +49,7 @@ const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
 
 // Цвета категорий для отображения в основном компоненте
 const CATEGORY_COLORS = {
-  'apart': '#EA4335',
+  'apart': '#e590ad',
   'hostel': '#34A853', 
   'glamping': '#FBBC05',
   'hotel': '#4285F4',

@@ -27,7 +27,7 @@ const translations = {
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentLanguage } = useLanguage();
-
+console.log("header",currentLanguage);
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
 
   return (

@@ -4,7 +4,7 @@
 
 import React, { useEffect } from "react";
 import Header from "@/app/components/Header"; 
-import Search from "./components/Search";
+import Search from "@/app/components/Search";
 // import NewRealty from "./components/NewRealty";
 import { useSelector } from "react-redux";
 

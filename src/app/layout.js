@@ -71,6 +71,7 @@ import AuthLogic from './components/AuthLogic';
 import { SessionProvider } from "next-auth/react";
 import { store } from './store';
 import Apartments from './components/Apartments';
+import Search from '@/app/components/Search';
 import { Provider } from 'react-redux';
 import Footer from './components/Footer';
 import Blog from '../../pages/blog';
@@ -96,6 +97,7 @@ export default function Layout({ children }) {
               <AuthLogic />
               {children} {/* ← Теперь Search будет внутри LanguageProvider */}
               <Apartments/>
+              <Search/>
               <Blog/>
               <Footer/>
             </LanguageProvider>

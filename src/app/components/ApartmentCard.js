@@ -57,6 +57,7 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => {
     // Пытаемся получить язык из localStorage при загрузке
     const savedLanguage = localStorage.getItem('selectedLanguage');
+    
     if (savedLanguage) {
       setCurrentLanguage(savedLanguage);
     }
@@ -158,7 +159,7 @@ const ApartmentCardComponent = ({
   const { currentLanguage } = useLanguage();
   const t = APARTMENT_CARD_TRANSLATIONS[currentLanguage] || APARTMENT_CARD_TRANSLATIONS.ua;
   const categoryTranslations = CATEGORY_TRANSLATIONS[currentLanguage] || CATEGORY_TRANSLATIONS.ua;
-  
+  console.log(currentLanguage);
   const translateCategory = (category) => {
     if (!category) return t.apartmentDefault;
     return categoryTranslations[category] || category;
@@ -599,10 +600,13 @@ const ApartmentCardComponent = ({
   );
 };
 
+
+
+
 export default function ApartmentCard(props) {
   return (
     <LanguageProvider>
       <ApartmentCardComponent {...props} />
-    </LanguageProvider>
+     </LanguageProvider>
   );
 }

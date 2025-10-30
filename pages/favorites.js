@@ -1,16 +1,18 @@
 
 
 
+
+
 // 'use client';
 // import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 // import Header from "@/app/components/Header";
 // import { store } from "@/app/store";
 // import { Provider } from "react-redux";
 // import Apartments from "@/app/components/Apartments";
+// import CreateUser from "@/app/components/CreateUser";
 // import { useEffect, useState } from "react";
-// import { Box, Typography, CircularProgress, Button, Snackbar, Alert } from "@mui/material";
+// import { Box, Typography, CircularProgress, Button, Snackbar, Alert, Modal } from "@mui/material";
 // import axios from 'axios';
-// import { useRouter } from 'next/navigation';
 
 // const TRANSLATIONS = {
 //   ua: {
@@ -19,7 +21,7 @@
 //     noFavorites: "У вас поки немає обраних оголошень",
 //     errorLoading: "Помилка при завантаженні обраного",
 //     removeSuccess: "Видалено з обраного",
-//     retry: "Увійти/Зареєструватися",
+//     retry: "Увійти/Зареєструватися", // Исправлен регистр
 //     unauthorized: "Користувач не авторизований",
 //     userNotAuthorized: "Користувач не авторизований",
 //     count: "кількість"
@@ -30,7 +32,7 @@
 //     noFavorites: "У вас пока нет избранных объявлений",
 //     errorLoading: "Ошибка при загрузке избранного",
 //     removeSuccess: "Удалено из избранного",
-//     retry: "Войти/Зарегистрироваться",
+//     retry: "Войти/Зарегистрироваться", // Исправлен регистр
 //     unauthorized: "Пользователь не авторизован",
 //     userNotAuthorized: "Пользователь не авторизован",
 //     count: "количество"
@@ -40,13 +42,13 @@
 // function FavoritesContent() {
 //   const { currentLanguage } = useLanguage();
 //   const t = TRANSLATIONS[currentLanguage];
-//   const router = useRouter();
   
 //   const [profile, setProfile] = useState(null);
 //   const [favoriteApartments, setFavoriteApartments] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
 //   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+//   const [authModalOpen, setAuthModalOpen] = useState(false);
 
 //   useEffect(() => {
 //     loadFavorites();
@@ -62,7 +64,6 @@
 //       const userProfile = localStorage.getItem('user_profile');
       
 //       if (!userProfile) {
-//         // Устанавливаем только флаг ошибки, текст будем брать из переводов в рендере
 //         setError('unauthorized');
 //         setLoading(false);
 //         return;
@@ -98,15 +99,18 @@
 //   };
 
 //   const handleRetry = () => {
-//     // Перенаправляем на компонент авторизации CreateUser
-//     router.push('/create-user');
+//     setAuthModalOpen(true);
+//   };
+
+//   const handleCloseAuthModal = () => {
+//     setAuthModalOpen(false);
+//     loadFavorites();
 //   };
 
 //   const handleCloseSnackbar = () => {
 //     setSnackbar({ ...snackbar, open: false });
 //   };
 
-//   // Функция для получения правильного текста ошибки
 //   const getErrorText = () => {
 //     if (error === 'unauthorized') {
 //       return t.userNotAuthorized;
@@ -128,11 +132,40 @@
 //     return (
 //       <Box sx={{ p: 3, textAlign: 'center' }}>
 //         <Typography variant="h5" color="error" gutterBottom>
-//           {getErrorText()} {/* Используем функцию для получения переведенного текста */}
+//           {getErrorText()}
 //         </Typography>
-//         <Button variant="contained" onClick={handleRetry}>
+//         <Button 
+//           variant="contained" 
+//           onClick={handleRetry}
+//           sx={{ textTransform: 'none' }} // Убираем автоматическое преобразование в верхний регистр
+//         >
 //           {t.retry}
 //         </Button>
+        
+//         <Modal
+//           open={authModalOpen}
+//           onClose={handleCloseAuthModal}
+//           aria-labelledby="auth-modal-title"
+//           aria-describedby="auth-modal-description"
+//           sx={{
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//           }}
+//         >
+//           <Box sx={{
+//             width: '90%',
+//             maxWidth: 500,
+//             bgcolor: 'background.paper',
+//             borderRadius: 2,
+//             boxShadow: 24,
+//             p: 0,
+//             maxHeight: '90vh',
+//             overflow: 'auto'
+//           }}>
+//             <CreateUser onClose={handleCloseAuthModal} />
+//           </Box>
+//         </Modal>
 //       </Box>
 //     );
 //   }
@@ -144,9 +177,18 @@
 //       </Typography>
       
 //       {!profile ? (
-//         <Typography variant="body1">
-//           {t.notAuthorized}
-//         </Typography>
+//         <Box sx={{ textAlign: 'center' }}>
+//           <Typography variant="body1" sx={{ mb: 2 }}>
+//             {t.notAuthorized}
+//           </Typography>
+//           <Button 
+//             variant="contained" 
+//             onClick={handleRetry}
+//             sx={{ textTransform: 'none' }} // Убираем автоматическое преобразование в верхний регистр
+//           >
+//             {t.retry}
+//           </Button>
+//         </Box>
 //       ) : favoriteApartments.length === 0 ? (
 //         <Typography variant="body1">
 //           {t.noFavorites}
@@ -160,6 +202,31 @@
 //           isFavoritesPage={true}
 //         />
 //       )}
+
+//       <Modal
+//         open={authModalOpen}
+//         onClose={handleCloseAuthModal}
+//         aria-labelledby="auth-modal-title"
+//         aria-describedby="auth-modal-description"
+//         sx={{
+//           display: 'flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//         }}
+//       >
+//         <Box sx={{
+//           width: '90%',
+//           maxWidth: 500,
+//           bgcolor: 'background.paper',
+//           borderRadius: 2,
+//           boxShadow: 24,
+//           p: 0,
+//           maxHeight: '90vh',
+//           overflow: 'auto'
+//         }}>
+//           <CreateUser onClose={handleCloseAuthModal} />
+//         </Box>
+//       </Modal>
 
 //       <Snackbar
 //         open={snackbar.open}
@@ -202,26 +269,31 @@ import CreateUser from "@/app/components/CreateUser";
 import { useEffect, useState } from "react";
 import { Box, Typography, CircularProgress, Button, Snackbar, Alert, Modal } from "@mui/material";
 import axios from 'axios';
+import Head from 'next/head';
 
 const TRANSLATIONS = {
   ua: {
     title: "Обране",
+    metaTitle: "Обрані оголошення про оренду | NaDoby",
+    metaDescription: "Ваш список обраних оголошень про оренду житла. Квартири, готелі, будинки, сауни та інші варіанти проживання.",
     notAuthorized: "Будь ласка, увійдіть, щоб побачити обране",
     noFavorites: "У вас поки немає обраних оголошень",
     errorLoading: "Помилка при завантаженні обраного",
     removeSuccess: "Видалено з обраного",
-    retry: "Увійти/Зареєструватися", // Исправлен регистр
+    retry: "Увійти/Зареєструватися",
     unauthorized: "Користувач не авторизований",
     userNotAuthorized: "Користувач не авторизований",
     count: "кількість"
   },
   ru: {
-    title: "Избранное", 
+    title: "Избранное",
+    metaTitle: "Избранные объявления об аренде | NaDoby", 
+    metaDescription: "Ваш список избранных объявлений об аренде жилья. Квартиры, гостиницы, дома, сауны и другие варианты проживания.",
     notAuthorized: "Пожалуйста, войдите чтобы увидеть избранное",
     noFavorites: "У вас пока нет избранных объявлений",
     errorLoading: "Ошибка при загрузке избранного",
     removeSuccess: "Удалено из избранного",
-    retry: "Войти/Зарегистрироваться", // Исправлен регистр
+    retry: "Войти/Зарегистрироваться",
     unauthorized: "Пользователь не авторизован",
     userNotAuthorized: "Пользователь не авторизован",
     count: "количество"
@@ -261,8 +333,12 @@ function FavoritesContent() {
       const profileData = JSON.parse(userProfile);
       setProfile(profileData);
       
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? process.env.NEXT_PUBLIC_API_URL 
+        : 'http://localhost:3000';
+      
       const response = await axios.get(
-        'http://localhost:3000/api/v1/apartments/favorites/user',
+        `${baseUrl}/api/v1/apartments/favorites/user`,
         { 
           headers: { 'user-id': profileData._id }
         }
@@ -311,26 +387,108 @@ function FavoritesContent() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
+      <>
+        <Head>
+          <title>{t.metaTitle}</title>
+          <meta name="description" content={t.metaDescription} />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
+      </>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography variant="h5" color="error" gutterBottom>
-          {getErrorText()}
+      <>
+        <Head>
+          <title>{t.metaTitle}</title>
+          <meta name="description" content={t.metaDescription} />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h5" color="error" gutterBottom>
+            {getErrorText()}
+          </Typography>
+          <Button 
+            variant="contained" 
+            onClick={handleRetry}
+            sx={{ textTransform: 'none' }}
+          >
+            {t.retry}
+          </Button>
+          
+          <Modal
+            open={authModalOpen}
+            onClose={handleCloseAuthModal}
+            aria-labelledby="auth-modal-title"
+            aria-describedby="auth-modal-description"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Box sx={{
+              width: '90%',
+              maxWidth: 500,
+              bgcolor: 'background.paper',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 0,
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}>
+              <CreateUser onClose={handleCloseAuthModal} />
+            </Box>
+          </Modal>
+        </Box>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Head>
+        <title>{t.metaTitle}</title>
+        <meta name="description" content={t.metaDescription} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {t.title} ({favoriteApartments.length})
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={handleRetry}
-          sx={{ textTransform: 'none' }} // Убираем автоматическое преобразование в верхний регистр
-        >
-          {t.retry}
-        </Button>
         
+        {!profile ? (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {t.notAuthorized}
+            </Typography>
+            <Button 
+              variant="contained" 
+              onClick={handleRetry}
+              sx={{ textTransform: 'none' }}
+            >
+              {t.retry}
+            </Button>
+          </Box>
+        ) : favoriteApartments.length === 0 ? (
+          <Typography variant="body1">
+            {t.noFavorites}
+          </Typography>
+        ) : (
+          <Apartments 
+            apartments={favoriteApartments}
+            favoriteIds={favoriteApartments.map(apt => apt._id)}
+            onFavoriteRemoved={handleRemoveFavorite}
+            showActions={false}
+            isFavoritesPage={true}
+          />
+        )}
+
         <Modal
           open={authModalOpen}
           onClose={handleCloseAuthModal}
@@ -355,83 +513,34 @@ function FavoritesContent() {
             <CreateUser onClose={handleCloseAuthModal} />
           </Box>
         </Modal>
-      </Box>
-    );
-  }
 
-  return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        {t.title} ({favoriteApartments.length})
-      </Typography>
-      
-      {!profile ? (
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            {t.notAuthorized}
-          </Typography>
-          <Button 
-            variant="contained" 
-            onClick={handleRetry}
-            sx={{ textTransform: 'none' }} // Убираем автоматическое преобразование в верхний регистр
-          >
-            {t.retry}
-          </Button>
-        </Box>
-      ) : favoriteApartments.length === 0 ? (
-        <Typography variant="body1">
-          {t.noFavorites}
-        </Typography>
-      ) : (
-        <Apartments 
-          apartments={favoriteApartments}
-          favoriteIds={favoriteApartments.map(apt => apt._id)}
-          onFavoriteRemoved={handleRemoveFavorite}
-          showActions={false}
-          isFavoritesPage={true}
-        />
-      )}
-
-      <Modal
-        open={authModalOpen}
-        onClose={handleCloseAuthModal}
-        aria-labelledby="auth-modal-title"
-        aria-describedby="auth-modal-description"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Box sx={{
-          width: '90%',
-          maxWidth: 500,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 0,
-          maxHeight: '90vh',
-          overflow: 'auto'
-        }}>
-          <CreateUser onClose={handleCloseAuthModal} />
-        </Box>
-      </Modal>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={2000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          severity={snackbar.severity} 
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={2000}
           onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+          <Alert 
+            severity={snackbar.severity} 
+            onClose={handleCloseSnackbar}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </>
   );
+}
+
+// Функция для статической генерации - выполняется на сервере во время сборки
+export async function getStaticProps() {
+  return {
+    props: {
+      generatedAt: new Date().toISOString(),
+    },
+    // Регенерация страницы каждые 24 часа (опционально)
+    revalidate: 86400, // 24 часа в секундах
+  }
 }
 
 export default function Favorites() {

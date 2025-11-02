@@ -652,7 +652,7 @@ import {
 } from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 import { useRouter } from 'next/navigation';
-
+import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 // Динамические импорты для тяжелых компонентов
 const CreateUser = dynamic(() => import('./CreateUser'), {
   loading: () => <div>Загрузка формы...</div>
@@ -662,39 +662,39 @@ const CreateUser = dynamic(() => import('./CreateUser'), {
 import { useFavorites } from '@/app/hooks/useFavorites';
 
 // Создаем контекст для языка
-const LanguageContext = React.createContext();
+// const LanguageContext = React.createContext();
 
 // Провайдер языка
-export const LanguageProvider = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = useState('ua');
+// export const LanguageProvider = ({ children }) => {
+//   const [currentLanguage, setCurrentLanguage] = useState('ua');
 
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    if (savedLanguage) {
-      setCurrentLanguage(savedLanguage);
-    }
-  }, []);
+//   useEffect(() => {
+//     const savedLanguage = localStorage.getItem('selectedLanguage');
+//     if (savedLanguage) {
+//       setCurrentLanguage(savedLanguage);
+//     }
+//   }, []);
 
-  const changeLanguage = useCallback((language) => {
-    setCurrentLanguage(language);
-    localStorage.setItem('selectedLanguage', language);
-  }, []);
+//   const changeLanguage = useCallback((language) => {
+//     setCurrentLanguage(language);
+//     localStorage.setItem('selectedLanguage', language);
+//   }, []);
 
-  return (
-    <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
-      {children}
-    </LanguageContext.Provider>
-  );
-};
+//   return (
+//     <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
+//       {children}
+//     </LanguageContext.Provider>
+//   );
+// };
 
 // Хук для использования языка
-export const useLanguage = () => {
-  const context = React.useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-};
+// export const useLanguage = () => {
+//   const context = React.useContext(LanguageContext);
+//   if (!context) {
+//     throw new Error('useLanguage must be used within a LanguageProvider');
+//   }
+//   return context;
+// };
 
 const APARTMENT_CARD_TRANSLATIONS = {
   ua: {
@@ -1203,8 +1203,8 @@ const MemoizedApartmentCardComponent = memo(ApartmentCardComponent);
 
 export default function ApartmentCard(props) {
   return (
-    <LanguageProvider>
+    // <LanguageProvider>
       <MemoizedApartmentCardComponent {...props} />
-    </LanguageProvider>
+    // </LanguageProvider>
   );
 }

@@ -51,7 +51,7 @@ const ApartmentListComponent = ({
 }) => {
   const { currentLanguage } = useLanguage();
   const t = APARTMENT_LIST_TRANSLATIONS[currentLanguage] || APARTMENT_LIST_TRANSLATIONS.ua;
-
+console.log("ApartmentListComponent",currentLanguage);
   const getIsFavoriteForApartment = (apartment) => {
     if (typeof isFavorite === 'function') return isFavorite(apartment._id);
     if (typeof isFavorite === 'boolean') return isFavorite;
@@ -105,8 +105,8 @@ const ApartmentListComponent = ({
 
 export default function ApartmentList(props) {
   return (
-    <LanguageProvider>
+    // <LanguageProvider>
       <ApartmentListComponent {...props} />
-    </LanguageProvider>
+    // </LanguageProvider>
   );
 }

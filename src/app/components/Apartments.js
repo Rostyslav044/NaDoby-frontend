@@ -592,6 +592,7 @@ const ApartmentsContent = ({
   const { data: session } = useSession();
   const router = useRouter();
   const { currentLanguage } = useLanguage();
+  console.log('Apartment',currentLanguage);
   const t = APARTMENTS_TRANSLATIONS[currentLanguage] || APARTMENTS_TRANSLATIONS.ua;
 
   // Используем хук избранного
@@ -772,12 +773,11 @@ const ApartmentsContent = ({
 };
 
 const Apartments = (props) => {
-  return (
-    <SessionProvider>
-      <LanguageProvider>
+  return (<>
+
         <ApartmentsContent {...props} />
-      </LanguageProvider>
-    </SessionProvider>
+
+    </>
   );
 };
 

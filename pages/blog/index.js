@@ -1,8 +1,6 @@
 
 
 
-
-
 // 'use client'
 
 // import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
@@ -13,10 +11,13 @@
 // import { Box,Typography, Container, Card, CardContent, Button, Chip } from '@mui/material'
 // import Image from 'next/image'
 // import Link from 'next/link'
+// import Head from 'next/head'
 
 // const BLOG_CONTENT = {
 //   ua: {
 //     title: "Корисні поради та ідеї для вашої подорожі",
+//     metaTitle: "Корисні поради для подорожей та оренди житла | NaDoby",
+//     metaDescription: "🔝 Експертні поради з вибору житла: квартири, готелі, будинки, хостели. Як уникнути шахрайства та знайти ідеальний варіант для відпочинку.",
 //     posts: [
 //       // Основні категорії
 //       {
@@ -85,10 +86,10 @@
 //       },
 //       // Нові категорії
 //       {
-//         title: "Пансіонати з лікувальними програмами",
+//         title: "Пансіонати/Санаторії з лікувальними програмами",
 //         content: "Як вибрати пансіонат з максимальною користю для здоров'я",
 //         image: "/pansionat.png",
-//         category: "Пансіонати",
+//         category: "Пансіонати/Санаторії",
 //         link: "/blog/sanatoriumGuide"
 //       },
 //       {
@@ -117,6 +118,8 @@
 //   },
 //   ru: {
 //     title: "Полезные советы и идеи для вашего путешествия",
+//     metaTitle: "Полезные советы для путешествий и аренды жилья | NaDoby",
+//     metaDescription: "🔝 Экспертные советы по выбору жилья: квартиры, отели, дома, хостелы. Как избежать мошенничества и найти идеальный вариант для отдыха.",
 //     posts: [
 //       // Основные категории
 //       {
@@ -184,10 +187,10 @@
 //       },
 //       // Новые категории
 //       {
-//         title: "Пансионаты с лечебными программами",
+//         title: "Пансионаты/Санатории с лечебными программами",
 //         content: "Как выбрать пансионат с максимальной пользой для здоровья",
 //         image: "/pansionat.png",
-//         category: "Пансионаты",
+//         category: "Пансионаты/Санатории",
 //         link: "/blog/sanatoriumGuide"
 //       },
 //       {
@@ -223,102 +226,127 @@
 //   const content = BLOG_CONTENT[currentLanguage]
 
 //   return (
-//     <Container maxWidth="lg" 
-//     sx={ { py: 6 } }
-//     >
-//       <Typography variant="h3" component="h1" sx={{ 
-//         mb: 6, 
-//         fontWeight: 700,
-//         textAlign: 'center',
-//         color: 'text.primary',
-//         fontSize: { xs: '2rem', md: '2.5rem' }
-//       }}>
-//         {content.title}
-//       </Typography>
+//     <>
+//       <Head>
+//         <title>{content.metaTitle}</title>
+//         <meta name="description" content={content.metaDescription} />
+//         <meta name="viewport" content="width=device-width, initial-scale=1" />
+//       </Head>
 
-//       <Box sx={{ 
-//         display: 'grid', 
-//         gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-//         gap: 4,
-//         mb: 8
-//       }}>
-//         {content.posts.map((post, index) => (
-//           <Link 
-//             key={index} 
-//             href={post.link || '#'} 
-//             passHref 
-//             legacyBehavior
-//             style={{ textDecoration: 'none' }}
-//           >
-//             <Card elevation={2} sx={{ 
-//               display: 'flex', 
-//               flexDirection: 'column',
-//               height: '100%',
-//               transition: 'all 0.3s ease',
-//               borderRadius: 2,
-//               cursor: 'pointer',
-//               '&:hover': {
-//                 transform: 'translateY(-8px)',
-//                 boxShadow: 6,
-//               }
-//             }}>
-//               <Box sx={{ 
-//                 position: 'relative', 
-//                 height: 220,
-//                 overflow: 'hidden',
-//                 borderTopLeftRadius: 8,
-//                 borderTopRightRadius: 8
+//       <Container maxWidth="lg" 
+//       sx={ { py: 6 } }
+//       >
+//         <Typography variant="h3" component="h1" sx={{ 
+//           mb: 6, 
+//           fontWeight: 700,
+//           textAlign: 'center',
+//           color: 'text.primary',
+//           fontSize: { xs: '2rem', md: '2.5rem' }
+//         }}>
+//           {content.title}
+//         </Typography>
+
+//         <Box sx={{ 
+//           display: 'grid', 
+//           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+//           gap: 4,
+//           mb: 8
+//         }}>
+//           {content.posts.map((post, index) => (
+//             <Link 
+//               key={index} 
+//               href={post.link || '#'} 
+//               passHref 
+//               legacyBehavior
+//               style={{ textDecoration: 'none' }}
+//             >
+//               <Card elevation={2} sx={{ 
+//                 display: 'flex', 
+//                 flexDirection: 'column',
+//                 height: '100%',
+//                 transition: 'all 0.3s ease',
+//                 borderRadius: 2,
+//                 cursor: 'pointer',
+//                 '&:hover': {
+//                   transform: 'translateY(-8px)',
+//                   boxShadow: 6,
+//                 }
 //               }}>
-//                 <Image
-//                   src={post.image}
-//                   alt={post.title}
-//                   fill
-//                   style={{ 
-//                     objectFit: 'cover',
-//                     objectPosition: 'center'
-//                   }}
-//                   sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
-//                 />
-//               </Box>
-//               <CardContent sx={{ 
-//                 flexGrow: 1,
-//                 p: 3,
-//                 display: 'flex',
-//                 flexDirection: 'column'
-//               }}>
-//                 <Chip 
-//                   label={post.category} 
-//                   size="small" 
-//                   sx={{ 
+//                 <Box sx={{ 
+//                   position: 'relative', 
+//                   height: 220,
+//                   overflow: 'hidden',
+//                   borderTopLeftRadius: 8,
+//                   borderTopRightRadius: 8
+//                 }}>
+//                   <Image
+//                     src={post.image}
+//                     alt={post.title}
+//                     fill
+//                     style={{ 
+//                       objectFit: 'cover',
+//                       objectPosition: 'center'
+//                     }}
+//                     sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+//                     loading={index < 6 ? "eager" : "lazy"}
+//                     priority={index < 3}
+//                   />
+//                 </Box>
+//                 <CardContent sx={{ 
+//                   flexGrow: 1,
+//                   p: 3,
+//                   display: 'flex',
+//                   flexDirection: 'column'
+//                 }}>
+//                   <Chip 
+//                     label={post.category} 
+//                     size="small" 
+//                     sx={{ 
+//                       mb: 2,
+//                       alignSelf: 'flex-start',
+//                       bgcolor: 'primary.light',
+//                       color: 'primary.contrastText',
+//                       fontWeight: 600
+//                     }}
+//                   />
+//                   <Typography variant="h5" component="h2" sx={{ 
 //                     mb: 2,
-//                     alignSelf: 'flex-start',
-//                     bgcolor: 'primary.light',
-//                     color: 'primary.contrastText',
-//                     fontWeight: 600
-//                   }}
-//                 />
-//                 <Typography variant="h5" component="h2" sx={{ 
-//                   mb: 2,
-//                   fontWeight: 600,
-//                   lineHeight: 1.3,
-//                   minHeight: '3.5em'
-//                 }}>
-//                   {post.title}
-//                 </Typography>
-//                 <Typography variant="body1" sx={{ 
-//                   mb: 3,
-//                   color: 'text.secondary',
-//                   flexGrow: 1
-//                 }}>
-//                   {post.content}
-//                 </Typography>
-//               </CardContent>
-//             </Card>
-//           </Link>
-//         ))}
-//       </Box>
-//     </Container>
+//                     fontWeight: 600,
+//                     lineHeight: 1.3,
+//                     minHeight: '3.5em'
+//                   }}>
+//                     {post.title}
+//                   </Typography>
+//                   <Typography variant="body1" sx={{ 
+//                     mb: 3,
+//                     color: 'text.secondary',
+//                     flexGrow: 1
+//                   }}>
+//                     {post.content}
+//                   </Typography>
+//                 </CardContent>
+//               </Card>
+//             </Link>
+//           ))}
+//         </Box>
+//       </Container>
+//     </>
 //   )
+// }
+
+// // Функция для статической генерации - выполняется на сервере во время сборки
+// export async function getStaticProps() {
+//   // Здесь можно добавить запросы к API для получения данных
+//   // которые будут встроены в статическую страницу
+  
+//   return {
+//     props: {
+//       // Данные которые будут переданы в компонент как пропсы
+//       generatedAt: new Date().toISOString(),
+//     },
+//     // Регенерация страницы каждые 24 часа (опционально)
+//     revalidate: 86400, // 24 часа в секундах
+//   }
 // }
 
 // export default function Blog() {
@@ -333,18 +361,15 @@
 // }
 
 
-
 'use client'
 
-import { LanguageProvider, useLanguage } from "@/app/LanguageContext"
+import { useLanguage } from "@/app/LanguageContext"
 import Header from "@/app/components/Header"
-import { store } from "@/app/store"
-import { Provider } from "react-redux"
-import { Warning } from '@mui/icons-material';  
-import { Box,Typography, Container, Card, CardContent, Button, Chip } from '@mui/material'
+import { Box, Typography, Container, Card, CardContent, Button, Chip } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
 import Head from 'next/head'
+import Footer from "@/app/components/Footer"
 
 const BLOG_CONTENT = {
   ua: {
@@ -554,7 +579,7 @@ const BLOG_CONTENT = {
   }
 }
 
-function BlogPosts() {
+function BlogPosts({ generatedAt }) {
   const { currentLanguage } = useLanguage()
   const content = BLOG_CONTENT[currentLanguage]
 
@@ -682,13 +707,14 @@ export async function getStaticProps() {
   }
 }
 
-export default function Blog() {
+function Blog({ generatedAt }) {
   return (
-    <Provider store={store}>
-      <LanguageProvider>
-        <Header />
-        <BlogPosts />
-      </LanguageProvider>
-    </Provider>
+    <>
+      <Header />
+      <BlogPosts generatedAt={generatedAt} />
+      <Footer />
+    </>
   )
 }
+
+export default Blog

@@ -13,6 +13,10 @@ import Apartments from "@/app/components/Apartments";
 import Blog from "./blog";
 import Head from "next/head";
 import AuthLogic from "@/app/components/AuthLogic";
+
+import Footer from "@/app/components/Footer";
+
+
 const TRANSLATIONS = {
   ua: {
     metaTitle: "Оренда квартир, будинків і готелів | NaDoby",
@@ -96,7 +100,23 @@ console.log("test",currentLanguage);
       
 
         <Apartments />
-        {/* <Blog /> */}
+        <Blog />
+        {/* <ApartmentGuide/>
+        <AutocampingGuide/>
+        <ResortGuide/>
+        <CottageComplexGuide/>
+        <CoworkingGuide/>
+        <GlampingGuide/> */}
+        {/* <HostelGuide/>
+        <HotelGuide/>
+        <HouseGuide/>
+        <PetHotelGuide/> */}
+        {/* <SanatoriumGuide/> */}
+{/* <SaunaGuide/> */}
+{/* <ScamGuide/> */}
+
+        <Footer/>
+        
       </main>
     </>
   );

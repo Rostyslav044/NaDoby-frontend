@@ -23,7 +23,7 @@ export default function MyApp({ Component, pageProps }) {
           {/* <AuthLogic /> */}
           <Component {...pageProps} />
          
-          <Footer />
+          {/* <Footer /> */}
         </LanguageProvider>
       </Provider>
     </SessionProvider>

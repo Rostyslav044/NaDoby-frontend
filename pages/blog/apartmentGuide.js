@@ -780,7 +780,7 @@ function ApartmentGuide({ generatedAt }) {
             </Link>
           </Box>
         </Container>
-        <Footer />
+        {/* <Footer /> */}
       </Box>
     </>
   )

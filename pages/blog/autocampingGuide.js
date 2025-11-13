@@ -924,7 +924,7 @@ import {
   ArrowBack,
   CheckCircle
 } from '@mui/icons-material'
-import Footer from "@/app/components/Footer"
+// import Footer from "@/app/components/Footer"
 import Head from 'next/head'
 
 const AUTOCAMPING_CONTENT = {
@@ -1327,7 +1327,7 @@ function AutocampingGuide({ generatedAt }) {
             </Link>
           </Box>
         </Container>
-        <Footer />
+        {/* <Footer /> */}
       </Box>
     </>
   )

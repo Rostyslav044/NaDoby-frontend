@@ -1,12 +1,12 @@
 
 
-
 // 'use client';
 
 // import React from "react";
 // import { useLanguage } from "@/app/LanguageContext";
-// import { Box, Typography, Grid, Link, IconButton } from '@mui/material';
-// import { Facebook, Instagram, Telegram, Email } from '@mui/icons-material';
+// import { Box, Typography, Grid, Link, IconButton, Button } from '@mui/material';
+// import { Facebook, Instagram, Telegram, Email, ArrowUpward } from '@mui/icons-material';
+// import Logo from '@/app/components/Logo'; // Импортируем ваш компонент логотипа
 
 // const translations = {
 //   ua: {
@@ -28,7 +28,6 @@
 //     aboutTitle: "Про нас",
 //     aboutText1: "NaDoby - це платформа для оренди житла без посередників. Ми об'єднуємо власників нерухомості та орендарів по всій Україні.",
 //     aboutText2: "Наші переваги: чесні ціни, прозорі умови.",
-//     // , безпечні платежі та підтримка на кожному етапі оренди.",
 //     contactsTitle: "Контакти",
 //     copyright: "© {year} NaDoby.com.ua - Оренда житла без посередників. Всі права захищені.",
 //     links: {
@@ -36,7 +35,8 @@
 //       terms: "Умови використання",
 //       help: "Допомога"
 //     },
-//     workingHours: "Працюємо цілодобово"
+//     workingHours: "Працюємо цілодобово",
+//     backToTop: "Наверх"
 //   },
 //   ru: {
 //     title: "Аренда жилья по всей Украине",
@@ -57,7 +57,6 @@
 //     aboutTitle: "О нас",
 //     aboutText1: "NaDoby - это платформа для аренды жилья без посредников. Мы объединяем владельцев недвижимости и арендаторов по всей Украине.",
 //     aboutText2: "Наши преимущества: честные цены, прозрачные условия.",
-//     //  безопасные платежи и поддержка на каждом этапе аренды.",
 //     contactsTitle: "Контакты",
 //     copyright: "© {year} NaDoby.com.ua - Аренда жилья без посредников. Все права защищены.",
 //     links: {
@@ -65,13 +64,27 @@
 //       terms: "Условия использования",
 //       help: "Помощь"
 //     },
-//     workingHours: "Работаем круглосуточно"
+//     workingHours: "Работаем круглосуточно",
+//     backToTop: "Наверх"
 //   }
 // };
 
 // const Footer = () => {
 //   const { currentLanguage } = useLanguage();
 //   const t = translations[currentLanguage];
+
+//   // Функция для открытия почтового клиента
+//   const handleEmailClick = () => {
+//     window.location.href = 'mailto:info.nadoby@com.ua';
+//   };
+
+//   // Функция для плавного скролла наверх
+//   const scrollToTop = () => {
+//     window.scrollTo({
+//       top: 0,
+//       behavior: 'smooth'
+//     });
+//   };
 
 //   return (
 //     <Box 
@@ -82,10 +95,37 @@
 //         py: 4,
 //         px: 2,
 //         borderTop: '1px solid #e0e0e0',
-//         mt: 'auto'
+//         mt: 'auto',
+//         position: 'relative'
 //       }}
 //     >
+//       {/* Кнопка "Наверх" */}
+//       <Button
+//         variant="contained"
+//         onClick={scrollToTop}
+//         startIcon={<ArrowUpward />}
+//         sx={{
+//           position: 'absolute',
+//           top: -20,
+//           right: 20,
+//           backgroundColor: '#1976d2',
+//           '&:hover': {
+//             backgroundColor: '#1565c0'
+//           },
+//           minWidth: 'auto',
+//           px: 2,
+//           py: 1
+//         }}
+//       >
+//         {t.backToTop}
+//       </Button>
+
 //       <Box maxWidth="1200px" mx="auto">
+//         {/* Логотип */}
+//         <Box sx={{ textAlign: 'center', mb: 3 }}>
+//           <Logo />
+//         </Box>
+
 //         <Grid container spacing={4}>
 //           {/* Категории */}
 //           <Grid item xs={12} md={4}>
@@ -131,7 +171,7 @@
 //               {t.contactsTitle}
 //             </Typography>
 //             <Box sx={{ mt: 2 }}>
-//               <Typography paragraph>
+//               <Typography paragraph sx={{ cursor: 'pointer' }} onClick={handleEmailClick}>
 //                 <Email sx={{ verticalAlign: 'middle', mr: 1 }} />
 //                 info.nadoby@com.ua
 //               </Typography>
@@ -163,17 +203,8 @@
 //           <Typography variant="body2">
 //             {t.copyright.replace('{year}', new Date().getFullYear())}
 //           </Typography>
-//           <Box sx={{ mt: 1 }}>
-//             <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-//               {t.links.privacy}
-//             </Link>
-//             <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-//               {t.links.terms}
-//             </Link>
-//             <Link href="#" color="inherit" variant="body2" sx={{ mx: 1 }}>
-//               {t.links.help}
-//             </Link>
-//           </Box>
+          
+        
 //         </Box>
 //       </Box>
 //     </Box>
@@ -181,7 +212,6 @@
 // };
 
 // export default Footer;
-
 
 'use client';
 
@@ -219,7 +249,7 @@ const translations = {
       help: "Допомога"
     },
     workingHours: "Працюємо цілодобово",
-    backToTop: "Наверх"
+    backToTop: "Нагору"
   },
   ru: {
     title: "Аренда жилья по всей Украине",

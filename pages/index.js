@@ -41,9 +41,9 @@ function HomeContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-console.log("test",currentLanguage);
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
+
     if (!token) {
       setLoading(false);
       return;
@@ -55,7 +55,7 @@ console.log("test",currentLanguage);
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -101,19 +101,7 @@ console.log("test",currentLanguage);
 
         <Apartments />
         <Blog />
-        {/* <ApartmentGuide/>
-        <AutocampingGuide/>
-        <ResortGuide/>
-        <CottageComplexGuide/>
-        <CoworkingGuide/>
-        <GlampingGuide/> */}
-        {/* <HostelGuide/>
-        <HotelGuide/>
-        <HouseGuide/>
-        <PetHotelGuide/> */}
-        {/* <SanatoriumGuide/> */}
-{/* <SaunaGuide/> */}
-{/* <ScamGuide/> */}
+      
 
         <Footer/>
         

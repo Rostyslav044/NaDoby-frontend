@@ -8,7 +8,8 @@
 
 // 'use client';
 
-// import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+// import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
+// import dynamic from 'next/dynamic';
 // import {
 //   Box,
 //   Typography,
@@ -43,46 +44,15 @@
 // } from '@mui/icons-material';
 // import { useSwipeable } from 'react-swipeable';
 // import { useRouter } from 'next/navigation';
-// import CreateUser from './CreateUser';
+// import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
+// // Динамические импорты для тяжелых компонентов
+// const CreateUser = dynamic(() => import('./CreateUser'), {
+//   loading: () => <div>Загрузка формы...</div>
+// });
+
+// // Импортируем хук обычным способом
 // import { useFavorites } from '@/app/hooks/useFavorites';
-// // import { LanguageProvider, useLanguage } from "@/app/LanguageContext";
 
-// // Создаем контекст для языка
-// const LanguageContext = createContext();
-
-// // Провайдер языка
-// export const LanguageProvider = ({ children }) => {
-//   const [currentLanguage, setCurrentLanguage] = useState('ua');
-
-//   useEffect(() => {
-//     // Пытаемся получить язык из localStorage при загрузке
-//     const savedLanguage = localStorage.getItem('selectedLanguage');
-    
-//     if (savedLanguage) {
-//       setCurrentLanguage(savedLanguage);
-//     }
-//   }, []);
-
-//   const changeLanguage = (language) => {
-//     setCurrentLanguage(language);
-//     localStorage.setItem('selectedLanguage', language);
-//   };
-
-//   return (
-//     <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
-//       {children}
-//     </LanguageContext.Provider>
-//   );
-// };
-
-// // Хук для использования языка
-// export const useLanguage = () => {
-//   const context = useContext(LanguageContext);
-//   if (!context) {
-//     throw new Error('useLanguage must be used within a LanguageProvider');
-//   }
-//   return context;
-// };
 
 // const APARTMENT_CARD_TRANSLATIONS = {
 //   ua: {
@@ -110,7 +80,7 @@
 //     rooms: (count) => (count === 1 ? 'комната' : count < 5 ? 'комнаты' : 'комнат'),
 //     noPrice: 'Цена не указана',
 //     favoriteAdd: 'Добавить в избранное',
-//     favoriteRemove: 'Удалить из избранного',
+//     favoriteRemove: 'Удалить из избранное',
 //     apartmentDefault: 'Апартаменты',
 //     loginRequired: 'Войдите, чтобы добавить в избранное',
 //     favoriteError: 'Ошибка при обновлении избранного',
@@ -159,11 +129,11 @@
 //   const { currentLanguage } = useLanguage();
 //   const t = APARTMENT_CARD_TRANSLATIONS[currentLanguage] || APARTMENT_CARD_TRANSLATIONS.ua;
 //   const categoryTranslations = CATEGORY_TRANSLATIONS[currentLanguage] || CATEGORY_TRANSLATIONS.ua;
-//   console.log(currentLanguage);
-//   const translateCategory = (category) => {
+  
+//   const translateCategory = useCallback((category) => {
 //     if (!category) return t.apartmentDefault;
 //     return categoryTranslations[category] || category;
-//   };
+//   }, [categoryTranslations, t.apartmentDefault]);
 
 //   const photos = Array.isArray(apartment?.photos) ? apartment.photos : [];
 //   const [currentIndex, setCurrentIndex] = useState(0);
@@ -180,7 +150,7 @@
 //   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 //   const router = useRouter();
 
-//   // Используем хук избранного
+//   // Используем хук избранного - обычный импорт
 //   const { isFavorite, toggleFavorite, loading: favoriteLoading } = useFavorites();
 
 //   // Определяем, использовать ли переданные пропсы или хук
@@ -195,7 +165,7 @@
 //     };
 //   }, []);
 
-//   const startAutoCloseTimer = () => {
+//   const startAutoCloseTimer = useCallback(() => {
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
@@ -204,17 +174,17 @@
 //       setLoginModalOpen(false);
 //       setSnackbar(prev => ({ ...prev, open: false }));
 //     }, 5000);
-//   };
+//   }, []);
 
-//   const handlePrevPhoto = (e) => {
+//   const handlePrevPhoto = useCallback((e) => {
 //     e.stopPropagation();
 //     setCurrentIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
-//   };
+//   }, [photos.length]);
 
-//   const handleNextPhoto = (e) => {
+//   const handleNextPhoto = useCallback((e) => {
 //     e.stopPropagation();
 //     setCurrentIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
-//   };
+//   }, [photos.length]);
 
 //   const swipeHandlers = useSwipeable({
 //     onSwipedLeft: () =>
@@ -225,13 +195,13 @@
 //     trackMouse: true,
 //   });
 
-//   const handleCardClick = () => {
+//   const handleCardClick = useCallback(() => {
 //     if (!loginModalOpen) {
 //       router.push(`/apartment/${apartment._id}`);
 //     }
-//   };
+//   }, [loginModalOpen, apartment?._id, router]);
 
-//   const handleFavoriteClick = async (e) => {
+//   const handleFavoriteClick = useCallback(async (e) => {
 //     e.stopPropagation();
 //     if (favoriteLoading) return;
 
@@ -263,23 +233,23 @@
 //         setSnackbar({ open: true, message: t.favoriteError, severity: 'error' });
 //       }
 //     }
-//   };
+//   }, [favoriteLoading, t, startAutoCloseTimer, actualToggleFavorite, apartment?._id]);
 
-//   const handleCloseModal = () => {
+//   const handleCloseModal = useCallback(() => {
 //     setLoginModalOpen(false);
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
-//   };
+//   }, []);
 
-//   const handleCloseSnackbar = () => {
+//   const handleCloseSnackbar = useCallback(() => {
 //     setSnackbar(prev => ({ ...prev, open: false }));
 //     if (autoCloseTimer.current) {
 //       clearTimeout(autoCloseTimer.current);
 //     }
-//   };
+//   }, []);
 
-//   const formatPrice = (price) => {
+//   const formatPrice = useCallback((price) => {
 //     if (!price) return t.noPrice;
 //     return new Intl.NumberFormat('uk-UA', {
 //       style: 'currency',
@@ -288,13 +258,16 @@
 //     })
 //       .format(price)
 //       .replace('₴', ' грн');
-//   };
+//   }, [t.noPrice]);
+
+//   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+//   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
 //   return (
 //     <Card
 //       onClick={handleCardClick}
-//       onMouseEnter={() => setIsHovered(true)}
-//       onMouseLeave={() => setIsHovered(false)}
+//       onMouseEnter={handleMouseEnter}
+//       onMouseLeave={handleMouseLeave}
 //       sx={{
 //         cursor: 'pointer',
 //         bgcolor: 'background.paper',
@@ -369,27 +342,25 @@
 //             />
 
 //             {photos.length > 1 && (
-           
-// <Badge
-//   badgeContent={`${currentIndex + 1}/${photos.length}`}
-//   color="primary"
-//   sx={{
-//     position: 'absolute',
-//     bottom: { xs: 40, sm: 13 },
-//     right: { xs: 30, sm: 20 }, // ЕЩЕ БОЛЬШЕ ОТСТУП СПРАВА
-//     '& .MuiBadge-badge': {
-//       bgcolor: 'rgba(0,0,0,0.7)',
-//       color: '#fff',
-//       fontSize: '0.7rem',
-//       fontWeight: 'bold',
-//       px: 1,
-//       py: 0.5,
-//       borderRadius: '16px',
-//       border: '1px solid rgba(255,255,255,0.3)',
-//     },
-//   }}
-// />
-
+//               <Badge
+//                 badgeContent={`${currentIndex + 1}/${photos.length}`}
+//                 color="primary"
+//                 sx={{
+//                   position: 'absolute',
+//                   bottom: { xs: 40, sm: 13 },
+//                   right: { xs: 30, sm: 20 },
+//                   '& .MuiBadge-badge': {
+//                     bgcolor: 'rgba(0,0,0,0.7)',
+//                     color: '#fff',
+//                     fontSize: '0.7rem',
+//                     fontWeight: 'bold',
+//                     px: 1,
+//                     py: 0.5,
+//                     borderRadius: '16px',
+//                     border: '1px solid rgba(255,255,255,0.3)',
+//                   },
+//                 }}
+//               />
 //             )}
 
 //             {photos.length > 1 && (
@@ -543,32 +514,18 @@
 //             '&:hover': { bgcolor: 'primary.dark' },
 //           }}
 //         >
-//           {/* <Typography
-//             variant={{ xs: 'body1', sm: 'h6' }}
-//             fontWeight={700}
-//             color="white"
+//           <Typography
+//             component="div"
 //             sx={{ 
+//               fontSize: { xs: '1rem', sm: '1.25rem' },
+//               fontWeight: 700,
+//               color: 'white',
 //               lineHeight: 1,
 //               fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' 
 //             }}
 //           >
 //             {formatPrice(apartment?.price)}
-//           </Typography> */}
-
-
-// <Typography
-//   component="div"
-//   sx={{ 
-//     fontSize: { xs: '1rem', sm: '1.25rem' },
-//     fontWeight: 700,
-//     color: 'white',
-//     lineHeight: 1,
-//     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif' 
-//   }}
-// >
-//   {formatPrice(apartment?.price)}
-// </Typography>
-
+//           </Typography>
 //         </Box>
 //       </CardContent>
 
@@ -600,20 +557,18 @@
 //   );
 // };
 
-
-
+// const MemoizedApartmentCardComponent = memo(ApartmentCardComponent);
 
 // export default function ApartmentCard(props) {
 //   return (
-//     <LanguageProvider>
-//       <ApartmentCardComponent {...props} />
-//      </LanguageProvider>
+//     // <LanguageProvider>
+//       <MemoizedApartmentCardComponent {...props} />
+//     // </LanguageProvider>
 //   );
 // }
 
 
-
-
+// карточка для отображения объявления об аренде.
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
@@ -661,41 +616,6 @@ const CreateUser = dynamic(() => import('./CreateUser'), {
 // Импортируем хук обычным способом
 import { useFavorites } from '@/app/hooks/useFavorites';
 
-// Создаем контекст для языка
-// const LanguageContext = React.createContext();
-
-// Провайдер языка
-// export const LanguageProvider = ({ children }) => {
-//   const [currentLanguage, setCurrentLanguage] = useState('ua');
-
-//   useEffect(() => {
-//     const savedLanguage = localStorage.getItem('selectedLanguage');
-//     if (savedLanguage) {
-//       setCurrentLanguage(savedLanguage);
-//     }
-//   }, []);
-
-//   const changeLanguage = useCallback((language) => {
-//     setCurrentLanguage(language);
-//     localStorage.setItem('selectedLanguage', language);
-//   }, []);
-
-//   return (
-//     <LanguageContext.Provider value={{ currentLanguage, changeLanguage }}>
-//       {children}
-//     </LanguageContext.Provider>
-//   );
-// };
-
-// Хук для использования языка
-// export const useLanguage = () => {
-//   const context = React.useContext(LanguageContext);
-//   if (!context) {
-//     throw new Error('useLanguage must be used within a LanguageProvider');
-//   }
-//   return context;
-// };
-
 const APARTMENT_CARD_TRANSLATIONS = {
   ua: {
     noPhotos: 'Немає фото',
@@ -738,27 +658,58 @@ const CATEGORY_TRANSLATIONS = {
     'Хостел': 'Хостел',
     'Дом': 'Будинок',
     'База отдыха': 'База відпочинку',
+    
     'Сауна/Баня': 'Сауна/Лазня',
     'Готель для тварин': 'Готель для тварин',
+    'Глемпинг': 'Глемпінг',
     'Глемпінг': 'Глемпінг',
-    'Пансіонат': 'Пансіонат',
-    'Котедж для компній': 'Котедж для компаній',
+    'Пансионат': ' Санаторій/Пансіонат',
+    'Пансіонат': 'Санаторій/Пансіонат',
+    'Котедж для компаний': 'Котедж для компаній',
+    'Котедж для компаній': 'Котедж для компаній',
+    'Коворкинг': 'Коворкінг',
     'Коворкінг': 'Коворкінг',
-    'Автокемпінг': 'Автокемпінг'
+    'Автокемпинг': 'Автокемпінг',
+    'Автокемпінг': 'Автокемпінг',
+    // 'Сауна': 'Сауна',
+    // 'Баня': 'Лазня',
+    'Гостиница для животных': 'Готель для тварин',
+    'Хостель': 'Хостел',
+    'Пансионаты': 'Пансіонати',
+    'Коттеджи для компаний': 'Котеджі для компаній',
+    'Коворкинги': 'Коворкінги',
+    'Автокемпинги': 'Автокемпінги',
+    'Базы отдыха': 'Бази відпочинку'
   },
   ru: {
     'Квартира': 'Квартира',
     'Гостиница': 'Гостиница',
     'Хостел': 'Хостел',
-    'Дом': 'Дом',
-    'База отдыха': 'База отдыха',
-    'Сауна/Баня': 'Сауна/Баня',
+    // 'Дом': 'Будинок',
+    'Будинок': 'Дом',
+    // 'База отдыха': 'База отдыха',
+    'База відпочинку': 'База отдыха',
+    'Сауна/Лазня': 'Сауна/Баня',
     'Готель для тварин': 'Отель для животных',
+    'Глемпинг': 'Глэмпинг',
     'Глемпінг': 'Глэмпинг',
-    'Пансіонат': 'Пансионат',
-    'Котедж для компній': 'Коттедж для компаний',
+    'Пансионат': 'Пансионат',
+    'Пансіонат': 'Санаторий/Пансионат',
+    'Котедж для компаний': 'Коттедж для компаний',
+    'Котедж для компаній': 'Коттедж для компаний',
+    'Коворкинг': 'Коворкинг',
     'Коворкінг': 'Коворкинг',
-    'Автокемпінг': 'Автокемпинг'
+    'Автокемпинг': 'Автокемпинг',
+    'Автокемпінг': 'Автокемпинг',
+    // 'Сауна': 'Сауна',
+    // 'Баня': 'Баня',
+    'Гостиница для животных': 'Гостиница для животных',
+    'Хостель': 'Хостел',
+    'Пансионаты': 'Пансионаты',
+    'Коттеджи для компаний': 'Коттеджи для компаний',
+    'Коворкинги': 'Коворкинги',
+    'Автокемпинги': 'Автокемпинги',
+    'Базы отдыха': 'Базы отдыха'
   }
 };
 
@@ -774,7 +725,33 @@ const ApartmentCardComponent = ({
   
   const translateCategory = useCallback((category) => {
     if (!category) return t.apartmentDefault;
-    return categoryTranslations[category] || category;
+    
+    const cleanCategory = String(category).trim();
+    
+    // Сначала пробуем точное совпадение
+    if (categoryTranslations[cleanCategory]) {
+      return categoryTranslations[cleanCategory];
+    }
+    
+    // Пробуем найти частичное совпадение
+    const normalizedCategory = cleanCategory.toLowerCase().replace(/\s+/g, ' ').replace(/[\/\\]/g, '/');
+    
+    for (const [key, translation] of Object.entries(categoryTranslations)) {
+      const normalizedKey = key.toLowerCase().replace(/\s+/g, ' ').replace(/[\/\\]/g, '/');
+      
+      // Проверяем точное совпадение нормализованных строк
+      if (normalizedKey === normalizedCategory) {
+        return translation;
+      }
+      
+      // Проверяем частичное совпадение (если одна строка содержит другую)
+      if (normalizedCategory.includes(normalizedKey) || normalizedKey.includes(normalizedCategory)) {
+        return translation;
+      }
+    }
+    
+    // Если перевод не найден, возвращаем оригинал
+    return cleanCategory;
   }, [categoryTranslations, t.apartmentDefault]);
 
   const photos = Array.isArray(apartment?.photos) ? apartment.photos : [];
@@ -1203,8 +1180,6 @@ const MemoizedApartmentCardComponent = memo(ApartmentCardComponent);
 
 export default function ApartmentCard(props) {
   return (
-    // <LanguageProvider>
-      <MemoizedApartmentCardComponent {...props} />
-    // </LanguageProvider>
+    <MemoizedApartmentCardComponent {...props} />
   );
 }

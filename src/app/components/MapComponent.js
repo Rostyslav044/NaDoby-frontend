@@ -1,19 +1,11 @@
 
 
-
-
-
-
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
 import { useFavorites } from '@/app/hooks/FavoritesContext';
-
-// Глобальная переменная для отслеживания загрузки API
-let googleMapsLoading = false;
-let googleMapsLoaded = false;
-let googleMapsLoadCallbacks = [];
+import { useGoogleMaps } from '../../GoogleMapsProvider';
 
 // Цвета для разных категорий
 const CATEGORY_COLORS = {
@@ -45,6 +37,8 @@ const MapComponent = ({
   const markersRef = useRef([]);
   const [mapLoading, setMapLoading] = useState(true);
   const [mapError, setMapError] = useState(false);
+  
+  const { isLoaded: isGoogleMapsLoaded, loadError: googleMapsError } = useGoogleMaps();
 
   // Используем контекст избранного
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -177,8 +171,11 @@ const MapComponent = ({
           <path fill="${color}" d="M${markerWidth/2} 0C${markerWidth/2 - 12.8} 0 10 11.2 10 ${markerHeight/3.2}c0 18 25 45 25 45s25-27 25-45C60 11.2 48.8 0 35 0z"/>
           
           <!-- Поле цены -->
-          <rect x="${priceRectX}" y="${priceRectY}" width="${priceRectWidth}" height="${priceRectHeight}" rx="4" fill="white" stroke="#ccc" stroke-width="1"/>
-          <text x="${priceTextX}" y="${priceTextY}" text-anchor="middle" fill="${priceTextColor}" font-size="${priceFontSize}" font-weight="bold" font-family="Arial, sans-serif">
+          <rect x="${priceRectX}" y="${priceRectY}" width="${priceRectWidth}" 
+          height="${priceRectHeight}" rx="4" fill="white" stroke="#ccc" stroke-width="1"/>
+          <text x="${priceTextX}" y="${priceTextY}" text-anchor="middle" 
+          fill="${priceTextColor}" font-size="${priceFontSize}"
+           font-weight="bold" font-family="Arial, sans-serif">
             ${formattedPrice}
           </text>
           
@@ -189,63 +186,6 @@ const MapComponent = ({
       scaledSize: new window.google.maps.Size(markerWidth, markerHeight),
       anchor: new window.google.maps.Point(markerWidth/2, markerHeight),
     };
-  };
-
-  // Функция для загрузки Google Maps API
-  const loadGoogleMaps = () => {
-    return new Promise((resolve, reject) => {
-      if (googleMapsLoaded) {
-        resolve();
-        return;
-      }
-
-      if (googleMapsLoading) {
-        googleMapsLoadCallbacks.push(resolve);
-        return;
-      }
-
-      googleMapsLoading = true;
-
-      if (window.google && window.google.maps) {
-        googleMapsLoaded = true;
-        googleMapsLoading = false;
-        resolve();
-        return;
-      }
-
-      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-      if (existingScript) {
-        existingScript.onload = () => {
-          googleMapsLoaded = true;
-          googleMapsLoading = false;
-          resolve();
-          googleMapsLoadCallbacks.forEach(cb => cb());
-          googleMapsLoadCallbacks = [];
-        };
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      
-      script.onload = () => {
-        googleMapsLoaded = true;
-        googleMapsLoading = false;
-        resolve();
-        googleMapsLoadCallbacks.forEach(cb => cb());
-        googleMapsLoadCallbacks = [];
-      };
-
-      script.onerror = () => {
-        googleMapsLoading = false;
-        setMapError(true);
-        reject(new Error('Failed to load Google Maps'));
-      };
-
-      document.head.appendChild(script);
-    });
   };
 
   // Функция для получения координат апартамента
@@ -413,8 +353,8 @@ const MapComponent = ({
     });
   }, [isFavorite, compactMode]);
 
-  const initializeMap = async () => {
-    if (!mapRef.current || !window.google) return;
+  const initializeMap = useCallback(async () => {
+    if (!mapRef.current || !window.google || !isGoogleMapsLoaded) return;
 
     try {
       const defaultCenter = { lat: 50.4501, lng: 30.5234 };
@@ -595,37 +535,24 @@ const MapComponent = ({
       setMapError(true);
       setMapLoading(false);
     }
-  };
+  }, [isGoogleMapsLoaded, apartments, centerMode, compactMode, isFavorite, onApartmentSelect]);
 
   // Обновляем маркеры при изменении избранного
   useEffect(() => {
-    if (markersRef.current.length > 0) {
+    if (markersRef.current.length > 0 && isGoogleMapsLoaded) {
       updateFavoriteMarkers();
     }
-  }, [updateFavoriteMarkers]);
+  }, [updateFavoriteMarkers, isGoogleMapsLoaded]);
 
+  // Инициализация карты когда Google Maps загружен
   useEffect(() => {
-    const initMap = async () => {
-      try {
-        setMapLoading(true);
-        setMapError(false);
-        
-        await loadGoogleMaps();
-        
-        if (window.google && window.google.maps) {
-          await initializeMap();
-        } else {
-          throw new Error('Google Maps API not loaded');
-        }
-      } catch (error) {
-        console.error('Map loading error:', error);
-        setMapError(true);
-        setMapLoading(false);
-      }
-    };
+    if (isGoogleMapsLoaded && window.google) {
+      initializeMap();
+    }
+  }, [isGoogleMapsLoaded, initializeMap]);
 
-    initMap();
-
+  // Очистка при размонтировании
+  useEffect(() => {
     return () => {
       markersRef.current.forEach(marker => {
         if (marker.infoWindow) {
@@ -637,9 +564,9 @@ const MapComponent = ({
       });
       markersRef.current = [];
     };
-  }, [apartments, centerMode, userLocation, compactMode]);
+  }, []);
 
-  if (mapError) {
+  if (mapError || googleMapsError) {
     return (
       <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
         <Typography color="error" sx={{ mb: 2 }}>
@@ -650,20 +577,6 @@ const MapComponent = ({
           onClick={() => {
             setMapError(false);
             setMapLoading(true);
-            setTimeout(() => {
-              const initMap = async () => {
-                try {
-                  await loadGoogleMaps();
-                  if (window.google && window.google.maps) {
-                    await initializeMap();
-                  }
-                } catch (error) {
-                  setMapError(true);
-                  setMapLoading(false);
-                }
-              };
-              initMap();
-            }, 100);
           }}
         >
           Попробовать снова
@@ -704,6 +617,4 @@ const MapComponent = ({
 };
 
 export default MapComponent;
-
-
 

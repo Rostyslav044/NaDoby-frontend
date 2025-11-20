@@ -103,7 +103,7 @@ function HomeContent() {
         <Blog />
       
 
-        <Footer/>
+        {/* <Footer/> */}
         
       </main>
     </>

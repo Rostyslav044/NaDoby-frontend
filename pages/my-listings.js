@@ -46,6 +46,7 @@ import { Provider } from "react-redux";
 import Apartments from "@/app/components/Apartments";
 import { useEffect, useState } from "react";
 import Head from 'next/head';
+import Footer from "@/app/components/Footer";
 
 export default function MyListings() {
   const [profile, setProfile] = useState(null);
@@ -76,6 +77,7 @@ export default function MyListings() {
                 showActions={true} // ← ВАЖНО: передаем showActions=true
               />
             )}  
+            <Footer/>
           </LanguageProvider>
         </Provider>
       </div>

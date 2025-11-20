@@ -263,6 +263,7 @@ import { Provider } from "react-redux";
 import { Container, Typography, Box, Paper, List, ListItem, ListItemIcon, Chip, Alert, useTheme, useMediaQuery } from "@mui/material";
 import { CheckCircle, ContactMail, Home, Payment, ThumbUp, VerifiedUser, Security } from "@mui/icons-material";
 import Head from 'next/head';
+import Footer from "@/app/components/Footer";
 
 export default function RentalTerms() {
   const theme = useTheme();
@@ -505,11 +506,12 @@ export default function RentalTerms() {
                     fontSize: isMobile ? '1.1rem' : '1.3rem' 
                   }}>
                     Якщо у вас виникли питання або пропозиції щодо роботи платформи, 
-                    будь ласка, пишіть на <strong>support@nadoby.com.ua</strong>
+                    будь ласка, пишіть на <strong>nadoby.rent@gmail.com</strong>
                   </Typography>
                 </Box>
               </Paper>
             </Container>
+            <Footer/>
           </LanguageProvider>
         </Provider>
       </div>

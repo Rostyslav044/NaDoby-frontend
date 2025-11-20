@@ -270,6 +270,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography, CircularProgress, Button, Snackbar, Alert, Modal } from "@mui/material";
 import axios from 'axios';
 import Head from 'next/head';
+import Footer from "@/app/components/Footer";
 
 const TRANSLATIONS = {
   ua: {
@@ -549,6 +550,7 @@ export default function Favorites() {
       <LanguageProvider>
         <Header />
         <FavoritesContent />
+        <Footer/>
       </LanguageProvider>
     </Provider>
   );

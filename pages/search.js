@@ -42,6 +42,7 @@ import ArrowBack from '@mui/icons-material/ArrowBack';
 import Warning from '@mui/icons-material/Warning';
 import MapIcon from '@mui/icons-material/Map';
 import Close from '@mui/icons-material/Close';
+import { GoogleMapsProvider } from '../src/GoogleMapsProvider';
 
 // Динамически загружаем карту
 const MapComponent = dynamic(() => import('@/app/components/MapComponent'), {
@@ -650,15 +651,36 @@ const SearchResultsContent = () => {
 };
 
 // Главный компонент страницы с провайдерами
+// export default function Search() {
+//   return (
+//     <Providers store={store}>
+//       <LanguageProvider>
+//         <SessionProvider>
+//           <FavoritesProvider>   {/* Добавляем здесь */}
+//           <GoogleMapsProvider> 
+//             <Header />
+//             <SearchResultsContent />
+//             <Footer />
+            
+//           </FavoritesProvider>
+//         </SessionProvider>
+//       </LanguageProvider>
+//     </Providers>
+//   );
+// }
+
+// Главный компонент страницы с провайдерами
 export default function Search() {
   return (
     <Providers store={store}>
       <LanguageProvider>
         <SessionProvider>
-          <FavoritesProvider>   {/* Добавляем здесь */}
-            <Header />
-            <SearchResultsContent />
-            <Footer />
+          <FavoritesProvider>
+            <GoogleMapsProvider> 
+              <Header />
+              <SearchResultsContent />
+              <Footer />
+            </GoogleMapsProvider>
           </FavoritesProvider>
         </SessionProvider>
       </LanguageProvider>

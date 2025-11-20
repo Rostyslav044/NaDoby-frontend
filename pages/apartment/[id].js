@@ -1107,6 +1107,7 @@ const ApartmentDetailContent = ({ apartmentData, userApartmentsCount }) => {
         {apartment && myListingsCount > 1 && (
           <Box sx={{ textAlign: "center", mb: 4, mt: 3 }}>
             <Link
+              // href={`/listings/${apartment.user_id}`}
               href={`/listings/${apartment.user_id}`}
               style={{ textDecoration: "none" }}
             >

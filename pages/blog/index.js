@@ -712,7 +712,7 @@ function Blog({ generatedAt }) {
     <>
       <Header />
       <BlogPosts generatedAt={generatedAt} />
-      {/* <Footer /> */}
+      <Footer />
     </>
   )
 }
